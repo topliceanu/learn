@@ -9,6 +9,11 @@ class Person:
     def hi(self):
         print 'Hi, my name is {0}'.format(self.name)
 
+    def credentials(self):
+        return (self.name, 'pfa')
+
 
 p = Person('Alex')
 p.hi()
+(name, status) = p.credentials()
+print(status)
