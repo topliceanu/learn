@@ -1,4 +1,5 @@
 class Person:
+    """ Represents an person's stored data. """
 
     population = 0
 
@@ -11,9 +12,3 @@ class Person:
 
     def credentials(self):
         return (self.name, 'pfa')
-
-
-p = Person('Alex')
-p.hi()
-(name, status) = p.credentials()
-print(status)

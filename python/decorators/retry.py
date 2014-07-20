@@ -3,7 +3,15 @@ from functools import wraps
 
 
 def retry (f):
-    """ Decorator which retries a wrapped function a number of times. """
+    """ Decorator which retries a wrapped function a number of times.
+
+        Usage:
+            @retry
+            def fn():
+                raise ValueError()
+
+            fn()
+    """
 
     @wraps(f)
     def wrapped_f (*args, **kwargs):
@@ -16,16 +24,3 @@ def retry (f):
                 sleep(10 * attempt)
 
     return wrapped_f
-
-
-
-counter = 0
-@retry
-def test ():
-    counter += 1
-    if counter < 4:
-        raise ValueError('Error: '+counter)
-    print('worked')
-
-if __name__ == '__main__':
-    test()
