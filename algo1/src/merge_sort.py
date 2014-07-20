@@ -1,6 +1,15 @@
 from math import floor, ceil
 
 def merge (left, right):
+    """ Joins two sorted lists.
+
+        Positional arguments:
+        left -- a sorted list of elements
+        right -- a sorted list of elements
+
+        Return:
+        A list produced by merging the two received lists.
+    """
     i = 0
     j = 0
     n = len(left)
@@ -37,10 +46,3 @@ def merge_sort (arr):
         right = merge_sort(arr[int(ceil(n/2)):n])
         res = merge(left, right)
         return res
-
-
-# Test
-#arr = [7,2,6,3,1,8,4,9,5]
-arr = [4,5,2,3,0,14,34]
-print merge_sort(arr)
-
