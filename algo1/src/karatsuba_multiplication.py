@@ -1,9 +1,15 @@
 from math import ceil, floor
 
 def to_int (x, default=10):
-    """
-        Function takes a string as argument and returns a number.
+    """ Function takes a string as argument and returns a number.
         Except for the string '0' which will return 10.
+
+        Params:
+        x - int
+        default - int
+
+        Returns:
+        int
     """
     if x is '0':
         return default
@@ -11,11 +17,15 @@ def to_int (x, default=10):
 
 
 def multiply (x, y):
-    """
-        Multiplies x and y recursively by splitting both terms in two number.
-        @param {Int} x, x positive non-zero integer
-        @param {Int} y, y positive non-zero integer
-        @return {Int}
+    """ Multiplies two integers (x and y) recursively by
+        splitting both terms in two number.
+
+        Params:
+        x - int positive non-zero integer
+        y - int positive non-zero integer
+
+        Returns:
+        int
     """
     # Make sure they're both strings.
     x = str(x)
@@ -30,9 +40,9 @@ def multiply (x, y):
     else:
         # Compute segments of the initial numbers.
         a = x[0:int(floor(n/2))]
-        b = x[int(ceil(n/2)):n]
+        b = x[int(ceil(n/2)):]
         c = y[0:int(floor(m/2))]
-        d = y[int(ceil(m/2)):m]
+        d = y[int(ceil(m/2)):]
 
         # Compute Karatsuba multiplication terms.
         ac = multiply(a, c)
@@ -46,19 +56,3 @@ def multiply (x, y):
         pow2 = max(int(floor(n/2)), int(floor(m/2)))
 
         return ac*(10**pow1) + adbc*(10**pow2) + bd
-
-
-# Test
-# import pdb; pdb.set_trace();
-
-#x = 12
-#y = 13
-#print "%s * %s; actual %s; expected %s" % (x, y, multiply(x, y), x*y)
-
-#x = 12
-#y = 10
-#print "%s * %s; actual %s; expected %s" % (x, y, multiply(x, y), x*y)
-
-#x = 5678
-#y = 1234
-#print "%s * %s; actual %s; expected %s" % (x, y, multiply(x, y), x*y)

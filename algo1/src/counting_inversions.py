@@ -5,9 +5,12 @@ def sort_and_count_split_inversions (left, right):
         This function counts the number of inversions accross left and right.
         An inversion is any pair (i,j), i from left and j from right, where i > j.
 
-        @param {Array} left - sorted array
-        @param {Array} right - sorted array
-        @return [{Array}, {Number}] - sorted array and invertion counter
+        Params:
+        left - sorted list
+        right - sorted list
+
+        Return:
+        [{list}, {int}] - sorted array and invertion counter
     """
     n = len(left)
     m = len(right)
@@ -39,33 +42,37 @@ def sort_and_count_split_inversions (left, right):
 
 def sort_and_count_inversions (arr):
     """
-        This function is a divide an conquer routine that recursively splits the
-        input array in two halves counting the inversions them summing them up.
+        This function is a divide an conquer routine that recursively splits
+        the input array in two halves counting the inversions them summing
+        them up.
 
-        @param {Array} arr
-        @return {Array}
+        Params:
+        arr - list of items
+
+        Return:
+        (sorted_arr, num_inversions)
     """
     n = len(arr)
     # Base case.
     if n is 1:
         return [arr, 0]
     else:
-        # Split the input array in two.
+        # Split the input array in two in the middle.
         left = arr[0:int(floor(n/2))]
-        right = arr[int(ceil(n/2)):n]
+        right = arr[int(ceil(n/2)):]
 
         # Count inversions in each of the smaller arrays.
         [left_sorted, left_count] = sort_and_count_inversions(left)
         [right_sorted, right_count] = sort_and_count_inversions(right)
 
         # Count inversions only across the arrays.
-        [arr_sorted, split_count] = sort_and_count_split_inversions(left_sorted, right_sorted)
+        [arr_sorted, split_count] = sort_and_count_split_inversions(
+                                            left_sorted, right_sorted)
 
-        # Sum them all up.
+        # Sum up all inversions.
         count = left_count + right_count + split_count
+
         return [arr_sorted, count]
 
 
 # Test
-arr = [1, 3, 5, 2, 4, 6]
-print sort_and_count_inversions(arr)

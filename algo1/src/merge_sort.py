@@ -35,14 +35,20 @@ def merge (left, right):
 
 
 def merge_sort (arr):
-    """
-        Sorts out an array.
+    """ Sorts out an array.
+        Does modify the input array.
+
+        Params:
+        arr - a list of items.
+
+        Return:
+        The sorted version of the input array.
     """
     n = len(arr)
     if n is 1: # Base case.
         return arr
     else:
         left = merge_sort(arr[0:int(floor(n/2))])
-        right = merge_sort(arr[int(ceil(n/2)):n])
+        right = merge_sort(arr[int(ceil(n/2)):])
         res = merge(left, right)
         return res

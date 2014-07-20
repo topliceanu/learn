@@ -1,7 +1,10 @@
 def op (x, y, op = '+'):
-    """
-        Liniar operation over two square, same-size matrices.
-        Default is add.
+    """ Liniar operation over two square, same-size matrices.
+
+        Params:
+        x - array of size nxn
+        y - array of size nxn
+        op - str with operations to apply on two arrays
     """
     n = len(x)
     out = []
@@ -145,33 +148,4 @@ def strassen_array_multiplication (x, y):
         cfdh = sub(sub(add(p1, p5), p3), p7)
 
         out = arr_join(aebg, afbh, cedg, cfdh)
-        import pdb; pdb.set_trace()
         return out
-
-
-# Test
-#x = [[1,2], [3,4]]
-#y = [[5,6], [7,8]]
-#print strassen_array_multiplication(x, y)
-#print add(x, y)
-#print sub(x, y)
-#print arr_section(x, 1, 2, 1, 2)
-#a = [[1]]
-#b = [[2]]
-#c = [[3]]
-#d = [[4]]
-#print arr_join(a,b,c,d)
-
-x = [
-    [1,2,3,4],
-    [2,3,4,5],
-    [3,4,5,6],
-    [7,8,9,10]
-]
-y = [
-    [8,9,10,11],
-    [9,10,11,12],
-    [10,11,12,13],
-    [11,12,13,14]
-]
-print strassen_array_multiplication(x, y)
