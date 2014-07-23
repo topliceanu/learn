@@ -1,7 +1,16 @@
-def pick_pivot(arr, l, r):
-    """ Pick a pivot element
+import random
+
+
+def pick_pivot(l, r):
+    """ Picks a pivot element at random from the 25-75% input percentile.
+        Params:
+
+        Return:
+        int - a randon number between l and r
     """
-    (arr[0], 0)
+    x = int(r + (r - l)/4)
+    y = int(l - (r - l)/4)
+    random.randint(x, y)
 
 def partition(arr, l, r):
     """ Arranges all elements smaller than p to the left and all
@@ -38,7 +47,7 @@ def quick_sort(arr, l, r):
     """
     if n == 1:
         return arr
-    (p, pos) = pick_pivot(arr, l, r)
-    (left, right) = partition(arr, pos)
+    p = pick_pivot(l, r)
+    (left, right) = partition(arr, p)
     quick_sort(left, len(left))
     quick_sort(right, len(right))
