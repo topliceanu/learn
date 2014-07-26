@@ -3,10 +3,13 @@ import random
 
 def pick_pivot(l, r):
     """ Picks a pivot element at random from the 25-75% input percentile.
-        Params:
 
-        Return:
-        int - a randon number between l and r
+    Params:
+    l - left most index to pick as pivot
+    r - right most index to pick as pivot
+
+    Return:
+    int - a randon number between l and r
     """
     return random.randint(l, r)
 
@@ -30,22 +33,29 @@ def partition(arr, l, r):
             i += 1
     # Finally move the pivot from the first position into it's correct order.
     (arr[i-1], arr[pos]) = (arr[pos], arr[i-1])
-    return arr
+    return arr, (i - 1)
 
 def quick_sort(arr, l, r):
     """ Sorts the input array using the 'quick sort' method.
 
-        Params:
-        arr - a list of elements.
-        l - left most index of the array
-        r - right most index of the array
+    Params:
+    arr - a list of elements.
+    l - left most index of the array
+    r - right most index of the array
 
-        Returns:
-        A list of sorted elements.
+    Returns:
+    A list of sorted elements.
     """
-    if n == 1:
+    if (l - r + 1) == 1:
         return arr
+
+    # Pick a pivot and make sure it's in the first position of the array.
     p = pick_pivot(l, r)
-    (left, right) = partition(arr, p)
-    quick_sort(left, len(left))
-    quick_sort(right, len(right))
+    (arr[l], arr[p]) = (arr[p], arr[l])
+
+    # Partition the array in place and return the final position of the pivot.
+    (arr, pos) = partition(arr, l, r)
+
+    # Recurse on the two positions.
+    quick_sort(arr, l, pos)
+    quick_sort(arr, pos+1, r)
