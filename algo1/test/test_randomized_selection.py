@@ -10,3 +10,9 @@ class RandomizedSelection(unittest.TestCase):
         actual = randomized_selection(arr, len(arr), 2)
         expected = 8
         self.assertEqual(actual, expected, 'should select the third position')
+
+    def test_randomized_selection_to_produce_median(self):
+        arr = [8,2,1,7,4,5,3,0,6,9]
+        actual = randomized_selection(arr, len(arr), 5)
+        expected = 5
+        self.assertEqual(actual, expected, 'should produce the arrays median')
