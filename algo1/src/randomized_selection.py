@@ -15,7 +15,7 @@ def randomized_selection(arr, n, i):
     Return:
     The element on the given position.
     """
-    if n == 1:
+    if n in [0, 1]:
         return arr[0]
 
     pos = quick_sort.pick_pivot(0, n - 1)
