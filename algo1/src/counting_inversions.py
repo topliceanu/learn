@@ -73,6 +73,3 @@ def sort_and_count_inversions (arr):
         count = left_count + right_count + split_count
 
         return [arr_sorted, count]
-
-
-# Test
