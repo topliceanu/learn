@@ -8,9 +8,7 @@ def pick_pivot(l, r):
         Return:
         int - a randon number between l and r
     """
-    x = int(r + (r - l)/4)
-    y = int(l - (r - l)/4)
-    random.randint(x, y)
+    return random.randint(l, r)
 
 def partition(arr, l, r):
     """ Arranges all elements smaller than p to the left and all

@@ -10,3 +10,7 @@ class QuickSortTest(unittest.TestCase):
         expected = [1, 2, 3, 5, 8, 4, 7, 6]
         actual = partition(arr, 0, len(arr))
         self.assertEqual(actual, expected)
+
+    def test_pick_pivot(self):
+        pivot = pick_pivot(1, 10)
+        self.assertIn(pivot, range(1, 11))
