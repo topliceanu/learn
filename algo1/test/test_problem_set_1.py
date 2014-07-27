@@ -32,12 +32,8 @@ from src.counting_inversions import sort_and_count_inversions
 
 numbers = []
 with open('{base}/test/IntegerArray.txt'.format(base=os.getcwd()), 'r') as f:
-    while True:
-        number = f.readLine()
-        if number:
-            numbers.append(int(number))
-        else:
-            break
+    lines = f.readlines()
+    [numbers.append(int(line)) for line in lines]
 
 sorted_arr, num_inversions = sort_and_count_inversions(numbers)
 print num_inversions
