@@ -36,4 +36,5 @@ with open('{base}/test/IntegerArray.txt'.format(base=os.getcwd()), 'r') as f:
     [numbers.append(int(line)) for line in lines]
 
 sorted_arr, num_inversions = sort_and_count_inversions(numbers)
+print sorted_arr
 print num_inversions

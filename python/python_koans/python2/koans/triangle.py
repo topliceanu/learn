@@ -18,8 +18,19 @@
 #   about_triangle_project_2.py
 #
 def triangle(a, b, c):
-    # DELETE 'PASS' AND WRITE THIS CODE
-    pass
+    if a <= 0 or b <=0 or c <=0:
+        raise TriangleError('At least one side is smaller or equal than 0')
+
+    s = sorted([a,b,c])
+    if s[2] >= s[0] + s[1]:
+        raise TriangleError('The sides cannot compose a triangle')
+
+    if a == b and b == c:
+        return 'equilateral'
+    elif a == b or a == c or b == c:
+        return 'isosceles'
+    else:
+        return 'scalene'
 
 
 # Error class used in part 2.  No need to change this code.
