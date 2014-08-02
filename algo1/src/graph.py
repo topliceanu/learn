@@ -1,4 +1,5 @@
-# This is a lib with utilities for graph processing.
+# -*- coding: utf-8 -*-
+
 
 class Graph:
     """ Data structure to hold graph data using adjacency lists. """

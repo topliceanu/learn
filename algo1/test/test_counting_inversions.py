@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import unittest
 
 from src.counting_inversions import sort_and_count_inversions

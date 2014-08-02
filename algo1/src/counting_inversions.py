@@ -1,4 +1,7 @@
+# -*- coding: utf-8 -*-
+
 from math import floor, ceil
+
 
 def sort_and_count_split_inversions (left, right):
     """

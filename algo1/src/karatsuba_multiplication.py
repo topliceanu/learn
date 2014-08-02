@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from math import ceil, floor
 
 def to_int (x, default=10):

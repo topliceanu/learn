@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import random
 
 import src.quick_sort as quick_sort

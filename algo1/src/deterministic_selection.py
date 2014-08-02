@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from src.merge_sort import merge_sort
 from src.quick_sort import partition
 

@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from math import floor, ceil
 
 def merge (left, right):

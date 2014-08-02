@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+
+
 def op (x, y, op = '+'):
     """ Liniar operation over two square, same-size matrices.
 

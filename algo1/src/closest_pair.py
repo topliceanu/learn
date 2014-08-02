@@ -1,5 +1,7 @@
+# -*- coding: utf-8 -*-
+
 def closest_pair(points):
-    """ Computes the closest pair from a given set of points in a plaing.
+    """ Computes the closest pair from a given set of points in a plain.
 
     Running time is O(nlogn) time.
     Uses divide and conquer with the following steps:

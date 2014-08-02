@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import unittest
 
 from src.strassen_array_multiplication import strassen_array_multiplication

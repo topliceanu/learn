@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import unittest
 
 from src.deterministic_selection import deterministic_selection, \

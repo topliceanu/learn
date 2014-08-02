@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import unittest
 
 from src.quick_sort import quick_sort, partition, pick_pivot
