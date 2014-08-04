@@ -19,6 +19,3 @@ def closest_pair(points):
     Params
     points - list of tuples [(x, y)]
     """
-
-    p = extract(points, 0)
-    q = extract(points, 1)
