@@ -6,8 +6,14 @@ class Graph:
     """
 
     def __init__(self, directed=False):
+        # Marks whether or not the graph is directed. Defaults to False.
         self.directed = directed
+
+        # Dict structure to hold the graph. Format {tail: {head: value}}
         self.table = {}
+
+        # Dict structure to hold the vertices values.
+        self.values = {}
 
     def split_edge(self, edge):
         tail = edge[0]
@@ -73,6 +79,14 @@ class Graph:
             self.table[tail][head] = newValue
         if self.adjacent(head, tail):
             self.table[head][tail] = newValue
+
+    def get_vertex_value(self, vertex):
+        if vertex in self.values:
+            return self.values[vertex]
+        return None
+
+    def set_vertex_value(self, vertex, newValue):
+        self.values[vertex] = newValue
 
     def remove_edge(self, edge):
         (tail, head, value) = self.split_edge(edge)

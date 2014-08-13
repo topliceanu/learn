@@ -3,7 +3,7 @@
 import unittest
 
 from src.bfs_shortest_path import bfs_shortest_path_distance
-import src.graph
+from src.graph import Graph
 
 
 class TestBfsShortestPath(unittest.TestCase):
@@ -14,11 +14,16 @@ class TestBfsShortestPath(unittest.TestCase):
           /     /  |  /
         (s)--(b)--(d)
         """
-        vertices = ['s', 'a', 'b', 'c', 'd', 'e']
-        edges = [('s', 'a'), ('s', 'b'), ('a', 'c'),
-                 ('c', 'b'), ('c', 'd'), ('d', 'e')]
-        g = graph.Graph(vertices, edges)
+        edges = [('s', 'a'), ('s', 'b'), ('a', 'c'), ('b', 'd'),
+                 ('c', 'b'), ('c', 'd'), ('c', 'e'), ('d', 'e')]
+        g = Graph.build(edges=edges, directed=False)
 
-        expected = 3
-        actual = bfs_shortest_path_distance(g, 's', 'e')
-        assert.equal(actual, expected, 'should compute correct distance')
+        g = bfs_shortest_path_distance(g, 's')
+        print g.values
+
+        self.assertEqual(g.get_vertex_value('s'), 0, 'correct distance')
+        self.assertEqual(g.get_vertex_value('a'), 1, 'correct distance')
+        self.assertEqual(g.get_vertex_value('b'), 1, 'correct distance')
+        self.assertEqual(g.get_vertex_value('c'), 2, 'correct distance')
+        self.assertEqual(g.get_vertex_value('d'), 2, 'correct distance')
+        self.assertEqual(g.get_vertex_value('e'), 3, 'correct distance')
