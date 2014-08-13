@@ -16,16 +16,15 @@ def contract(graph, edge):
     super_vertex = '{start}_{end}'.format(start=start, end=end)
 
     # Remove individual vertices and add super-vertex.
-    graph.vertices.remove(start)
-    graph.vertices.remove(end)
-    graph.vertices.append(super_vertex)
+    graph.rename_vertex(start, super_vertex)
+    graph.rename_vertex(end, super_vertex)
 
     # Process edges such that start and end vertices
     # are replaced by the new super-vertex.
     # Also remove self-loops.
     for edge in graph.edges:
         [s, e] = edge
-        if (s == start and e == end) or (s == end and e = start):
+        if (s == start and e == end) or (s == end and e == start):
             graph.delete(s, e)
         elif (s == start) or (s == end):
             edge[0] = super_vertex

@@ -2,7 +2,7 @@
 
 import unittest
 
-import graph
+import src.graph
 from src.minimum_cut import pick_random_edge, contract, minimum_cut
 
 
@@ -24,6 +24,8 @@ class MinimumCutTest(unittest.TestCase):
                                                ('b', 'c'), ('b', 'd'),
                                                ('c', 'd')])
         left, right = minimum_cut(g)
+        print 'left: ', left
+        print 'right: ', right
 
     def test_minimum_cut_for_larger_graph(self):
         """ Test minimum cut for a larger graph.
@@ -31,3 +33,4 @@ class MinimumCutTest(unittest.TestCase):
          |  X |    |  X |
         (c)--(d)--(g)--(h)
         """
+        pass
