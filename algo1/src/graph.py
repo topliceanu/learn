@@ -5,14 +5,9 @@ class Graph:
     Uses the adjacency list paradigm to save on space.
     """
 
-    # Representation of the graph as a dict of dicts.
-    table = {}
-
-    # Whether or not the current graph is directed or not.
-    directed = False
-
-    def __init__(directed):
+    def __init__(self, directed=False):
         self.directed = directed
+        self.table = {}
 
     def split_edge(self, edge):
         tail = edge[0]
@@ -23,15 +18,44 @@ class Graph:
             value = edge[2]
         return (tail, head, value)
 
+    def add_vertex(self, vertex):
+        if vertex not in self.table:
+            self.table[vertex] = {}
+
     def add_edge(self, edge):
         (tail, head, value) = self.split_edge(edge)
 
         self.add_vertex(head)
         self.add_vertex(tail)
-        self.table[tail] = {head: value}
+        self.table[tail][head] = value
 
         if self.directed == False:
-            self.table[head] = {tail: value}
+            self.table[head][tail] = value
+
+    def get_vertices(self):
+        return self.table.keys()
+
+    def adjacent(self, tail, head):
+        if tail in self.table:
+            if head in self.table[tail]:
+                return True
+        return False
+
+    def neighbours(self, vertex):
+        if vertex not in self.table:
+            return []
+        else:
+            return self.table[vertex].keys()
+
+    def get_edge_value(self, edge):
+        (tail, head, __) = self.split_edge(edge)
+        if self.adjacent(tail, head):
+            return self.table[tail][head]
+        else:
+            return None
+
+    def set_edge_value(self, edge, value):
+        pass
 
     def remove_edge(self, edge):
         (tail, head, value) = self.split_edge(edge)
@@ -43,35 +67,14 @@ class Graph:
                 if tail in self.table[head]:
                     del self.table[head][tail]
 
-    def inverse_edge(self, edge):
-        (tail, head, value) = self.split_edge(edge)
-        return (head, tail, value)
-
-    def add_vertex(self, vertex):
-        if self.table[vertex] is None:
-            self.table[vertex] = {}
-
     def remove_vertex(self, vertex):
         if vertex not in self.table:
             return
-
-        for head, value in self.table[vertex].iteritems():
-            del self.table[head][vertex]
         del self.table[vertex]
 
-    def adjacent(self, head, tail):
-        return self.table[head][tail] != None
-
-    def neighbours(self, vertex):
-        if self.table[vertex] is None:
-            return []
-        else:
-            return sel.table[vertex].keys()
-
-    def get_edge_value(self, edge):
-        (tail, head) = self.split_edge(edge)
-        if self.adjacent(tail, head):
-            return self.table[tail][head]
+        for tail, edges in self.table.iteritems():
+            if vertex in edges:
+                del self.table[tail][vertex]
 
     def rename_node(self, old, new):
         if old not in self.table:
@@ -80,8 +83,10 @@ class Graph:
         self.table[new] = self.table[old]
         del self.table[old]
 
-        for head, value in self.table[new].iteritems():
-            self.table[head
+        for tail, edges in self.table.iteritems():
+            if old in edges:
+                self.table[tail][new] = self.table[tail][old]
+                del self.table[tail][old]
 
     @staticmethod
     def build(vertices, edges, directed = False):
