@@ -38,6 +38,15 @@ class Graph:
     def get_vertices(self):
         return self.table.keys()
 
+    def get_edges(self):
+        output = []
+        for tail, edges in self.table.iteritems():
+            for head, value in edges.iteritems():
+                if self.directed == False and (head, tail, value) in output:
+                    continue
+                output.append((tail, head, value))
+        return output
+
     def adjacent(self, tail, head):
         if tail in self.table:
             if head in self.table[tail]:
@@ -95,14 +104,18 @@ class Graph:
         del self.table[old]
 
         for tail, edges in self.table.iteritems():
+            if tail == new and new in edges:
+                del self.table[tail][new]
             if old in edges:
                 if tail != new:
                     self.table[tail][new] = self.table[tail][old]
                 del self.table[tail][old]
 
     @staticmethod
-    def build(vertices, edges, directed = False):
+    def build(vertices = [], edges = [], directed = False):
         g = Graph(directed)
         for vertex in vertices:
             g.add_vertex(vertex)
+        for edge in edges:
+            g.add_edge(edge)
         return g

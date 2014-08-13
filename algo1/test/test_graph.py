@@ -32,6 +32,16 @@ class TestGraph(unittest.TestCase):
         self.assertIn(1, g.table, 'should have stored a key in the hash')
         self.assertEqual(g.table[1], {}, 'should have stored an empty hash')
 
+    def test_add_edge_multiple_times_nothing_happens(self):
+        g = Graph(True)
+        g.add_edge((1,2,3))
+        g.add_edge((1,2,3))
+        g.add_edge((1,2,3))
+        g.add_edge((1,2,3))
+
+        self.assertIn(1, g.table, 'should have stored the tail in table')
+        self.assertIn(2, g.table[1], 'should have stored the head in table')
+
     def test_add_edge_for_undirected_graph(self):
         g = Graph(False)
         g.add_edge((1,2,3))
@@ -69,6 +79,17 @@ class TestGraph(unittest.TestCase):
         actual = g.get_vertices()
         expected = [1,2]
         self.assertEqual(actual, expected, 'should return all vertices')
+
+    def test_get_vertices_for_non_directed_graph(self):
+        g = Graph(False)
+        g.add_edge((1,2))
+        g.add_edge((2,3))
+        g.add_edge((3,1))
+
+        actual = g.get_edges()
+        expected = [(1,2,True), (1,3,True), (2,3,True)]
+
+        self.assertEqual(actual, expected, 'should return only one way edges')
 
     def test_adjacent_in_directed_graphs(self):
         g = Graph(True)
