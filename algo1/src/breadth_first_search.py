@@ -1,7 +1,5 @@
 from collections import deque
 
-import graph.py
-
 
 def bfs(graph, start_vertex):
     """ Parses all the graph using the breadth first search.
@@ -11,15 +9,16 @@ def bfs(graph, start_vertex):
     """
 
     queue = deque()
-    queue.append(start_vertex)
+    queue.appendleft(start_vertex)
     explored_vertices = []
+    explored_vertices.append(start_vertex)
 
-    while len(queue) == 0:
-        v = queue.pop()
-        edges = graph.edges_from(v)
-        for edge in edges:
-            if edge[1] not in explored_vertices:
-                explored_vertices.append(edge[1])
-                queue.appendleft(edge[1])
+    while len(queue) != 0:
+        vertex = queue.pop()
+        neighbours = graph.neighbours(vertex)
+        for neighbour in neighbours:
+            if neighbour not in explored_vertices:
+                explored_vertices.append(neighbour)
+                queue.appendleft(neighbour)
 
     return explored_vertices
