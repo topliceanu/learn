@@ -1,64 +1,91 @@
 # -*- coding: utf-8 -*-
 
-
 class Graph:
-    """ Data structure to hold graph data using adjacency lists.
-    Uses the adjacency list paradigm.
-
-    TODO add implementation and tests for all these methods.
+    """ Base data structure to hold graph data using adjacency lists.
+    Uses the adjacency list paradigm to save on space.
     """
 
-    # list() - list of vertex names.
-    vertices = []
+    # Representation of the graph as a dict of dicts.
+    table = {}
 
-    # list(tuples()) - list of tuples, each tuple represents
-    # the vertex ends of an edge.
-    edges = []
+    # Whether or not the current graph is directed or not.
+    directed = False
 
-    def __init__(self, vertices=[], edges=[]):
-        """
-        """
-        self.vertices = vertices
-        self.edges = edges
+    def __init__(directed):
+        self.directed = directed
 
-    # The basic operations provided by a graph data structure:
+    def split_edge(self, edge):
+        tail = edge[0]
+        head = edge[1]
+        if len(edge) == 2:
+            value = True
+        else:
+            value = edge[2]
+        return (tail, head, value)
 
-    def adjacent(x, y):
-        """ Tests whether there is an edge from node x to node y."""
-        pass
+    def add_edge(self, edge):
+        (tail, head, value) = self.split_edge(edge)
 
-    def neighbors(x):
-        """ Lists all nodes y such that there is an edge from x to y. """
-        pass
+        self.add_vertex(head)
+        self.add_vertex(tail)
+        self.table[tail] = {head: value}
 
-    def add_edge(x, y):
-        """ Adds to G the edge from x to y, if it is not there. """
-        pass
+        if self.directed == False:
+            self.table[head] = {tail: value}
 
-    def delete_edge(x, y):
-        """ Removes the edge from x to y, if it is there. """
-        pass
+    def remove_edge(self, edge):
+        (tail, head, value) = self.split_edge(edge)
+        if tail in self.table:
+            if head in self.table[tail]:
+                del self.table[tail][head]
+        if self.directed == False:
+            if head in self.table:
+                if tail in self.table[head]:
+                    del self.table[head][tail]
 
-    def add_vertex(x):
-        """ Add a vertex to the graph. """
-        pass
+    def inverse_edge(self, edge):
+        (tail, head, value) = self.split_edge(edge)
+        return (head, tail, value)
 
-    def delete_vertex(x):
-        """ Removes a vertex and all adjacent edges from the graph. """
-        pass
+    def add_vertex(self, vertex):
+        if self.table[vertex] is None:
+            self.table[vertex] = {}
 
-    def get_vertex_value(x):
-        pass
+    def remove_vertex(self, vertex):
+        if vertex not in self.table:
+            return
 
-    def set_vertex_value():
-        pass
+        for head, value in self.table[vertex].iteritems():
+            del self.table[head][vertex]
+        del self.table[vertex]
 
-    def get_edge_value(x, y):
-        pass
+    def adjacent(self, head, tail):
+        return self.table[head][tail] != None
 
-    def set_edge_value(x, y, v):
-        pass
+    def neighbours(self, vertex):
+        if self.table[vertex] is None:
+            return []
+        else:
+            return sel.table[vertex].keys()
 
+    def get_edge_value(self, edge):
+        (tail, head) = self.split_edge(edge)
+        if self.adjacent(tail, head):
+            return self.table[tail][head]
 
-class DirectedGraph(Graph):
-    pass
+    def rename_node(self, old, new):
+        if old not in self.table:
+            return
+
+        self.table[new] = self.table[old]
+        del self.table[old]
+
+        for head, value in self.table[new].iteritems():
+            self.table[head
+
+    @staticmethod
+    def build(vertices, edges, directed = False):
+        g = Graph(directed)
+        for vertex in vertices:
+            g.add_vertex(vertex)
+        return g
