@@ -9,18 +9,17 @@ def bfs_connected_components(graph):
     and running bfs over it.
 
     Returns:
-    A list of subgraphs.
+    A list of lists of vertexes which are connected.
     """
-
     subgraphs = []
     explored_vertices = []
 
-    for vertex in graph.vertices:
+    for vertex in graph.get_vertices():
         if vertex in explored_vertices:
             continue
         visited_vertices = bfs(graph, vertex)
 
         explored_vertices.extend(visited_vertices)
-        output.append(visited_vertices)
+        subgraphs.append(visited_vertices)
 
     return subgraphs
