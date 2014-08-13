@@ -16,8 +16,8 @@ def contract(graph, edge):
     super_vertex = '{start}_{end}'.format(start=start, end=end)
 
     # Remove individual vertices and add super-vertex.
-    graph.rename_vertex(start, super_vertex)
-    graph.rename_vertex(end, super_vertex)
+    graph.replaceVertex(start, super_vertex)
+    graph.replaceVertex(end, super_vertex)
 
     # Process edges such that start and end vertices
     # are replaced by the new super-vertex.
@@ -35,7 +35,8 @@ def contract(graph, edge):
 
 def minimum_cut(graph):
     """ Finds the cut in a given graph with
-    the lowest number of crossing edges.
+    the lowest number of crossing edges using
+    the random contraction algorithm.
 
     Defined by David Carted in eary 90s.
     Returns
