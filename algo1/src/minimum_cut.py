@@ -35,7 +35,8 @@ def contract(graph, edge):
 
 def minimum_cut(graph):
     """ Finds the cut in a given graph with
-    the lowest number of crossing edges.
+    the lowest number of crossing edges using
+    the random contraction algorithm.
 
     Defined by David Carted in eary 90s.
     Returns
