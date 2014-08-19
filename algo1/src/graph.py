@@ -65,6 +65,13 @@ class Graph:
         else:
             return self.table[vertex].keys()
 
+    def incident(self, vertex):
+        out = set()
+        for tail, edges in self.table.iteritems():
+            if vertex in edges:
+                out.add(tail)
+        return list(out)
+
     def get_edge_value(self, edge):
         (tail, head, __) = self.split_edge(edge)
         if self.adjacent(tail, head):

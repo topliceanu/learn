@@ -80,7 +80,7 @@ class TestGraph(unittest.TestCase):
         expected = [1,2]
         self.assertEqual(actual, expected, 'should return all vertices')
 
-    def test_get_vertices_for_non_directed_graph(self):
+    def test_get_vertices_for_undirected_graph(self):
         g = Graph(False)
         g.add_edge((1,2))
         g.add_edge((2,3))
@@ -117,6 +117,29 @@ class TestGraph(unittest.TestCase):
         expected = []
         actual = g.neighbours(2)
         self.assertEqual(actual, expected, '2 has no neighbours')
+
+    def test_incident_in_directed_graph(self):
+        g = Graph(directed = True)
+        g.add_edge((2,1))
+        g.add_edge((3,1))
+
+        actual = g.incident(1)
+        expected = [2, 3]
+        self.assertEqual(actual, expected, '1 has two incident vertexes')
+
+    def test_incident_in_undirected_graph(self):
+        g = Graph(directed = False)
+        g.add_edge((2,1))
+        g.add_edge((3,1))
+
+        actual = g.incident(1)
+        expected = [2, 3]
+        self.assertEqual(actual, expected, '1 has two incident vertexes')
+
+        incident = g.incident(1)
+        neighbours = g.neighbours(1)
+        self.assertEqual(incident, neighbours,
+                'should be the same for undirected graphs')
 
     def test_get_edge_value_in_directed_graph(self):
         g = Graph(True)
