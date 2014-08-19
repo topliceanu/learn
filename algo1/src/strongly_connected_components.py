@@ -12,6 +12,16 @@ def scc(g):
        vertex ie. an ordering of the vertices.
     3. run DFS on the normal graph in reverse order of finisihing times.
     """
+    global t
+    global finishing_time
+    global s
+    global leader
+
+    t = 0
+    finishing_time = {}
+    s = None
+    leader = {}
+
     # Reset visited value of each vertex.
     #import pdb; pdb.set_trace()
     for vertex in g.get_vertices():
@@ -62,7 +72,8 @@ def dfs_compute_ordering(g):
     # 4. Process the results to get a list of vertex orderings.
     out = range(len(vertices))
     for vertex, f in finishing_time.iteritems():
-        out[f] = vertex
+        out[f-1] = vertex
+
     return out
 
 def dfs_discover_connected_components(g, vertices_ordering):
@@ -88,4 +99,10 @@ def dfs_discover_connected_components(g, vertices_ordering):
             second_dfs(g, vertex)
 
     # 3. Process the leader dict to determine the sccs.
-    return leader
+    components = set(leader.values())
+    out = {}
+    for vertex, component in leader.iteritems():
+        if component not in out:
+            out[component] = []
+        out[component].append(vertex)
+    return out.values()

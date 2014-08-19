@@ -26,9 +26,13 @@ class TestStronglyConnectedComponents(unittest.TestCase):
                                (11,9), (9,10), (10,11), (2,8), (8,9), (8,10)],
                         directed=True)
         connected_components = scc(g)
-        expected = [[1,2,3], [4,5,6,7], [9,10,11], [8]]
-        self.assertEqual(connected_components, expected,
-            'should detect strongly connected components')
+        expected = [[8], [1], [2, 3], [9, 10, 11], [4, 5, 6, 7]]
+
+        self.assertEqual(len(connected_components), len(expected),
+                'should return the same number of components')
+        for component in connected_components:
+            self.assertIn(component, expected,
+                'should detect strongly connected components')
 
     def test_scc_on_simpler_graph(self):
         """ Given the following graph it computes SCCs in it.
@@ -42,6 +46,10 @@ class TestStronglyConnectedComponents(unittest.TestCase):
                                (3,9), (6,8), (8,2), (2,5), (5,8)],
                         directed=True)
         connected_components = scc(g)
-        expected = [[1,7,4], [9,6,3], [8,5,2]]
-        self.assertEqual(connected_components, expected,
-            'should detect strongly connected components')
+        expected = [[2, 5, 8], [3, 6, 9], [1, 4, 7]]
+
+        self.assertEqual(len(connected_components), len(expected),
+                'should return the same number of components')
+        for component in connected_components:
+            self.assertIn(component, expected,
+                'should detect strongly connected components')
