@@ -1,9 +1,33 @@
+import heapq
+
 VISITED = 0x100
 NOT_VISITED = 0x101
 
 def shortest_path_heap(graph, start_vertex):
-    """ Computes shortest path using a heap data structure. """
+    """ Computes shortest path using a dijkstra algorithm and speeding it up
+    using a heap data structure.
+    """
+    S = [start_vertex]
+    A = {}
+    A[start_vertex] = 0
+    heap = [] # stores all vertices which are not yet in S with the 'dijkstra
+              # greedy score' as the key.
+
+    while True:
+        frontier = get_frontier(graph, S)
+        if len(frontier) == 0:
+            break
+
+        heap = push_frontier(graph, heap, frontier)
+        (vertex, score) = heapq.heappop(heap)
+        S.append(vertex)
+        A[vertex] = score
+
+    return A
+
+def push_frontier(graph, heap, frontier):
     pass
+
 
 def shortest_path_naive(graph, start_vertex):
     """ Computes single source shortest paths to every other vertex
@@ -23,7 +47,7 @@ def shortest_path_naive(graph, start_vertex):
     A[start_vertex] = 0 # Path to itself is 0.
     B = {} # Stores actual shortest path vertices for each node in graph.
            # Format: {vertex: [list_of_vertices]}
-    # TODO implement B functionality
+           # TODO implement B functionality
 
     while True:
         frontier = get_frontier(graph, S)
