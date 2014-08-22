@@ -28,7 +28,6 @@ def shortest_path_heap(graph, start_vertex):
 def push_frontier(graph, heap, frontier):
     pass
 
-
 def shortest_path_naive(graph, start_vertex):
     """ Computes single source shortest paths to every other vertex
     in a directed graph.
