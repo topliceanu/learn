@@ -88,8 +88,24 @@ class TestHeap(unittest.TestCase):
         self.assertEqual(min_key, 4, 'should extract the min value')
         self.assertTrue(Heap.is_heap(data), 'should still hold the heap property')
 
-    def test_delete(self):
-        pass
+    def test_remove(self):
+        """ Test the removal of a key from the middle of the heap.
+        Given the following heap:
+                        (4)
+                       /   \
+                    (4)    (8)
+                   /  \    /  \
+                 (9) (4) (12) (9)
+                /  \
+             (11)  (13)
+        """
+        data = [4, 4, 8, 9, 4, 12, 9, 11, 13]
+        h = Heap(data)
 
-    def test_static_heapafy(self):
-        pass
+        h.remove(9)
+        self.assertTrue(Heap.is_heap(data), 'should preserve heap property')
+
+    def test_static_heapify(self):
+        data = [8,2,6,3,1,2,9,5,3,7,4]
+        h = Heap.heapify(data)
+        self.assertTrue(Heap.is_heap(data), 'should preserve heap property')

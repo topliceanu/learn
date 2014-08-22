@@ -101,9 +101,15 @@ class Heap(object):
         return
 
     @staticmethod
-    def heapafy(data):
-        """ Initializes a heap from a list of numbers. """
-        pass
+    def heapify(data):
+        """ Initializes a heap from a list of numbers.
+        Traverse the array from end to front and bubble keys down as needed.
+        Running time: O(n)
+        """
+        h = Heap(data)
+        for i in range(len(h.data)-1, -1, -1):
+            h.bubble_down(i)
+        return h
 
     @staticmethod
     def parent(index):
@@ -147,8 +153,8 @@ class Heap(object):
         Running time: O(log2 n) the max number of swaps.
         """
         while True:
-            left = parent * 2
-            right = parent * 2 + 1
+            left = parent * 2 + 1
+            right = parent * 2 + 2
             min_index = self.get_min(parent, left, right)
             if min_index == parent:
                 break
