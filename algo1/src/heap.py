@@ -1,8 +1,10 @@
+# -*- coding: utf-8 -*-
+
 import heapq
 
 
 def heap_sort(arr):
-    """ Sorts an array using a heap. """
+    """ Sorts list arr using a heap. """
     heapq.heapify(arr)
     out = []
     while True:
@@ -16,6 +18,10 @@ def heap_sort(arr):
 class Median(object):
     """ Class maintains a list of elements. Whenever a new element is added
     to the list the median value (n/2 order statistic) is recomputed.
+
+    Arguments:
+        h_low: list, a heap ordered list contaning the smallest n/2 numbers
+        h_high: list, a heap ordered list containing the largest n/2 numbers
     """
 
     def __init__(self):
@@ -23,7 +29,14 @@ class Median(object):
         self.h_high = []
 
     def add(self, new_value):
-        """ Add element to the internal list and return new median. """
+        """ Add element to the internal list and return new median.
+
+        Args:
+            new_value: int
+
+        Returns:
+            An int representing the new median after inserting new_value.
+        """
         if len(self.h_low) > 0:
             max_low = self.h_low[-1]
         else:
@@ -53,7 +66,11 @@ class Median(object):
             return self.h_high[0]
 
 class Heap(object):
-    """ Implementation of a min-heap. """
+    """ Implementation of a min-heap data structure.
+
+    Attributes:
+        data: list, contains elements maintaining the heap invariant.
+    """
 
     def __init__(self, data):
         """ Initialize an empty heap. """
@@ -63,6 +80,7 @@ class Heap(object):
 
     def insert(self, element):
         """ Adds an element to the heap.
+
         Initially insert the element as the next leaf, the bubble it up if
         necessary: if the parent is larger do a swap then recurse.
 
@@ -70,6 +88,9 @@ class Heap(object):
         is out of order, ie. does not have the heap property.
 
         Running time: O(log n)
+
+        Args:
+            element: any value to add to the heap.
         """
         self.data.append(element)
         self.bubble_up(len(self.data) - 1)
@@ -77,6 +98,9 @@ class Heap(object):
     def extract_min(self):
         """ Removes the head of the array, swaps in the tail (last leaf in
         the tree) then bubbles it down to restore the heap property.
+
+        Returns:
+            The min value of the list of values inserted into the heap.
         """
         self.data[0], self.data[-1] = self.data[-1], self.data[0]
         root = self.data.pop(-1)
@@ -88,6 +112,9 @@ class Heap(object):
         The last leaf in the heap is swapped in the position of the element.
         If if violates the heap property towards its parent then bubble up,
         otherwise bubble down.
+
+        Args:
+            element: a value to remove from the heap.
         """
         try:
             index = self.data.index(element)
@@ -98,13 +125,16 @@ class Heap(object):
                 self.bubble_down(index)
         except ValueError as ve:
             pass
-        return
 
     @staticmethod
     def heapify(data):
         """ Initializes a heap from a list of numbers.
+
         Traverse the array from end to front and bubble keys down as needed.
         Running time: O(n)
+
+        Args:
+            data: list, array of elements to organize into a heap.
         """
         h = Heap(data)
         for i in range(len(h.data)-1, -1, -1):
@@ -124,6 +154,12 @@ class Heap(object):
         """ Checks if a list of numbers has the min heap property, ie. parent
         key is smaller than child keys
         Complexity: O(n)
+
+        Args:
+            data: list, array of elements to check if a heap.
+
+        Returns:
+            bool
         """
         for i in range(1, len(data)):
             if data[i] < data[Heap.parent(i)]:
@@ -133,8 +169,12 @@ class Heap(object):
     def bubble_up(self, index):
         """ Bubbles a value at position index to maintain the heap property:
         any parent node should be smaller than it's children.
+
         This will do at most log2 n (ie. the number of layers in the tree)
         swaps to restore the heap property.
+
+        Args:
+            index: int, the key in the heap to bubble up.
         """
         while True:
             parent = int(index/2)
@@ -147,10 +187,14 @@ class Heap(object):
 
     def bubble_down(self, parent):
         """ Bubbles down the element at position index (if it has any children).
+
         This is done by continuously swapping with the minimum of the two
         children keys.
 
         Running time: O(log2 n) the max number of swaps.
+
+        Args:
+            parent: int, the key in the heap to bubble down.
         """
         while True:
             left = parent * 2 + 1
@@ -164,6 +208,7 @@ class Heap(object):
             parent = min_index
 
     def get_min(self, parent, left, right):
+        """ Returns the index corresponging to the minimum values in a list."""
         a = []
         try:
             a.append((self.data[parent], parent))
@@ -174,4 +219,3 @@ class Heap(object):
 
         __, min_index = min(a, key=lambda t: t[0])
         return min_index
-

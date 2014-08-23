@@ -1,3 +1,5 @@
+# -*- conding: utf-8 -*-
+
 import unittest
 
 from src.bloom_filter import BloomFilter

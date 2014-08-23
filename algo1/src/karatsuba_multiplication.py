@@ -4,14 +4,15 @@ from math import ceil, floor
 
 def to_int (x, default=10):
     """ Function takes a string as argument and returns a number.
-        Except for the string '0' which will return 10.
 
-        Params:
-        x - int
-        default - int
+    Except for the string '0' which will return 10.
 
-        Returns:
-        int
+    Params:
+        x: int
+        default: int
+
+    Returns:
+        x if x can be cast to an integer or the default value.
     """
     if x is '0':
         return default
@@ -22,12 +23,12 @@ def multiply (x, y):
     """ Multiplies two integers (x and y) recursively by
         splitting both terms in two number.
 
-        Params:
-        x - int positive non-zero integer
-        y - int positive non-zero integer
+    Params:
+        x: int, positive non-zero integer
+        y: int, positive non-zero integer
 
-        Returns:
-        int
+    Returns:
+        int, value of x*y
     """
     # Make sure they're both strings.
     x = str(x)

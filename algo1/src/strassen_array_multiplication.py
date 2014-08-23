@@ -4,10 +4,13 @@
 def op (x, y, op = '+'):
     """ Liniar operation over two square, same-size matrices.
 
-        Params:
-        x - array of size nxn
-        y - array of size nxn
-        op - str with operations to apply on two arrays
+    Args:
+        x: array of size nxn
+        y: array of size nxn
+        op: str with operations to apply on two arrays
+
+    Returns:
+        A 2D list resulting from applying op to each element of x and y.
     """
     n = len(x)
     out = []
@@ -24,23 +27,18 @@ def op (x, y, op = '+'):
 
 
 def add (x, y):
-    """
-        Adds two square arrays.
-    """
+    """ Adds two square arrays. """
     return op(x, y, '+')
 
 
 def sub (x, y):
-    """
-        Subtracts two square arrays.
-    """
+    """ Subtracts two square arrays. """
     return op(x, y, '-')
 
 
 def arr_section (x, m, n, o, p):
-    """
-        Method extracts an array section of the original array x, denoted by
-        lines m through n and columns o through p.
+    """ Method extracts an array section of the original array x, denoted by
+    lines m through n and columns o through p.
     """
     out = []
     for i in range(m, n):
@@ -52,10 +50,10 @@ def arr_section (x, m, n, o, p):
 
 
 def arr_join (a, b, c, d):
-    """
-        Recomposes an array from for four equal-sized section arrays as follows:
-        x = (a b)
-            (c d)
+    """ Recomposes an array from for four equal-sized section arrays as follows:
+
+    x = (a b)
+        (c d)
     """
     out = []
     n = len(a)
@@ -77,32 +75,36 @@ def arr_join (a, b, c, d):
 
 
 def strassen_array_multiplication (x, y):
-    """
-        Multiplies two array using the strassen algorithm.
-        Ie. splits x and y into four sectors each:
-        x = (a b)   y = (e f)   x*y = (ae+bg af+bh)
-            (c d)       (g h)         (cd+dg cf+dh)
+    """ Multiplies two array using the strassen algorithm.
 
-        It then computes the 7 strassen coeficients recursively:
-        p1 = a(f-h)
-        p2 = (a+b)h
-        p3 = (c+d)e
-        p4 = d(g-e)
-        p5 = (a+d)(e+h)
-        p6 = (b-d)(g+h)
-        p7 = (a-c)(e+f)
+    Ie. splits x and y into four sectors each:
+    x = (a b)   y = (e f)   x*y = (ae+bg af+bh)
+        (c d)       (g h)         (cd+dg cf+dh)
 
-        Finally compute x*y components using the strassen coeficients:
-        ae+bg = p5 + p4 - p2 + p6
-        af+bh = p1 + p2
-        ce+dg = p3 + p4
-        cf+dh = p1 + p5 - p3 - p7
+    It then computes the 7 strassen coeficients recursively:
+    p1 = a(f-h)
+    p2 = (a+b)h
+    p3 = (c+d)e
+    p4 = d(g-e)
+    p5 = (a+d)(e+h)
+    p6 = (b-d)(g+h)
+    p7 = (a-c)(e+f)
 
-        @param {Array} x - square array of nxn, where n is a multiple of 2
-        @param {Array} y - square array of nxn, where n is a multiple of 2
+    Finally compute x*y components using the strassen coeficients:
+    ae+bg = p5 + p4 - p2 + p6
+    af+bh = p1 + p2
+    ce+dg = p3 + p4
+    cf+dh = p1 + p5 - p3 - p7
 
-        NOTE: to make it work for mxn * nxm or for the cases where n is not a
-        multiple of 2 a padding of 1s can be added.
+    NOTE: to make it work for mxn * nxm or for the cases where n is not a
+    multiple of 2 a padding of 1s can be added.
+
+    Args:
+        x: list, square array of nxn, where n is a multiple of 2
+        y: list, square array of nxn, where n is a multiple of 2
+
+    Returns:
+        A 2D array.
     """
     n = len(x) # width/height of both arrays.
 

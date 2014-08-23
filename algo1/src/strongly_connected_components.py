@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import random
 
 
@@ -6,11 +8,15 @@ NOT_VISITED = 0x101
 
 def scc(g):
     """ Computes strongly connected components of a acyclic directed graph.
-    Uses the Kosaraju two-pass algorithm.
+
+    Uses the Kosaraju two-pass algorithm, with the following steps:
     1. reverse all the edges in a graph.
     2. run DFS on the reverse graph to compute finishing times for each
        vertex ie. an ordering of the vertices.
     3. run DFS on the normal graph in reverse order of finisihing times.
+
+    Args:
+        g: instance of src.graph.Graph, a data structure encapsulating graphs.
     """
     global t
     global finishing_time
@@ -37,6 +43,7 @@ def scc(g):
     return connected_components
 
 def dfs_compute_ordering(g):
+    """ First pass of Rao Kosaraju's algorithm. """
     vertices = g.get_vertices()
     global t
     global finishing_time
@@ -77,6 +84,7 @@ def dfs_compute_ordering(g):
     return out
 
 def dfs_discover_connected_components(g, vertices_ordering):
+    """ The second pass through the graph in Kosaraju's algorithm. """
     global s
     global leader
     s = None # Stores the leader of the current node: the most recent vertex

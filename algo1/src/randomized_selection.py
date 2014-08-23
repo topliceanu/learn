@@ -7,15 +7,16 @@ import src.quick_sort as quick_sort
 
 def randomized_selection(arr, n, i):
     """ Select the ith element from arr if arr would be sorted.
+
     NOTE! We are not sorting arr, we just want the ith element in the array.
 
     Params:
-    arr - the input array
-    n - the length of the input array
-    i - the position of the element that we are looking for
+        arr: the input array
+        n: the length of the input array
+        i: the position of the element that we are looking for
 
-    Return:
-    The element on the given position.
+    Returns:
+        The element on the given position.
     """
     if n in [0, 1]:
         return arr[0]

@@ -5,8 +5,7 @@
 VISITED = 1
 
 def dfs(graph, start_vertex):
-    """ Recursive algorithms to parse a directed graph.
-    """
+    """ Recursive algorithms to parse a directed graph. """
     graph.set_vertex_value(start_vertex, VISITED)
 
     for neighbour in graph.neighbours(start_vertex):

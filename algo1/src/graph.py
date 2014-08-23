@@ -2,7 +2,14 @@
 
 class Graph:
     """ Base data structure to hold graph data using adjacency lists.
+
     Uses the adjacency list paradigm to save on space.
+
+    Attributes:
+        directed: bool marking whether or not the graph is directed.
+        table: dict with all vertices in the graph as keys. The format is
+            {tail: {head: edge_value}
+        values: dict holding the values of vertices. Format: {vertex: value}
     """
 
     def __init__(self, directed=False):
@@ -16,6 +23,16 @@ class Graph:
         self.values = {}
 
     def split_edge(self, edge):
+        """ Disambiguate edges.
+
+        Args:
+            edge: tuple, format (tail, head, value). Some edges may not
+                have values, in this case True is used.
+
+        Returns:
+            A tuple with format (tail, head, value).
+        """
+
         tail = edge[0]
         head = edge[1]
         if len(edge) == 2:
@@ -25,15 +42,24 @@ class Graph:
         return (tail, head, value)
 
     def add_vertex(self, vertex):
+        """ Adds vertex to the graph data structure. """
         if vertex not in self.table:
             self.table[vertex] = {}
 
     def add_edge(self, edge):
+        """ Adds edge to the graph data structure.
+
+        If the graph is undirected, both edge and reverse edge will be stored.
+
+        Args:
+            edge: tuple of format (tail, head, value)
+        """
         (tail, head, value) = self.split_edge(edge)
 
         self.add_vertex(head)
         self.add_vertex(tail)
 
+        # Give up in case this is a self edge.
         if head == tail:
             return
 
@@ -42,9 +68,17 @@ class Graph:
             self.table[head][tail] = value
 
     def get_vertices(self):
+        """ Returns all vertices in the stored graph. """
         return self.table.keys()
 
     def get_edges(self):
+        """ Return all edges in the stored graph.
+
+        If the graph is undirected, reverse edges will not be returned.
+
+        Returns:
+            A list of tuples of format [(tail, head, value)]
+        """
         output = []
         for tail, edges in self.table.iteritems():
             for head, value in edges.iteritems():
@@ -54,18 +88,21 @@ class Graph:
         return output
 
     def adjacent(self, tail, head):
+        """ Returns whether or not there is an edge betwee tail and head. """
         if tail in self.table:
             if head in self.table[tail]:
                 return True
         return False
 
     def neighbours(self, vertex):
+        """ Returns a list of all vertices reachable from vertex. """
         if vertex not in self.table:
             return []
         else:
             return self.table[vertex].keys()
 
     def incident(self, vertex):
+        """ Returns a list of all vertices from which you can reach vertex. """
         out = set()
         for tail, edges in self.table.iteritems():
             if vertex in edges:
@@ -73,6 +110,7 @@ class Graph:
         return list(out)
 
     def get_edge_value(self, edge):
+        """ Return value of the edge given in format (tail, head). """
         (tail, head, __) = self.split_edge(edge)
         if self.adjacent(tail, head):
             return self.table[tail][head]
@@ -80,6 +118,7 @@ class Graph:
             return None
 
     def set_edge_value(self, edge, newValue):
+        """ Set value of edge to be newValue. """
         (tail, head, value) = self.split_edge(edge)
 
         if self.adjacent(tail, head):
@@ -88,14 +127,23 @@ class Graph:
             self.table[head][tail] = newValue
 
     def get_vertex_value(self, vertex):
+        """ Return the value corresponding to the vertex name. """
         if vertex in self.values:
             return self.values[vertex]
         return None
 
     def set_vertex_value(self, vertex, newValue):
+        """ Update value of vertex with the newValue. """
         self.values[vertex] = newValue
 
     def remove_edge(self, edge):
+        """ Removes an edge from the graph.
+
+        If the graph is undirected the reverse edge will be removed as well.
+
+        Args:
+            edge: tuple for format (tail, head, value) representing a graph edge
+        """
         (tail, head, value) = self.split_edge(edge)
         if tail in self.table:
             if head in self.table[tail]:
@@ -106,6 +154,7 @@ class Graph:
                     del self.table[head][tail]
 
     def remove_vertex(self, vertex):
+        """ Removes vertex and it's adiacent and incidend edges. """
         if vertex not in self.table:
             return
         del self.table[vertex]
@@ -115,6 +164,12 @@ class Graph:
                 del self.table[tail][vertex]
 
     def rename_vertex(self, old, new):
+        """ Renames old vertex into new vertex.
+
+        Args:
+            old: str, old name of the vertex.
+            new: str, the new name of the vertex.
+        """
         if old not in self.table:
             return
 
@@ -133,7 +188,17 @@ class Graph:
                 del self.table[tail][old]
 
     @staticmethod
-    def build(vertices = [], edges = [], directed = False):
+    def build(vertices, edges, directed = False):
+        """ Builds a graph from the given vertices and edges.
+
+        Args:
+            vertices: list of immutable vertex names.
+            edges: list of edges of format (tail, head, value)
+            directed: bool indicating whether the graph is directed or not.
+
+        Returns:
+            An instance of this current Graph class.
+        """
         g = Graph(directed)
         for vertex in vertices:
             g.add_vertex(vertex)

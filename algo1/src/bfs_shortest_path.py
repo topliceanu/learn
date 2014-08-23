@@ -4,13 +4,17 @@ from collections import deque
 
 def bfs_shortest_path_distance(graph, start):
     """ Compute the length of the shortest path between start and end vertices
-    given a graph. Works the same as classic BFS except that it keep track
+    given a graph.
+
+    Works the same as classic BFS except that it keep track
     of how many hops there are from the start point to
 
     Params:
-        graph - a datastructure holding all vertices and edges.
-        start - a vertex name to start the graph exploration from.
-    Returns the number of hops to get from start to end vertices.
+        graph: a datastructure holding all vertices and edges.
+        start: a vertex name to start the graph exploration from.
+
+    Returns:
+        The number of hops to get from start to each vertex in the graph.
     """
     explored_vertices = []
     explored_vertices.append(start)

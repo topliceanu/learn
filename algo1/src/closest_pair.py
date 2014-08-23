@@ -16,6 +16,11 @@ def closest_pair(points):
     The trick is in the joining of the results and computing split pairs.
     This is done in O(logn) time
 
-    Params
-    points - list of tuples [(x, y)]
+    Args:
+        points: list of tuples [(x, y)] representing coordonates
+            of the points analyzed.
+
+    Returns:
+        A tuple of tuples representing hte closest pair of points.
     """
+    pass

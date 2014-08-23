@@ -5,11 +5,11 @@ from math import floor, ceil
 def merge (left, right):
     """ Joins two sorted lists.
 
-        Positional arguments:
-        left -- a sorted list of elements
-        right -- a sorted list of elements
+    Args:
+        left: a sorted list of elements
+        right: a sorted list of elements
 
-        Return:
+    Returns:
         A list produced by merging the two received lists.
     """
     i = 0
@@ -38,12 +38,13 @@ def merge (left, right):
 
 def merge_sort (arr):
     """ Sorts out an array.
-        Does modify the input array.
 
-        Params:
-        arr - a list of items.
+    Note! does modify the input array.
 
-        Return:
+    Args:
+        arr: list, of items.
+
+    Return:
         The sorted version of the input array.
     """
     n = len(arr)

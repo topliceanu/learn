@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import heapq
 
 VISITED = 0x100
@@ -6,6 +8,14 @@ NOT_VISITED = 0x101
 def shortest_path_heap(graph, start_vertex):
     """ Computes shortest path using a dijkstra algorithm and speeding it up
     using a heap data structure.
+
+    Args:
+        graph: data structure exposing graph operations.
+        start_vertex: name of the vertex to start exploring
+
+    Returns:
+        A dict containing all vertices in the graph as keys and the smallest
+        number of hops to get there from start_vertex.
     """
     S = [start_vertex]
     A = {}
@@ -38,6 +48,14 @@ def shortest_path_naive(graph, start_vertex):
     - edge weights are non-negative.
 
     It's the naive implementation because it's not very fast O(n^2)
+
+    Args:
+        graph: data structure exposing graph operations.
+        start_vertex: name of the vertex to start exploring
+
+    Returns:
+        A dict containing all vertices in the graph as keys and the smallest
+        number of hops to get there from start_vertex.
     """
     S = [start_vertex] # List of vertices processed so far.
                        # By default the start vertex is the first computed.
@@ -63,6 +81,13 @@ def get_frontier(graph, explored_vertices):
     """ Computes the edges on the frontier of graph given
     the already explored vertices, ie. the edges where the tail was explored
     and the head was not yet explored.
+
+    Args:
+        graph: data structure holding graph data.
+        explored_vertices: a list of vertex names
+
+    Returns:
+        A list of tuples representing vertices (tail, head, value).
     """
     frontier = set()
     for vertex in explored_vertices:
@@ -75,6 +100,13 @@ def get_frontier(graph, explored_vertices):
 def pick_min_path(graph, distances, frontier):
     """ Implements Dijkstra's greedy criterion: ie. find the vertex to add to
     the explored set so that it minimizes the path it creates.
+
+    Args:
+        graph: data structure containg graph data and operations.
+        distances: dict of so far explored vertices and the min number of hops
+            to reach them.
+        frontier: a list of tuples representing vertices (tail, head, value)
+            where the head vertex was not explored.
     """
     min_vertex = None
     min_length = 0

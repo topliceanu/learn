@@ -5,15 +5,16 @@ from math import floor, ceil
 
 def sort_and_count_split_inversions (left, right):
     """
-        This function counts the number of inversions accross left and right.
+        Counts the number of inversions accross left and right.
+
         An inversion is any pair (i,j), i from left and j from right, where i > j.
 
         Params:
-        left - sorted list
-        right - sorted list
+            left: sorted list
+            right: sorted list
 
         Return:
-        [{list}, {int}] - sorted array and invertion counter
+            [{list}, {int}] - sorted array and invertion counter
     """
     n = len(left)
     m = len(right)
@@ -45,15 +46,15 @@ def sort_and_count_split_inversions (left, right):
 
 def sort_and_count_inversions (arr):
     """
-        This function is a divide an conquer routine that recursively splits
+        Divide an conquer routine that recursively splits
         the input array in two halves counting the inversions them summing
         them up.
 
         Params:
-        arr - list of items
+            arr: list of items to count inversions in.
 
         Return:
-        (sorted_arr, num_inversions)
+            A tuple with (sorted_arr, num_inversions)
     """
     n = len(arr)
     # Base case.
