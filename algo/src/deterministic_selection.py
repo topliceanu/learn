@@ -15,7 +15,7 @@ def split_chunks(arr, size):
         list of lists of the indicated size with elements from arr.
     """
     output = []
-    for i in range(0, len(arr), size):
+    for i in xrange(0, len(arr), size):
         output.append(arr[i:i+size])
     return output
 

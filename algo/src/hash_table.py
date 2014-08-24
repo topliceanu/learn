@@ -18,7 +18,7 @@ class Hash(object):
         # Size of the internal storage list.
         self.num_buckets = num_buckets
         # Stores the hash buckets. It's a list of lists.
-        self.data = [[] for i in range(self.num_buckets)]
+        self.data = [[] for i in xrange(self.num_buckets)]
 
     def insert(self, value):
         """ Add value to the hash table. """

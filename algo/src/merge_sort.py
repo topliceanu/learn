@@ -27,10 +27,10 @@ def merge (left, right):
             j += 1
 
     if i is n:
-        for l in range(j, m):
+        for l in xrange(j, m):
             out.append(right[l])
     elif j is m:
-        for l in range(i, n):
+        for l in xrange(i, n):
             out.append(left[l])
 
     return out

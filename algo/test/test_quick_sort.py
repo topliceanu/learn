@@ -22,7 +22,7 @@ class QuickSortTest(unittest.TestCase):
 
     def test_pick_pivot(self):
         pivot = pick_pivot(1, 10)
-        self.assertIn(pivot, range(1, 11), 'pivot is picked randomly')
+        self.assertIn(pivot, xrange(1, 11), 'pivot is picked randomly')
 
     def test_quick_sort(self):
         arr = [4, 6, 5, 3 ,7, 8, 1, 9, 2, 0]

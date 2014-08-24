@@ -14,9 +14,9 @@ def op (x, y, op = '+'):
     """
     n = len(x)
     out = []
-    for i in range(n):
+    for i in xrange(n):
         line = []
-        for j in range(n):
+        for j in xrange(n):
             if op is '+':
                 res = x[i][j] + y[i][j]
             elif op is '-':

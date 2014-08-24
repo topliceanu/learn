@@ -137,7 +137,7 @@ class Heap(object):
             data: list, array of elements to organize into a heap.
         """
         h = Heap(data)
-        for i in range(len(h.data)-1, -1, -1):
+        for i in xrange(len(h.data)-1, -1, -1):
             h.bubble_down(i)
         return h
 
@@ -161,7 +161,7 @@ class Heap(object):
         Returns:
             bool
         """
-        for i in range(1, len(data)):
+        for i in xrange(1, len(data)):
             if data[i] < data[Heap.parent(i)]:
                 return False
         return True

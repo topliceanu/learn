@@ -31,7 +31,7 @@ def partition(arr, l, r):
     """
     pos = l # pos denotes the position of the pivot.
     i = pos + 1
-    for j in range(pos+1, r+1):
+    for j in xrange(pos+1, r+1):
         if arr[j] < arr[pos]:
             (arr[i], arr[j]) = (arr[j], arr[i])
             i += 1

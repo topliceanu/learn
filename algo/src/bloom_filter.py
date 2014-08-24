@@ -30,7 +30,7 @@ class BloomFilter(object):
 
         self.primes = [3,5,7,11,13,17,19,23,29,31,37,41,43,47]
         self.hash_fns = []
-        for i in range(num_hash_fn):
+        for i in xrange(num_hash_fn):
             prime = random.choice(self.primes)
             self.primes.remove(prime)
             self.hash_fns.append(self.generate_hash_fn(prime))
