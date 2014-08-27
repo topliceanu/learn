@@ -88,6 +88,24 @@ class TestHeap(unittest.TestCase):
         self.assertEqual(min_key, 4, 'should extract the min value')
         self.assertTrue(Heap.is_heap(data), 'should still hold the heap property')
 
+    def test_extract_min_and_insert(self):
+        """ Test if extracting min and adding a new value at the same time works.
+        Given the following heap:
+                        (4)
+                       /   \
+                    (5)    (8)
+                   /  \    /  \
+                 (9) (6) (12) (9)
+                /  \
+             (11)  (13)
+        """
+        data = [4, 5, 8, 9, 6, 12, 9, 11, 13]
+        h = Heap(data)
+        h.extract_min_and_insert(7)
+        expected = [4, 7, 5, 8, 9, 6, 12, 9, 11]
+        self.assertEqual(h.data, expected, 'should remove min and '+
+                                           'add new value correctly')
+
     def test_remove(self):
         """ Test the removal of a key from the middle of the heap.
         Given the following heap:

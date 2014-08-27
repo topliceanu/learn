@@ -99,6 +99,8 @@ class Heap(object):
         """ Removes the head of the array, swaps in the tail (last leaf in
         the tree) then bubbles it down to restore the heap property.
 
+        Complexity: O(log n)
+
         Returns:
             The min value of the list of values inserted into the heap.
         """
@@ -106,6 +108,34 @@ class Heap(object):
         root = self.data.pop(-1)
         self.bubble_down(0)
         return root
+
+    def peek_min(self):
+        """ Return the min value of the heap without removing it.
+
+        Complexity O(1)
+
+        Returns:
+            The min value of the values in the heap.
+        """
+        return self.data[0]
+
+    def extract_min_and_insert(self, new_value):
+        """ Returns the min value of the heap, removes it and add new_value.
+
+        The reason to combine an extract_min and an insert is for performance.
+        Both operations take O(log n) separately, combined they ammount also to
+        O(log n)
+
+        Args:
+            new_value: int, a new value to add to the heap after removing min.
+
+        Returns:
+            The min of all the values in the heap.
+        """
+        min_value = self.data.pop(-1)
+        self.data.insert(0, new_value)
+        self.bubble_down(0)
+        return min_value
 
     def remove(self, element):
         """ Removes the first occurance of an element from a heap.
