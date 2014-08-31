@@ -313,7 +313,7 @@ Search Tree Property: for any node k, all keys in the left subtree are
             node[SIZE] -= 1
             node = node[PARENT]
 
-    def rotate(self, node, direction):
+    def rotate(self, node, direction=LEFT):
         """ Interchange between node and one of it's children.
 
         If direction is LEFT, then interchange between node and it' right child,
@@ -325,19 +325,27 @@ Search Tree Property: for any node k, all keys in the left subtree are
             node: list, format [parent, key, left, right, size]
             direction: number, either LEFT or RIGHT.
         """
-        if direction is LEFT:
+        if node[PARENT][LEFT] == node:
+            parent_direction = LEFT
+        else:
+            parent_direction = RIGHT
+
+        child = node[direction]
+
+        if direction == LEFT:
             other_direction = RIGHT
         else:
             other_direction = LEFT
-
-        child = node[direction]
         other_child = node[other_direction]
 
         node[PARENT][parent_direction] = child
         child[PARENT] = node[PARENT]
-        node[PARENT] = child
+
         child[other_direction] = node
-        child[direction] = other_child
+        node[PARENT] = child
+
+        node[direction] = child[other_direction]
+        child[other_direction][PARENT] = node
 
     @staticmethod
     def node_to_string(node):
