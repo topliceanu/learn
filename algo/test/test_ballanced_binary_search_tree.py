@@ -138,3 +138,15 @@ class TestBST(unittest.TestCase):
         self.assertEqual(b.select(3)[KEY], 3, '3rd elem is 3')
         self.assertEqual(b.select(4)[KEY], 4, '4th elem is 4')
         self.assertEqual(b.select(5)[KEY], 5, '5th elem is 5')
+
+    def test_rank(self):
+        b = BST.build([3,1,2,5,4])
+        self.assertEqual(b.rank(1), 0, '0 keys smaller than 1')
+        self.assertEqual(b.rank(2), 1, '1 key smaller than 2')
+        self.assertEqual(b.rank(3), 2, '2 keys smaller than 3')
+        self.assertEqual(b.rank(4), 3, '3 keys smaller than 4')
+        self.assertEqual(b.rank(5), 4, '4 keys smaller than 5')
+        self.assertIsNone(b.rank(6), 'key 6 does not exist')
+
+    def test_rotate(self):
+        pass

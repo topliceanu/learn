@@ -248,10 +248,42 @@ Search Tree Property: for any node k, all keys in the left subtree are
         else:
             return self.select(index - left - 1, node[RIGHT])
 
-    def rank(self, key):
+    def rank(self, key, node=None):
         """ Given a key, computes how many elements are stritcly smaller than
         that key in the tree.
+
+        Args:
+            key: int, the value to look for.
+
+        Returns:
+            An int representing the number of keys strictly smaller.
+            None if the key is not found the data structure.
         """
+        if self.search(key) is None:
+            return None
+        if node is None:
+            node = self.root
+        return self.recursive_rank(key, node)
+
+    def recursive_rank(self, key, node):
+        """ Recursive pair of .rank() method.
+
+        The idea is to traverse the tree starting from the root.
+        """
+        if node is None:
+            return 0
+
+        if node[LEFT] is None:
+            left_size = 0
+        else:
+            left_size = node[LEFT][SIZE]
+
+        if node[KEY] == key:
+            return left_size
+        elif key < node[KEY]:
+            return self.recursive_rank(key, node[LEFT])
+        else:
+            return 1 + left_size + self.recursive_rank(key, node[RIGHT])
 
     def list_sorted(self):
         """ In-order traversal of a binary search tree.
@@ -280,6 +312,32 @@ Search Tree Property: for any node k, all keys in the left subtree are
         while node:
             node[SIZE] -= 1
             node = node[PARENT]
+
+    def rotate(self, node, direction):
+        """ Interchange between node and one of it's children.
+
+        If direction is LEFT, then interchange between node and it' right child,
+        otherwise if direction is RIGHT, interchange between node and it's
+        left child.
+        This operation is done in O(1) and preserves the search tree property.
+
+        Args:
+            node: list, format [parent, key, left, right, size]
+            direction: number, either LEFT or RIGHT.
+        """
+        if direction is LEFT:
+            other_direction = RIGHT
+        else:
+            other_direction = LEFT
+
+        child = node[direction]
+        other_child = node[other_direction]
+
+        node[PARENT][parent_direction] = child
+        child[PARENT] = node[PARENT]
+        node[PARENT] = child
+        child[other_direction] = node
+        child[direction] = other_child
 
     @staticmethod
     def node_to_string(node):
@@ -332,7 +390,11 @@ Search Tree Property: for any node k, all keys in the left subtree are
 
 class RedBlackTree(BST):
     """ Implements ballanced red-black trees as a subclass of binary search tree.
+    TODO implement this to maintain invariants.
     """
 
     def __init__(self):
         BST.__init__(self)
+
+    def insert(self, key):
+        """ Insert a key in the RB tree preserving the invariants. """
