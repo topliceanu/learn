@@ -1,6 +1,6 @@
 import unittest
 
-from src.ballanced_binary_search_tree import BST, PARENT, KEY, LEFT, RIGHT
+from src.ballanced_binary_search_tree import BST, PARENT, KEY, LEFT, RIGHT, SIZE
 
 
 class TestBST(unittest.TestCase):
@@ -16,10 +16,8 @@ class TestBST(unittest.TestCase):
                                 (1)
     """
 
-    def test_insert(self):
+    def test_build(self):
         b = BST.build([3,1,2,5,4])
-
-        self.assertEqual(b.length, 5, 'should have inserted 5 keys')
 
     def test_search(self):
         b = BST.build([3,1,2,5,4])
@@ -103,3 +101,32 @@ class TestBST(unittest.TestCase):
 
         b.delete(3)
         self.assertIsNone(b.search(3), 'should have removed 3')
+
+    def test_node_size_gets_modified_on_insertion(self):
+        b = BST.build([3,1,2,5,4])
+        self.assertEqual(b.root[SIZE], 5, 'root has size of 5')
+
+        b.insert(6)
+        self.assertEqual(b.root[SIZE], 6, 'new root size is now 6')
+        self.assertEqual(b.search(1)[SIZE], 2, '1 has size 2')
+        self.assertEqual(b.search(2)[SIZE], 1, '2 has size 1')
+        self.assertEqual(b.search(3)[SIZE], 6, '3 has size 6')
+        self.assertEqual(b.search(4)[SIZE], 1, '4 has size 1')
+        self.assertEqual(b.search(5)[SIZE], 3, '5 has size 3')
+        self.assertEqual(b.search(6)[SIZE], 1, '6 has size 1')
+
+    def test_node_size_gets_modified_on_deletion(self):
+        b = BST.build([3,1,2,5,4])
+        self.assertEqual(b.search(3)[SIZE], 5, '3 has size 6')
+
+        b.delete(2)
+        self.assertEqual(b.search(1)[SIZE], 1, '1 has no more children')
+        self.assertEqual(b.search(3)[SIZE], 4, 'root has 4 children now')
+
+        b.delete(5)
+        self.assertEqual(b.search(4)[SIZE], 1, 'the size of 1 is unchanged')
+        self.assertEqual(b.search(3)[SIZE], 3, 'root has 3 children after del')
+
+        b.delete(3)
+        self.assertEqual(b.search(4)[SIZE], 1, 'the size of 1 is unchanged')
+        self.assertEqual(b.search(1)[SIZE], 2, 'the new root is 1 and has size of 2')

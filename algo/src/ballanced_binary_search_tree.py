@@ -18,24 +18,24 @@ Search Tree Property: for any node k, all keys in the left subtree are
 
     Attributes:
         root: list, represents the root node, format: [parent, key, left, right]
-        length: int, number of nodes in the structure.
     """
 
     def __init__(self):
         self.root = None
-        self.length = 0
 
     def insert(self, key):
         """ Insert a node into the data structure.
 
         For equal keys the convention is to keep them in the left subtree.
+        Also increments the size of all nodes which are ancestors to the
+        inserted node. The default size of a node is 1 because it can reach
+        itself.
 
         Args:
             key: int, the value to insert in the tree.
         """
         if self.root is None:
-            self.root = [None, key, None, None]
-            self.length += 1
+            self.root = [None, key, None, None, 1]
             return
 
         node = self.root
@@ -44,9 +44,11 @@ Search Tree Property: for any node k, all keys in the left subtree are
                 path = RIGHT
             else:
                 path = LEFT
+
+            node[SIZE] += 1
+
             if node[path] is None:
-                node[path] = [node, key, None, None]
-                self.length += 1
+                node[path] = [node, key, None, None, 1]
                 break
             else:
                 node = node[path]
@@ -173,6 +175,9 @@ Search Tree Property: for any node k, all keys in the left subtree are
         predecessor in place of the deleted node, then call delete again on the
         new swapped node.
 
+        This method also decrements the size of all ancestors of the deleted
+        node.
+
         Args:
             key: int, a number to remove from the tree.
                  list, represents a node with the format [parent, key, left, right]
@@ -198,6 +203,7 @@ Search Tree Property: for any node k, all keys in the left subtree are
         # First case.
         if node[LEFT] is None and node[RIGHT] is None:
             parent[direction] = None
+            self.decrement_sizes(parent)
             return node
 
         # Second case.
@@ -208,6 +214,7 @@ Search Tree Property: for any node k, all keys in the left subtree are
             else:
                 parent[direction] = node[LEFT]
                 node[LEFT][PARENT] = parent
+            self.decrement_sizes(parent)
             return node
 
         # Third case.
@@ -248,12 +255,22 @@ Search Tree Property: for any node k, all keys in the left subtree are
         traversal(self.root)
         return output
 
+    def decrement_sizes(self, node):
+        """ Decrements the sizes of node and all it's acestors.
+
+        Args:
+            node: list, of format [parent, key, left, right, size]
+        """
+        while node:
+            node[SIZE] -= 1
+            node = node[PARENT]
+
     @staticmethod
     def node_to_string(node):
         """ Prints the given node in a human readable way.
 
         Args:
-            node: list, format [parent, key, left, right]
+            node: list, format [parent, key, left, right, size]
         """
         def print_key(node):
             if node is None:
@@ -264,8 +281,9 @@ Search Tree Property: for any node k, all keys in the left subtree are
         parent = print_key(node[PARENT])
         left = print_key(node[LEFT])
         right = print_key(node[RIGHT])
-        return "[{parent}, {key}, {left}, {right}]".format(parent=parent, \
-                                    key=node[KEY], left=left, right=right)
+        return "[{parent}, {key}, {left}, {right}, {size}]".format( \
+                                    parent=parent, key=node[KEY], left=left,
+                                    right=right, size=node[SIZE])
 
     @classmethod
     def tree_to_string(cls, root):
@@ -274,9 +292,9 @@ Search Tree Property: for any node k, all keys in the left subtree are
         node = root
         while node:
             print "({parent})->({left});".format(parent=cls.node_to_string(node),
-                                                 left=cls.node_to_string(node[LEFT]))
+                                        left=cls.node_to_string(node[LEFT]))
             print "({parent})->({right});".format(parent=cls.node_to_string(node),
-                                                  right=cls.node_to_string(node[RIGHT]))
+                                        right=cls.node_to_string(node[RIGHT]))
             cls.tree_to_string(node[LEFT])
             cls.tree_to_string(node[RIGHT])
 
