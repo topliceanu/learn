@@ -222,15 +222,31 @@ Search Tree Property: for any node k, all keys in the left subtree are
         node[KEY], predecessor[KEY] = predecessor[KEY], node[KEY]
         self.delete(predecessor)
 
-    def select(self, index):
-        """ Finds the index'th order statistic in the containing data structure.
+    def select(self, index, node = None):
+        """ Finds the i'th order statistic in the containing data structure.
 
         Args:
-            index: int, the order of the element to find.
+            index: int, the order of the element to find. Order starts with 0.
+            root: list, format [parent, key, left, right, size] the
+                root of the search.
 
         Returns:
-            An int on the position index.
+            The key of element on the index position in the sorted list.
         """
+        if node is None:
+            node = self.root
+
+        if node[LEFT] is None:
+            left = 0
+        else:
+            left = node[LEFT][SIZE]
+
+        if index == left + 1:
+            return node
+        if index < left + 1:
+            return self.select(index, node[LEFT])
+        else:
+            return self.select(index - left - 1, node[RIGHT])
 
     def rank(self, key):
         """ Given a key, computes how many elements are stritcly smaller than

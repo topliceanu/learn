@@ -130,3 +130,11 @@ class TestBST(unittest.TestCase):
         b.delete(3)
         self.assertEqual(b.search(4)[SIZE], 1, 'the size of 1 is unchanged')
         self.assertEqual(b.search(1)[SIZE], 2, 'the new root is 1 and has size of 2')
+
+    def test_select(self):
+        b = BST.build([3,1,2,5,4])
+        self.assertEqual(b.select(1)[KEY], 1, '1st elem is 1')
+        self.assertEqual(b.select(2)[KEY], 2, '2nd elem is 2')
+        self.assertEqual(b.select(3)[KEY], 3, '3rd elem is 3')
+        self.assertEqual(b.select(4)[KEY], 4, '4th elem is 4')
+        self.assertEqual(b.select(5)[KEY], 5, '5th elem is 5')
