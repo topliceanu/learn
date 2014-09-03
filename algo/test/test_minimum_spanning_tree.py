@@ -1,12 +1,12 @@
 import unittest
 
-from minimum_spanning_tree import mst
-from graph import Graph
+from src.graph import Graph
+from src.minimum_spanning_tree import prims_suboptimal_mst
 
 
 class TestMinimunSpanningTree(unittest.TestCase):
 
-    def mst(self):
+    def test_mst(self):
         """ Compute minimal spanning tree given this graph:
             (a)----1----(b)
              | \         |
@@ -17,5 +17,7 @@ class TestMinimunSpanningTree(unittest.TestCase):
         g = Graph.build(edges=[('a', 'b', 1), ('a', 'c', 4), ('a', 'd', 3),
                                ('b', 'd', 2), ('c', 'd', 5)],
                         directed=False)
-        actual = mst(g)
-        expected = []
+        expected = [('a', 'b', 1), ('a', 'c', 4), ('b', 'd', 2)]
+        mst = prims_suboptimal_mst(g)
+        actual = sorted(mst.get_edges())
+        self.assertEqual(actual, expected, 'should have computed correct mst')

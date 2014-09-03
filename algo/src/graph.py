@@ -188,7 +188,7 @@ class Graph:
                 del self.table[tail][old]
 
     @staticmethod
-    def build(vertices, edges, directed = False):
+    def build(vertices=[], edges=[], directed = False):
         """ Builds a graph from the given vertices and edges.
 
         Args:
