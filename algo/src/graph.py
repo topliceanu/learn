@@ -109,6 +109,21 @@ class Graph:
                 out.add(tail)
         return list(out)
 
+    def ingress(self, vertex):
+        """ Return all the edges whose head is vertex. """
+        output = []
+        for tail, edges in self.table.iteritems():
+            for head, value in edges.iteritems():
+                output.append((tail, head, value))
+        return output
+
+    def egress(self, vertex):
+        """ Return all the edgeswhose tail is vertex. """
+        edges = []
+        for head, value in self.table[vertex].iteritems():
+            edges.append((vertex, head, value))
+        return edges
+
     def get_edge_value(self, edge):
         """ Return value of the edge given in format (tail, head). """
         (tail, head, __) = self.split_edge(edge)
