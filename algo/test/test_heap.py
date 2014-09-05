@@ -123,7 +123,21 @@ class TestHeap(unittest.TestCase):
         h.remove(9)
         self.assertTrue(Heap.is_heap(data), 'should preserve heap property')
 
+    def test_remove_if_index_is_root(self):
+        data = [3, 4, 5]
+        h = Heap(data)
+        h.remove(3)
+        self.assertEqual(h.data, [4,5], 'should remove the root')
+        self.assertTrue(Heap.is_heap(h.data), 'should maintain heap invariant')
+
     def test_static_heapify(self):
         data = [8,2,6,3,1,2,9,5,3,7,4]
         h = Heap.heapify(data)
         self.assertTrue(Heap.is_heap(data), 'should preserve heap property')
+
+    def test_bubble_up(self):
+        h = Heap([])
+        h.data = [3, 4, 2]
+        h.bubble_up(2)
+        self.assertTrue(Heap.is_heap(h.data), 'should maintain the heap prop')
+        self.assertEqual(h.data, [2,4,3], 'should have reorganized the heap')

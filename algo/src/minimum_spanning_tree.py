@@ -22,7 +22,6 @@ def prims_suboptimal_mst(graph):
         A subgraph tree of minimal cost. ie. a connected subgraph with no
         cycles and whose sum of all edges is minimal.
     """
-    #import pdb; pdb.set_trace()
     mst_vertices = []
     mst_edges = []
 
@@ -60,13 +59,14 @@ def prims_heap_mst(graph):
     heap, as such always computing the min vertex is O(logm), where m is the
     number of edges.
 
+    TODO this implementation is broken.
+
     Args:
         graph: object, data structure to hold the graph data.
 
     Returns:
         A Graph instance reperesenting the MST.
     """
-
     mst_vertices = []
     mst_edges = []
 
@@ -82,21 +82,42 @@ def prims_heap_mst(graph):
     while len(mst_vertices) != len(graph.get_vertices()):
         min_cost_edge = frontier.extract_min()
         edge = cost_edge[min_cost_edge]
-        head_vertex = edge[1]
-        mst_vertices.append(head_vertex)
+
+        if edge[0] not in mst_vertices:
+            other_vertex = edge[0]
+        if edge[1] not in mst_vertices:
+            other_vertex = edge[1]
+
+        mst_vertices.append(other_vertex)
         mst_edges.append(edge)
 
         # Insert outgoing edges.
-        import pdb; pdb.set_trace()
-        edges = graph.egress(head_vertex)
+        edges = graph.egress(other_vertex)
         for edge in edges:
             if edge[1] not in mst_vertices:
                 frontier.insert(edge[2])
 
         # Remove ingoing edges whose vertices are already in the mst.
-        edges = graph.ingress(head_vertex)
+        edges = graph.ingress(other_vertex)
         for edge in edges:
-            frontier.remove(edge[2])
+            if edge[0] in mst_vertices:
+                frontier.remove(edge[2])
 
     mst = Graph.build(edges=mst_edges, directed=False)
     return mst
+
+def prims_fast_heap_mst(graph):
+    """ Computes a mst from the given graph using prims algorithm and a heap.
+
+    The heap is used to store the vertices not the edges as in the previous
+    implementation. The heap maintains two invariants:
+    1. elements in the heap are vertices not yet explored
+    2. keys under which each vertex is stored in the heap is the minimum weight
+    of an edge incided to the vertex whose tail is already in the MST.
+
+    Args:
+        graph: object, data structure to hold the graph data.
+
+    Returns:
+        A Graph instance reperesenting the MST.
+    """
