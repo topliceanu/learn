@@ -5,7 +5,7 @@ from runner.koan import *
 
 
 # Greed is a dice game where you roll up to five dice to accumulate
-# points.  The following "score" function will be used calculate the
+# points.  The following "score" function will be used to calculate the
 # score of a single roll of the dice.
 #
 # A greed roll is scored as follows:
@@ -34,8 +34,29 @@ from runner.koan import *
 # Your goal is to write the score method.
 
 def score(dice):
-    # You need to write this method
-    pass
+    n = len(dice)
+    if n == 0:
+        return 0
+    total = 0
+    i = 0
+    while i < n:
+        if dice[i] == 1:
+            if i < n + 1 and dice[i+1] == 1 and dice[i+2] == 1:
+                total += 1000
+                i += 3
+            else:
+                total += 100
+                i += 1
+        else:
+            if i < n + 1 and dice[i] == dice[i+1] == dice[i+2]:
+                total += dice[i] * 100
+                i += 3
+            elif dice[i] == 5:
+                total += 50
+                i += 1
+            else:
+                i += 1
+    return total
 
 
 class AboutScoringProject(Koan):
@@ -43,6 +64,7 @@ class AboutScoringProject(Koan):
         self.assertEqual(0, score([]))
 
     def test_score_of_a_single_roll_of_5_is_50(self):
+        import pdb; pdb.set_trace()
         self.assertEqual(50, score([5]))
 
     def test_score_of_a_single_roll_of_1_is_100(self):
