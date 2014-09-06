@@ -22,7 +22,7 @@ class TestMinimunSpanningTree(unittest.TestCase):
         actual = sorted(mst.get_edges())
         self.assertEqual(actual, expected, 'should have computed correct mst')
 
-    def xtest_prims_heap_mst(self):
+    def test_prims_heap_mst(self):
         """ Compute minimal spanning tree given this graph using
         a heap data structure.
             (a)----1----(b)

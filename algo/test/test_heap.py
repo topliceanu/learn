@@ -141,3 +141,18 @@ class TestHeap(unittest.TestCase):
         h.bubble_up(2)
         self.assertTrue(Heap.is_heap(h.data), 'should maintain the heap prop')
         self.assertEqual(h.data, [2,4,3], 'should have reorganized the heap')
+
+    def test_get_min(self):
+        h = Heap(range(10))
+
+        min_index = h.get_min(2, 4, 6)
+        self.assertEqual(min_index, 2, 'should return the index with the min key')
+
+        min_index = h.get_min(6, 4, 2)
+        self.assertEqual(min_index, 2, 'should return the index with the min key')
+
+        min_index = h.get_min(4, 2, 6)
+        self.assertEqual(min_index, 2, 'should return the index with the min key')
+
+        min_index = h.get_min(4, 2, 100)
+        self.assertEqual(min_index, 2, 'should work for unknown indexes')

@@ -139,16 +139,21 @@ class Heap(object):
 
     def remove(self, element):
         """ Removes the first occurance of an element from a heap.
-        The last leaf in the heap is swapped in the position of the element.
+        The last leaf in the heap is swapped in the position of the element,
+        then the element is removed.
         If if violates the heap property towards its parent then bubble up,
         otherwise bubble down.
 
         Args:
-            element: a value to remove from the heap.
+            element: the key to remove from the heap.
+
+        Returns:
+            The element which was removed from the heap.
         """
         try:
             index = self.data.index(element)
-            self.data.insert(0, self.data.pop(-1))
+            self.data[index], self.data[-1] = self.data[-1], self.data[index]
+            removed = self.data.pop(-1)
             parent = Heap.parent(index)
             if parent is None:
                 # Just removed the root so simply bubble_down the new root.
@@ -157,8 +162,91 @@ class Heap(object):
                 self.bubble_up(index)
             else:
                 self.bubble_down(index)
+            return removed
         except ValueError as ve:
             pass
+
+    def bubble_up(self, index):
+        """ Bubbles a value at position index to maintain the heap property:
+        any parent node should be smaller than it's children.
+
+        This will do at most log2 n (ie. the number of layers in the tree)
+        swaps to restore the heap property.
+
+        Args:
+            index: int, the key in the heap to bubble up.
+        """
+        while True:
+            parent = Heap.parent(index)
+            if parent is None:
+                break
+            if self.compare(self.data[parent], self.data[index]) < 0:
+                break
+            else:
+                (self.data[parent], self.data[index]) = \
+                    (self.data[index], self.data[parent])
+                index = parent
+
+    def bubble_down(self, parent):
+        """ Bubbles down the element at position index (if it has any children).
+
+        This is done by continuously swapping with the minimum of the two
+        children keys.
+
+        Running time: O(log2 n) the max number of swaps.
+
+        Args:
+            parent: int, the key in the heap to bubble down.
+        """
+        while True:
+            left = parent * 2 + 1
+            right = parent * 2 + 2
+            min_index = self.get_min(parent, left, right)
+            if min_index == parent:
+                break
+
+            (self.data[parent], self.data[min_index]) = \
+                (self.data[min_index], self.data[parent])
+            parent = min_index
+
+    def get_min(self, parent, left, right):
+        """ Returns the index corresponging to the minimum values in a list.
+
+        Assumes at least the parent index exists in the contained data, but
+        the left and right children may not exist, so this method takes care
+        of that.
+
+        Args:
+            parent: int
+            left: int
+            right: int
+
+        Returns:
+            An int representing the index with the min value.
+        """
+        min_index = parent
+        for index in [left, right]:
+            if index < len(self.data) and \
+               self.compare(self.data[min_index], self.data[index]) > 0:
+                min_index = index
+        return min_index
+
+    def compare(self, left, right):
+        """ Defines a comparison function between two elements from the heap.
+
+        By default uses the standard cmp function, but subclasses can extend
+        this functionality.
+
+        Args:
+            left: mixed
+            right: mixed
+
+        Return:
+            -1: if left < right
+            0: if left == right
+            1: if left > right
+        """
+        return cmp(left, right)
 
     @staticmethod
     def heapify(data):
@@ -213,59 +301,3 @@ class Heap(object):
             elif data[i] < data[Heap.parent(i)]:
                 return False
         return True
-
-    def bubble_up(self, index):
-        """ Bubbles a value at position index to maintain the heap property:
-        any parent node should be smaller than it's children.
-
-        This will do at most log2 n (ie. the number of layers in the tree)
-        swaps to restore the heap property.
-
-        Args:
-            index: int, the key in the heap to bubble up.
-        """
-        while True:
-            parent = Heap.parent(index)
-            if parent is None:
-                break
-            if self.data[parent] < self.data[index]:
-                break
-            else:
-                (self.data[parent], self.data[index]) = \
-                    (self.data[index], self.data[parent])
-                index = parent
-
-    def bubble_down(self, parent):
-        """ Bubbles down the element at position index (if it has any children).
-
-        This is done by continuously swapping with the minimum of the two
-        children keys.
-
-        Running time: O(log2 n) the max number of swaps.
-
-        Args:
-            parent: int, the key in the heap to bubble down.
-        """
-        while True:
-            left = parent * 2 + 1
-            right = parent * 2 + 2
-            min_index = self.get_min(parent, left, right)
-            if min_index == parent:
-                break
-
-            (self.data[parent], self.data[min_index]) = \
-                (self.data[min_index], self.data[parent])
-            parent = min_index
-
-    def get_min(self, parent, left, right):
-        """ Returns the index corresponging to the minimum values in a list."""
-        a = []
-        try:
-            a.append((self.data[parent], parent))
-            a.append((self.data[left], left))
-            a.append((self.data[right], right))
-        except:
-            pass
-
-        __, min_index = min(a, key=lambda t: t[0])
-        return min_index

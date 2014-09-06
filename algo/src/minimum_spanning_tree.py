@@ -59,7 +59,7 @@ def prims_heap_mst(graph):
     heap, as such always computing the min vertex is O(logm), where m is the
     number of edges.
 
-    TODO this implementation is broken.
+    NOTE! This implementation assumes all vertex costs are distinct.
 
     Args:
         graph: object, data structure to hold the graph data.
@@ -69,12 +69,10 @@ def prims_heap_mst(graph):
     """
     mst_vertices = []
     mst_edges = []
+    cost_edge = {edge[2]: edge for edge in graph.get_edges()}
 
     start_vertex = random.choice(graph.get_vertices())
     mst_vertices.append(start_vertex)
-
-    cost_edge = {edge[2]: edge for edge in graph.get_edges()}
-    edge_cost = {edge: edge[2] for edge in graph.get_edges()}
 
     values = map(itemgetter(2), graph.egress(start_vertex))
     frontier = Heap.heapify(values)
@@ -96,11 +94,7 @@ def prims_heap_mst(graph):
         for edge in edges:
             if edge[1] not in mst_vertices:
                 frontier.insert(edge[2])
-
-        # Remove ingoing edges whose vertices are already in the mst.
-        edges = graph.ingress(other_vertex)
-        for edge in edges:
-            if edge[0] in mst_vertices:
+            else:
                 frontier.remove(edge[2])
 
     mst = Graph.build(edges=mst_edges, directed=False)
