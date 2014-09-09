@@ -5,8 +5,8 @@ from src.ballanced_binary_search_tree import BST, PARENT, KEY, LEFT, RIGHT, SIZE
 
 class TestBST(unittest.TestCase):
     """ Running examples:
-                                         (5)
-                                         /
+                                        (5)
+                                        /
             (3)                       (4)
            /   \                      /
         (1)     (5)                 (3)
