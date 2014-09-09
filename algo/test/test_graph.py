@@ -222,3 +222,23 @@ class TestGraph(unittest.TestCase):
         self.assertTrue(g.table[4][1])
         self.assertNotIn(2, g.table[1])
         self.assertNotIn(2, g.table)
+
+    def test_ingress(self):
+        g = Graph(False)
+        g.add_edge((1, 2, 10))
+        g.add_edge((1, 3, 11))
+        g.add_edge((2, 3, 12))
+
+        actual = g.ingress(1)
+        expected = [(2, 1, 10), (3, 1, 11)]
+        self.assertEqual(actual, expected, 'should return ingress edges')
+
+    def test_egress(self):
+        g = Graph(False)
+        g.add_edge((1, 2, 10))
+        g.add_edge((1, 3, 11))
+        g.add_edge((2, 3, 12))
+
+        actual = g.egress(1)
+        expected = [(1, 2, 10), (1, 3, 11)]
+        self.assertEqual(actual, expected, 'should return ingress edges')

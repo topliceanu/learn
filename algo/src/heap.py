@@ -72,7 +72,7 @@ class Heap(object):
         data: list, contains elements maintaining the heap invariant.
     """
 
-    def __init__(self, data):
+    def __init__(self, data=None):
         """ Initialize an empty heap. """
         if data is None:
             data = []
@@ -148,8 +148,12 @@ class Heap(object):
         """
         try:
             index = self.data.index(element)
-            self.data[index] = self.data.pop(-1)
-            if self.data[int(index/2)] > self.data[index]:
+            self.data.insert(0, self.data.pop(-1))
+            parent = Heap.parent(index)
+            if parent is None:
+                # Just removed the root so simply bubble_down the new root.
+                self.bubble_down(index)
+            elif self.data[parent] > self.data[index]:
                 self.bubble_up(index)
             else:
                 self.bubble_down(index)
@@ -173,7 +177,17 @@ class Heap(object):
 
     @staticmethod
     def parent(index):
-        """ Computes the parent index of the given index. """
+        """ Computes the parent index of the given index.
+
+        Args:
+            index: int, a position in the list storing the heap.
+
+        Returns:
+            An int with the index of the parent element
+            None if the given index is 0 (ie. the root of the heap)
+        """
+        if index == 0:
+            return None
         if index % 2 == 0:
             return index/2 - 1
         else:
@@ -183,6 +197,7 @@ class Heap(object):
     def is_heap(data):
         """ Checks if a list of numbers has the min heap property, ie. parent
         key is smaller than child keys
+
         Complexity: O(n)
 
         Args:
@@ -192,7 +207,10 @@ class Heap(object):
             bool
         """
         for i in xrange(1, len(data)):
-            if data[i] < data[Heap.parent(i)]:
+            parent = Heap.parent(i)
+            if parent is None:
+                continue
+            elif data[i] < data[Heap.parent(i)]:
                 return False
         return True
 
@@ -207,7 +225,9 @@ class Heap(object):
             index: int, the key in the heap to bubble up.
         """
         while True:
-            parent = int(index/2)
+            parent = Heap.parent(index)
+            if parent is None:
+                break
             if self.data[parent] < self.data[index]:
                 break
             else:

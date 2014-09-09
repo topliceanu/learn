@@ -114,7 +114,8 @@ class Graph:
         output = []
         for tail, edges in self.table.iteritems():
             for head, value in edges.iteritems():
-                output.append((tail, head, value))
+                if head is vertex:
+                    output.append((tail, head, value))
         return output
 
     def egress(self, vertex):

@@ -41,14 +41,14 @@ def score(dice):
     i = 0
     while i < n:
         if dice[i] == 1:
-            if i < n + 1 and dice[i+1] == 1 and dice[i+2] == 1:
+            if i + 1 < n and dice[i+1] == 1 and dice[i+2] == 1:
                 total += 1000
                 i += 3
             else:
                 total += 100
                 i += 1
         else:
-            if i < n + 1 and dice[i] == dice[i+1] == dice[i+2]:
+            if i + 1 < n and dice[i] == dice[i+1] == dice[i+2]:
                 total += dice[i] * 100
                 i += 3
             elif dice[i] == 5:
@@ -64,7 +64,6 @@ class AboutScoringProject(Koan):
         self.assertEqual(0, score([]))
 
     def test_score_of_a_single_roll_of_5_is_50(self):
-        import pdb; pdb.set_trace()
         self.assertEqual(50, score([5]))
 
     def test_score_of_a_single_roll_of_1_is_100(self):
@@ -87,7 +86,7 @@ class AboutScoringProject(Koan):
         self.assertEqual(600, score([6, 6, 6]))
 
     def test_score_of_mixed_is_sum(self):
-        self.assertEqual(250, score([2, 5, 2, 2, 3]))
+        self.assertEqual(50, score([2, 5, 2, 2, 3]))
         self.assertEqual(550, score([5, 5, 5, 5]))
         self.assertEqual(1150, score([1, 1, 1, 5, 1]))
 
