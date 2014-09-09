@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-
 PARENT = 0
 KEY = 1
 LEFT = 2
@@ -179,6 +178,30 @@ class BST(object):
                 node = node[PARENT]
                 if node is None:
                     return None
+
+    def range_query(self, start_key, end_key):
+        """ Return all keys between start_key and end_key in a sorted order.
+
+        Complexity: O(k*log n) where k is the number of keys between
+        start_key and end_key.
+
+        Args:
+            start_key: int, value in the tree to start traversing.
+            end_key: int, value in the tree to traverse to.
+
+        Returns:
+            A list of all contained data from start_key to end_key.
+        """
+        if self.search(start_key) is None:
+            return []
+
+        output = [start_key]
+        while True:
+            node = self.successor(start_key)
+            if node is None or node[KEY] > end_key:
+                break
+            output.append(node[KEY])
+        return output
 
     def delete(self, key):
         """ Removes the key from the tree.
