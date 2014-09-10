@@ -154,6 +154,8 @@ class Heap(object):
         """
         if index > len(self.data):
             return
+        if index == len(self.data) - 1:
+            return self.data.pop(-1)
 
         self.data[index], self.data[-1] = self.data[-1], self.data[index]
         removed = self.data.pop(-1)

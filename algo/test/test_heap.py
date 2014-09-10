@@ -129,6 +129,20 @@ class TestHeap(unittest.TestCase):
         self.assertEqual(h.data, [4,5], 'should remove the root')
         self.assertTrue(Heap.is_heap(h.data), 'should maintain heap invariant')
 
+    def test_remove_if_index_is_last(self):
+        data = [3, 4, 5]
+        h = Heap(data)
+        h.remove(2)
+        self.assertEqual(h.data, [3, 4], 'should remove the last leaf')
+        self.assertTrue(Heap.is_heap(h.data), 'should maintain heap invariant')
+
+    def test_remove_if_one_element(self):
+        data = [3]
+        h = Heap(data)
+        h.remove(0)
+        self.assertEqual(h.data, [], 'should remove the only elem in heap')
+        self.assertTrue(Heap.is_heap(h.data), 'should maintain heap invariant')
+
     def test_static_heapify(self):
         data = [8,2,6,3,1,2,9,5,3,7,4]
         h = Heap.heapify(data)

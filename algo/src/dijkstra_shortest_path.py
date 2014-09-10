@@ -58,8 +58,9 @@ def shortest_path_heap(graph, start_vertex):
     while vertex:
         S.append(vertex[0])
         A[vertex[0]] = vertex[1]
-        print '>>>>>>>', S
-        print '>>>>>>>', A
+
+        if len(S) == len(graph.get_vertices()):
+            break
 
         for head in graph.get_vertices():
             if head not in S:

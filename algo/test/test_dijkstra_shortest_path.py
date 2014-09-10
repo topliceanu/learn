@@ -21,12 +21,11 @@ class TestDijkstraShortestPath(unittest.TestCase):
         g = Graph.build(edges=[('s', 'v', 1), ('s', 'w', 4), ('v', 'w', 2),
                                ('v', 't', 6), ('w', 't', 3)],
                         directed=True)
-        import pdb; pdb.set_trace()
         length_to = shortest_path_heap(g, 's')
-        #self.assertEqual(length_to['s'], 0, 'shortest path to self is 0')
-        #self.assertEqual(length_to['v'], 1)
-        #self.assertEqual(length_to['w'], 3)
-        #self.assertEqual(length_to['t'], 6)
+        self.assertEqual(length_to['s'], 0, 'shortest path to self is 0')
+        self.assertEqual(length_to['v'], 1)
+        self.assertEqual(length_to['w'], 3)
+        self.assertEqual(length_to['t'], 6)
 
     def test_shortest_path_naive(self):
         """ Compute a shortest path using a naive implementation.
