@@ -51,6 +51,17 @@ def prims_suboptimal_mst(graph):
     mst = Graph.build(edges=mst_edges, directed=False)
     return mst
 
+
+class EdgeHeap(Heap):
+    """ A heap storing graph edges. Format of element: (key, edge). """
+
+    def __init__(self):
+        Heap.__init__(self)
+
+    def compare(self, left, right):
+        return cmp(left[0], right[0])
+
+
 def prims_heap_mst(graph):
     """ Computes minimal spanning tree using a heap data structure to make
     things faster.
@@ -69,33 +80,29 @@ def prims_heap_mst(graph):
     """
     mst_vertices = []
     mst_edges = []
-    cost_edge = {edge[2]: edge for edge in graph.get_edges()}
+    INF = float('inf')
 
-    start_vertex = random.choice(graph.get_vertices())
-    mst_vertices.append(start_vertex)
+    edges = {index: edge for index, edge in enumerate(graph.get_edges())}
+    frontier = Heap.heapify([(INF, e) for e in graph.get_edges()])
 
-    values = map(itemgetter(2), graph.egress(start_vertex))
-    frontier = Heap.heapify(values)
+    vertex = random.choice(graph.get_vertices())
+    mst_vertices.append(vertex)
 
-    while len(mst_vertices) != len(graph.get_vertices()):
-        min_cost_edge = frontier.extract_min()
-        edge = cost_edge[min_cost_edge]
+    for e in graph.egress(vertex):
+        index = frontier.data.index((float('inf'), e))
+        frontier.remove(index)
+        frontier.insert((e[2], e))
 
-        if edge[0] not in mst_vertices:
-            other_vertex = edge[0]
-        if edge[1] not in mst_vertices:
-            other_vertex = edge[1]
-
-        mst_vertices.append(other_vertex)
+    while True:
+        edge = frontier.get_min()
+        [tail, head, cost] = graph.split_edge(edge)
+        mst_vertices.append(head)
         mst_edges.append(edge)
 
-        # Insert outgoing edges.
-        edges = graph.egress(other_vertex)
-        for edge in edges:
-            if edge[1] not in mst_vertices:
-                frontier.insert(edge[2])
-            else:
-                frontier.remove(edge[2])
+        for e in graph.egress(head):
+            index = frontier.data.index((float('inf'), e))
+            frontier.remove(index)
+            frontier.insert((e[2], e))
 
     mst = Graph.build(edges=mst_edges, directed=False)
     return mst
@@ -115,3 +122,57 @@ def prims_fast_heap_mst(graph):
     Returns:
         A Graph instance reperesenting the MST.
     """
+    mst_vertices = []
+    mst_edges = []
+    INF = float('inf')
+    num_vertices = len(graph.get_vertices())
+
+    frontier = EdgeHeap.heapify([(INF, v) for v in graph.get_vertices])
+    vertex = random.choice(graph.get_vertices())
+
+    while len(mst_vertices) != num_vertices:
+        mst_vertices.append(vertex)
+
+        for edge in graph.egress(vertex):
+            [__, head, value] = graph.split_edge(edge)
+            frontier.remove(head)
+
+
+        vertex = frontier.get_min()
+
+def kruskal_suboptimal_mst(graph):
+    """ Computes the MST of a given graph using Kruskal's algorithm.
+
+    Complexity is O(m*n) dominated by determining if adding a new edge
+    creates a cycle which is O(n).
+
+    Args:
+        graph: object, data structure to hold the graph data.
+
+    Returns:
+        A Graph instance reperesenting the MST.
+    """
+    mst_vertices = []
+    mst_edges = []
+    edges = graph.get_edges()
+    num_vertices = len(graph.get_vertices())
+
+    edges = graph.get_edges()
+    edges.sort(key=lambda e: e[2])
+
+    index = 0
+    while len(mst_vertices) != num_vertices:
+        edge = edges[index]
+        [tail, head, value] = graph.split_edge(edge)
+        index += 1
+
+        if tail in mst_vertices and head in mst_vertices:
+            continue
+        if tail not in mst_vertices:
+            mst_vertices.append(tail)
+        if head not in mst_vertices:
+            mst_vertices.append(head)
+        mst_edges.append(edge)
+
+    mst = Graph.build(edges=mst_edges, directed=False)
+    return mst

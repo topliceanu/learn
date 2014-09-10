@@ -137,34 +137,35 @@ class Heap(object):
         self.bubble_down(0)
         return min_value
 
-    def remove(self, element):
-        """ Removes the first occurance of an element from a heap.
-        The last leaf in the heap is swapped in the position of the element,
+    def remove(self, index):
+        """ Removes the element found at index in the heap array.
+
+        The last leaf in the heap is swapped in the position index,
         then the element is removed.
         If if violates the heap property towards its parent then bubble up,
         otherwise bubble down.
+        If the index is not found in the heap, nothing happens.
 
         Args:
-            element: the key to remove from the heap.
+            index: the key to remove from the heap.
 
         Returns:
-            The element which was removed from the heap.
+            The element which was removed from the heap at index.
         """
-        try:
-            index = self.data.index(element)
-            self.data[index], self.data[-1] = self.data[-1], self.data[index]
-            removed = self.data.pop(-1)
-            parent = Heap.parent(index)
-            if parent is None:
-                # Just removed the root so simply bubble_down the new root.
-                self.bubble_down(index)
-            elif self.data[parent] > self.data[index]:
-                self.bubble_up(index)
-            else:
-                self.bubble_down(index)
-            return removed
-        except ValueError as ve:
-            pass
+        if index > len(self.data):
+            return
+
+        self.data[index], self.data[-1] = self.data[-1], self.data[index]
+        removed = self.data.pop(-1)
+        parent = Heap.parent(index)
+        if parent is None:
+            # Just removed the root so simply bubble_down the new root.
+            self.bubble_down(index)
+        elif self.data[parent] > self.data[index]:
+            self.bubble_up(index)
+        else:
+            self.bubble_down(index)
+        return removed
 
     def bubble_up(self, index):
         """ Bubbles a value at position index to maintain the heap property:
@@ -172,6 +173,9 @@ class Heap(object):
 
         This will do at most log2 n (ie. the number of layers in the tree)
         swaps to restore the heap property.
+
+        Running time: O(log2 n) the max number of swaps == depth of the tree.
+        AKA. percolate up.
 
         Args:
             index: int, the key in the heap to bubble up.
@@ -193,7 +197,8 @@ class Heap(object):
         This is done by continuously swapping with the minimum of the two
         children keys.
 
-        Running time: O(log2 n) the max number of swaps.
+        Running time: O(log2 n) the max number of swaps == depth of the tree.
+        AKA. percolate down
 
         Args:
             parent: int, the key in the heap to bubble down.

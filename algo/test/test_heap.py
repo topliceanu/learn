@@ -119,14 +119,13 @@ class TestHeap(unittest.TestCase):
         """
         data = [4, 4, 8, 9, 4, 12, 9, 11, 13]
         h = Heap(data)
-
-        h.remove(9)
+        h.remove(3)
         self.assertTrue(Heap.is_heap(data), 'should preserve heap property')
 
     def test_remove_if_index_is_root(self):
         data = [3, 4, 5]
         h = Heap(data)
-        h.remove(3)
+        h.remove(0)
         self.assertEqual(h.data, [4,5], 'should remove the root')
         self.assertTrue(Heap.is_heap(h.data), 'should maintain heap invariant')
 
