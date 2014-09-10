@@ -1,9 +1,37 @@
 # -*- coding: utf-8 -*-
 
-import heapq
+from operator import itemgetter
+from src.heap import Heap
 
 VISITED = 0x100
 NOT_VISITED = 0x101
+
+
+class VertexHeap(Heap):
+    """ Stores vertexes in a heap.
+
+    This heap maintains two invariants:
+    1. elements in heap are vertexes with format (vertex, cost) which are part
+    of the frontier, ie. the unexplored section of the graph.
+    2. Each vertex has as cost the min of all Dijkstra greedy scores for edges
+    incident in vertex.
+    """
+
+    def __init__(self, data=None):
+        Heap.__init__(self, data)
+
+    def compare(self, left, right):
+        """ Overrides to support vertices in format (vertex, cost). """
+        return cmp(left[1], right[1])
+
+    def remove(self, vertex):
+        """ Overrides parent method to remove a vertex by it's vertex not cost.
+
+        Args
+            vertex: str, name of the vertex to remove.
+        """
+        index = map(itemgetter(0), self.data).index(vertex)
+        return Heap.remove(self, index)
 
 def shortest_path_heap(graph, start_vertex):
     """ Computes shortest path using a dijkstra algorithm and speeding it up
@@ -17,21 +45,39 @@ def shortest_path_heap(graph, start_vertex):
         A dict containing all vertices in the graph as keys and the smallest
         number of hops to get there from start_vertex.
     """
-    S = [start_vertex]
-    A = {}
-    A[start_vertex] = 0
-    heap = [] # stores all vertices which are not yet in S with the 'dijkstra
-              # greedy score' as the key.
+    INF = float('inf')
+    S = [] # List of vertices processed so far.
+    A = {} # Computed shortes paths distances for every node
+           # in the graph. Format: {vertex: path_length}
 
-    while True:
-        frontier = get_frontier(graph, S)
-        if len(frontier) == 0:
-            break
+    # Initially all vertices have an INF cost.
+    frontier = VertexHeap.heapify([(v, INF) for v in graph.get_vertices()])
+    frontier.remove(start_vertex)
 
-        heap = push_frontier(graph, heap, frontier)
-        (vertex, score) = heapq.heappop(heap)
-        S.append(vertex)
-        A[vertex] = score
+    vertex = (start_vertex, 0)
+    while vertex:
+        S.append(vertex[0])
+        A[vertex[0]] = vertex[1]
+        print '>>>>>>>', S
+        print '>>>>>>>', A
+
+        for head in graph.get_vertices():
+            if head not in S:
+                # For each vertex not in S compute greedy
+                # score of all inbound vertices.
+                dijkstra_greedy_score = INF
+                for edge in graph.ingress(head):
+                    [tail, __, cost] = graph.split_edge(edge)
+                    if tail in S:
+                        if dijkstra_greedy_score > cost + A[tail]:
+                            dijkstra_greedy_score = cost + A[tail]
+                # Store that back into the heap.
+                if dijkstra_greedy_score != INF:
+                    frontier.remove(head)
+                    frontier.insert((head, dijkstra_greedy_score))
+
+        # Compute the next vertex to add
+        vertex = frontier.extract_min()
 
     return A
 

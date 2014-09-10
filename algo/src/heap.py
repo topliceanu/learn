@@ -253,17 +253,19 @@ class Heap(object):
         """
         return cmp(left, right)
 
-    @staticmethod
-    def heapify(data):
+    @classmethod
+    def heapify(cls, data):
         """ Initializes a heap from a list of numbers.
 
         Traverse the array from end to front and bubble keys down as needed.
         Running time: O(n)
 
+        NOTE! This is a class method to allow for inheritance in subclasses.
+
         Args:
             data: list, array of elements to organize into a heap.
         """
-        h = Heap(data)
+        h = cls(data)
         for i in xrange(len(h.data)-1, -1, -1):
             h.bubble_down(i)
         return h
