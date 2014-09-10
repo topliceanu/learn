@@ -5,8 +5,8 @@ from src.ballanced_binary_search_tree import BST, PARENT, KEY, LEFT, RIGHT, SIZE
 
 class TestBST(unittest.TestCase):
     """ Running examples:
-                                         (5)
-                                         /
+                                        (5)
+                                        /
             (3)                       (4)
            /   \                      /
         (1)     (5)                 (3)
@@ -87,6 +87,12 @@ class TestBST(unittest.TestCase):
 
         actual = b.successor(5)
         self.assertIsNone(actual, '5 is max of tree so no successor')
+
+    def test_range_query(self):
+        b = BST.build([3,1,2,5,4])
+        actual = b.range_query(2, 4)
+        expected = [2,3,4]
+        self.assertEqual(actual, expected, 'should return a range of data')
 
     def test_delete(self):
         b = BST.build([3,1,2,5,4])

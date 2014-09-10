@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-
 PARENT = 0
 KEY = 1
 LEFT = 2
@@ -9,12 +8,15 @@ SIZE = 4
 
 class BST(object):
     """ Implements the operations needed for a Ballanced Binary Search Tree.
-Search Tree Property: for any node k, all keys in the left subtree are
+
+    Search Tree Property: for any node k, all keys in the left subtree are
     smaller than k and all keys in the right three are larger than k
 
     Two alternative implementations to consider:
     http://code.activestate.com/recipes/577540-python-binary-search-tree/
     http://www.laurentluce.com/posts/binary-search-tree-library-in-python/
+
+    All operations have a complexity of O(log n)
 
     Attributes:
         root: list, represents the root node, format: [parent, key, left, right]
@@ -30,6 +32,8 @@ Search Tree Property: for any node k, all keys in the left subtree are
         Also increments the size of all nodes which are ancestors to the
         inserted node. The default size of a node is 1 because it can reach
         itself.
+
+        Complexity: O(log n)
 
         Args:
             key: int, the value to insert in the tree.
@@ -56,6 +60,8 @@ Search Tree Property: for any node k, all keys in the left subtree are
     def search(self, key):
         """ Looks up a key in the data structure.
 
+        Complexity: O(log n)
+
         Args:
             key: immutable value to look for.
 
@@ -76,6 +82,8 @@ Search Tree Property: for any node k, all keys in the left subtree are
     def get_max(self, root=None):
         """ Returns the node with the maximum value of the tree.
 
+        Complexity: O(log n)
+
         Args:
             root: node, if specified it will be used as root for the
                 search routine. Otherwise the tree's root will be used.
@@ -95,6 +103,8 @@ Search Tree Property: for any node k, all keys in the left subtree are
 
     def get_min(self, root=None):
         """ Returns the node with the minimum value of the tree.
+
+        Complexity: O(log n)
 
         Args:
             root: node, if specified it will be used as root for the
@@ -120,6 +130,8 @@ Search Tree Property: for any node k, all keys in the left subtree are
         find the maximum in it, otherwise move up through it's ancestors to
         find the one with smaller key.
 
+        Complexity: O(log n)
+
         Args:
             key: int, value in the tree to find predecessor of.
 
@@ -144,6 +156,8 @@ Search Tree Property: for any node k, all keys in the left subtree are
     def successor(self, key):
         """ Finds the node with the smallest key larger the the given one.
 
+        Complexity: O(log n)
+
         Args:
             key: int, value in the tree to find predecessor of.
 
@@ -165,6 +179,30 @@ Search Tree Property: for any node k, all keys in the left subtree are
                 if node is None:
                     return None
 
+    def range_query(self, start_key, end_key):
+        """ Return all keys between start_key and end_key in a sorted order.
+
+        Complexity: O(k*log n) where k is the number of keys between
+        start_key and end_key.
+
+        Args:
+            start_key: int, value in the tree to start traversing.
+            end_key: int, value in the tree to traverse to.
+
+        Returns:
+            A list of all contained data from start_key to end_key.
+        """
+        if self.search(start_key) is None:
+            return []
+
+        output = [start_key]
+        while True:
+            node = self.successor(start_key)
+            if node is None or node[KEY] > end_key:
+                break
+            output.append(node[KEY])
+        return output
+
     def delete(self, key):
         """ Removes the key from the tree.
 
@@ -177,6 +215,8 @@ Search Tree Property: for any node k, all keys in the left subtree are
 
         This method also decrements the size of all ancestors of the deleted
         node.
+
+        Complexity: O(log n)
 
         Args:
             key: int, a number to remove from the tree.
@@ -225,6 +265,8 @@ Search Tree Property: for any node k, all keys in the left subtree are
     def select(self, index, node = None):
         """ Finds the i'th order statistic in the containing data structure.
 
+        Complexity: O(log n)
+
         Args:
             index: int, the order of the element to find. Order starts with 0.
             root: list, format [parent, key, left, right, size] the
@@ -251,6 +293,8 @@ Search Tree Property: for any node k, all keys in the left subtree are
     def rank(self, key, node=None):
         """ Given a key, computes how many elements are stritcly smaller than
         that key in the tree.
+
+        Complexity: O(log n)
 
         Args:
             key: int, the value to look for.
@@ -320,6 +364,8 @@ Search Tree Property: for any node k, all keys in the left subtree are
         otherwise if direction is RIGHT, interchange between node and it's
         left child.
         This operation is done in O(1) and preserves the search tree property.
+
+        TODO finish up the implementation and tests.
 
         Args:
             node: list, format [parent, key, left, right, size]
