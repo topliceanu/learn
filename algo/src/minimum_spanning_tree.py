@@ -51,16 +51,31 @@ def prims_suboptimal_mst(graph):
     mst = Graph.build(edges=mst_edges, directed=False)
     return mst
 
+class VertexHeap(Heap):
+    """ Stores vertexes in a heap.
 
-class EdgeHeap(Heap):
-    """ A heap storing graph edges. Format of element: (key, edge). """
+    This heap maintains two invariants:
+    1. elements in heap are vertexes with format (vertex, cost) which are part
+    of the frontier, ie. the unexplored section of the graph.
+    2. Each vertex has as cost the min of all Dijkstra greedy scores for edges
+    incident in vertex.
+    """
 
-    def __init__(self):
-        Heap.__init__(self)
+    def __init__(self, data=None):
+        Heap.__init__(self, data)
 
     def compare(self, left, right):
-        return cmp(left[0], right[0])
+        """ Overrides to support vertices in format (vertex, cost). """
+        return cmp(left[1], right[1])
 
+    def remove(self, vertex):
+        """ Overrides parent method to remove a vertex by it's vertex not cost.
+
+        Args
+            vertex: str, name of the vertex to remove.
+        """
+        index = map(itemgetter(0), self.data).index(vertex)
+        return Heap.remove(self, index)
 
 def prims_heap_mst(graph):
     """ Computes minimal spanning tree using a heap data structure to make
@@ -69,46 +84,6 @@ def prims_heap_mst(graph):
     The difference is that it sticks the frontier of the explored MST in a
     heap, as such always computing the min vertex is O(logm), where m is the
     number of edges.
-
-    NOTE! This implementation assumes all vertex costs are distinct.
-
-    Args:
-        graph: object, data structure to hold the graph data.
-
-    Returns:
-        A Graph instance reperesenting the MST.
-    """
-    mst_vertices = []
-    mst_edges = []
-    INF = float('inf')
-
-    edges = {index: edge for index, edge in enumerate(graph.get_edges())}
-    frontier = Heap.heapify([(INF, e) for e in graph.get_edges()])
-
-    vertex = random.choice(graph.get_vertices())
-    mst_vertices.append(vertex)
-
-    for e in graph.egress(vertex):
-        index = frontier.data.index((float('inf'), e))
-        frontier.remove(index)
-        frontier.insert((e[2], e))
-
-    while True:
-        edge = frontier.get_min()
-        [tail, head, cost] = graph.split_edge(edge)
-        mst_vertices.append(head)
-        mst_edges.append(edge)
-
-        for e in graph.egress(head):
-            index = frontier.data.index((float('inf'), e))
-            frontier.remove(index)
-            frontier.insert((e[2], e))
-
-    mst = Graph.build(edges=mst_edges, directed=False)
-    return mst
-
-def prims_fast_heap_mst(graph):
-    """ Computes a mst from the given graph using prims algorithm and a heap.
 
     The heap is used to store the vertices not the edges as in the previous
     implementation. The heap maintains two invariants:
@@ -125,20 +100,39 @@ def prims_fast_heap_mst(graph):
     mst_vertices = []
     mst_edges = []
     INF = float('inf')
-    num_vertices = len(graph.get_vertices())
+    vertices = graph.get_vertices()
+    num_vertices = len(vertices)
 
-    frontier = EdgeHeap.heapify([(INF, v) for v in graph.get_vertices])
+    frontier = VertexHeap.heapify([(v, INF) for v in vertices])
     vertex = random.choice(graph.get_vertices())
+    frontier.remove(vertex)
 
-    while len(mst_vertices) != num_vertices:
+    # This dict stores for each vertex the neighbour with the smallest edge,
+    # and the edge cost. Format {vertex: (incident_vertex, edge_cost)}
+    vertices = {}
+
+    while vertex:
         mst_vertices.append(vertex)
+        if len(mst_vertices) == num_vertices:
+            break
 
         for edge in graph.egress(vertex):
-            [__, head, value] = graph.split_edge(edge)
-            frontier.remove(head)
+            [__, head, cost] = graph.split_edge(edge)
+            if head not in mst_vertices:
+                [__, head_key] = frontier.remove(head)
+                min_cost = min(cost, head_key)
+                frontier.insert((head, min_cost))
+                if min_cost < head_key:
+                    vertices[head] = (vertex, cost)
 
+        # Extract the vertex with min cost and compute it's associated min edge.
+        (head, __) = frontier.extract_min()
+        (tail, cost) = vertices[head]
+        mst_edges.append((tail, head, cost))
+        vertex = head
 
-        vertex = frontier.get_min()
+    mst = Graph.build(edges=mst_edges, directed=False)
+    return mst
 
 def kruskal_suboptimal_mst(graph):
     """ Computes the MST of a given graph using Kruskal's algorithm.
