@@ -91,6 +91,8 @@ def prims_heap_mst(graph):
     2. keys under which each vertex is stored in the heap is the minimum weight
     of an edge incided to the vertex whose tail is already in the MST.
 
+    Complexity O(m*log n)
+
     Args:
         graph: object, data structure to hold the graph data.
 
@@ -160,6 +162,7 @@ def kruskal_suboptimal_mst(graph):
         [tail, head, value] = graph.split_edge(edge)
         index += 1
 
+        # TODO we need to check that ading tail does not create a loop.
         if tail in mst_vertices and head in mst_vertices:
             continue
         if tail not in mst_vertices:
