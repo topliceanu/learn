@@ -3,8 +3,10 @@
 import random
 from operator import itemgetter
 
+from src.breadth_first_search import bfs
 from src.graph import Graph
 from src.heap import Heap
+from src.union_find import UnionFind
 
 
 def prims_suboptimal_mst(graph):
@@ -141,6 +143,7 @@ def kruskal_suboptimal_mst(graph):
 
     Complexity is O(m*n) dominated by determining if adding a new edge
     creates a cycle which is O(n).
+    This algorithm also works for directed graphs.
 
     Args:
         graph: object, data structure to hold the graph data.
@@ -148,7 +151,6 @@ def kruskal_suboptimal_mst(graph):
     Returns:
         A Graph instance reperesenting the MST.
     """
-    mst_vertices = []
     mst_edges = []
     edges = graph.get_edges()
     num_vertices = len(graph.get_vertices())
@@ -157,18 +159,46 @@ def kruskal_suboptimal_mst(graph):
     edges.sort(key=lambda e: e[2])
 
     index = 0
-    while len(mst_vertices) != num_vertices:
+    while index < num_vertices:
         edge = edges[index]
         [tail, head, value] = graph.split_edge(edge)
         index += 1
 
-        # TODO we need to check that ading tail does not create a loop.
-        if tail in mst_vertices and head in mst_vertices:
+        # Ensure that the added edge does not create a cycle using
+        # breadth first search. Complexity is O(m*n).
+        mst = Graph.build(edges=mst_edges, directed=False)
+        explored = bfs(mst, tail)
+        if head not in explored:
+            mst_edges.append(edge)
+
+    mst = Graph.build(edges=mst_edges, directed=False)
+    return mst
+
+def kruskal_union_find_mst(graph):
+    """ Uses Kruskel's greedy algorithm to compute the MST of graph.
+
+    Running time: O(m*logn) where m is the number of edges and n is the number
+    of vertices.
+    """
+    mst_edges = []
+    edges = graph.get_edges()
+    num_vertices = len(graph.get_vertices())
+
+    edges = graph.get_edges()
+    edges.sort(key=lambda e: e[2])
+
+    union_find = UnionFind()
+
+    index = 0
+    while index < num_vertices:
+        edge = edges[index]
+        [tail, head, value] = graph.split_edge(edge)
+        index += 1
+
+        if union_find.find(head) == union_find.find(tail):
             continue
-        if tail not in mst_vertices:
-            mst_vertices.append(tail)
-        if head not in mst_vertices:
-            mst_vertices.append(head)
+        else:
+            union_find.union(head, tail)
         mst_edges.append(edge)
 
     mst = Graph.build(edges=mst_edges, directed=False)
