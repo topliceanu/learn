@@ -9,6 +9,16 @@ class UnionFind(object):
     Pseudo code borrowed from:
     http://en.wikipedia.org/wiki/Disjoint-set_data_structure
 
+    Optimizations used:
+    1. lazy union - only update the leader of a group to point to
+            the leader of the other group. `Find` has to now traverse multiple
+            layers to reach the root.
+    2. union by rank - maintain for each node, the depth of the subgraph it
+            is rooting for. On union, merge the smaller rank leader under the
+            larger rank leader. Only if the the two groups have the same rank
+            leader than the new leader has to increase it's rank by one.
+    3. path compression
+
     Attributes:
         leader: dict, a hash of format {item: leader}, maintaining the leader
                 for all items inserted.
