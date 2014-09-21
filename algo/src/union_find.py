@@ -17,7 +17,11 @@ class UnionFind(object):
             is rooting for. On union, merge the smaller rank leader under the
             larger rank leader. Only if the the two groups have the same rank
             leader than the new leader has to increase it's rank by one.
-    3. path compression
+    3. path compression - on finds, update the parent of each node you traverse
+            to reach a leader with the actual leader.
+
+    Even though the find/union operations both take O(log n), after m operations,
+    one can prove that the running time is O(m*log_star n)
 
     Attributes:
         leader: dict, a hash of format {item: leader}, maintaining the leader
@@ -51,6 +55,7 @@ class UnionFind(object):
         """ Returns an item of the set which is the leader of the input item.
 
         This method also applies the optimization known as `path compression`
+        Complexity: O(log n), n is the number of elements in the structure.
 
         Args:
             item: hashable data structure.
@@ -73,6 +78,7 @@ class UnionFind(object):
         update the set containing the least elements of the two. To do this
         we maintian a rank for each node which is the depth of the tree whose
         head this item is.
+        Complexity: O(log n), n is the number of elements in the structure.
 
         Args:
             item1: hashable data structure.

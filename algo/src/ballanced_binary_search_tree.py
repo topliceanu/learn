@@ -192,15 +192,17 @@ class BST(object):
         Returns:
             A list of all contained data from start_key to end_key.
         """
-        if self.search(start_key) is None:
+        key = start_key
+        if self.search(key) is None:
             return []
+        output = [key]
 
-        output = [start_key]
         while True:
-            node = self.successor(start_key)
+            node = self.successor(key)
             if node is None or node[KEY] > end_key:
                 break
-            output.append(node[KEY])
+            key = node[KEY]
+            output.append(key)
         return output
 
     def delete(self, key):
@@ -443,9 +445,20 @@ class BST(object):
 
 
 class RedBlackTree(BST):
-    """ Implements ballanced red-black trees as a subclass of binary search tree.
-    TODO implement this to maintain invariants.
+    """ Implements ballanced red-black trees as a subclass of
+    binary search tree.
+
+    The RB invariants are:
+    1. each node is either Red or Black.
+    2. root is always black
+    3. never have two red nodes in a row.
+    4. every path you can take from a root to a NULL path passes through
+    the same number of black nodes.
     """
+
+    # Coloring of nodes.
+    RED = 0x100
+    BLACK = 0x101
 
     def __init__(self):
         BST.__init__(self)
