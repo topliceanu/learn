@@ -5,6 +5,12 @@ KEY = 1
 LEFT = 2
 RIGHT = 3
 SIZE = 4
+COLOR = 5
+
+# Coloring of nodes.
+RED = 0x100
+BLACK = 0x101
+
 
 class BST(object):
     """ Implements the operations needed for a Ballanced Binary Search Tree.
@@ -30,17 +36,20 @@ class BST(object):
 
         For equal keys the convention is to keep them in the left subtree.
         Also increments the size of all nodes which are ancestors to the
-        inserted node. The default size of a node is 1 because it can reach
-        itself.
+        inserted node. The default size of a node is 1 because it can only
+        reach itself.
 
         Complexity: O(log n)
 
         Args:
             key: int, the value to insert in the tree.
+
+        Returns:
+            A list representing the newly inserted node.
         """
         if self.root is None:
             self.root = [None, key, None, None, 1]
-            return
+            return self.root
 
         node = self.root
         while True:
@@ -56,6 +65,7 @@ class BST(object):
                 break
             else:
                 node = node[path]
+        return node[path]
 
     def search(self, key):
         """ Looks up a key in the data structure.
@@ -359,7 +369,7 @@ class BST(object):
             node[SIZE] -= 1
             node = node[PARENT]
 
-    def rotate(self, node, direction=LEFT):
+    def rotate(self, node, DIRECTION=LEFT):
         """ Interchange between node and one of it's children.
 
         If direction is LEFT, then interchange between node and it' right child,
@@ -367,33 +377,56 @@ class BST(object):
         left child.
         This operation is done in O(1) and preserves the search tree property.
 
-        TODO finish up the implementation and tests.
+        Schema (for left rotations):
+
+                (P)                        (P)
+                 |                          |
+                (x)                        (y)
+               /   \           =>         /   \
+            (A)    (y)                 (x)    (C)
+                  /   \               /   \
+                (B)    (C)          (A)    (B)
+
+        Schema (for right rotations):
+
+                (P)                        (P)
+                 |                          |
+                (x)                        (y)
+               /   \           =>         /   \
+            (y)    (C)                 (A)    (x)
+           /   \                             /   \
+         (A)   (B)                        (B)    (C)
 
         Args:
             node: list, format [parent, key, left, right, size]
-            direction: number, either LEFT or RIGHT.
+            DIRECTION: number, either LEFT or RIGHT.
         """
-        if node[PARENT][LEFT] == node:
-            parent_direction = LEFT
+        # Build a reference to the parent node and the direction of node
+        # in relation to it's parent.
+        parent = node[PARENT]
+        if parent[LEFT] == node:
+            PARENT_DIRECTION = LEFT
         else:
-            parent_direction = RIGHT
+            PARENT_DIRECTION = RIGHT
 
-        child = node[direction]
-
-        if direction == LEFT:
-            other_direction = RIGHT
+        # Compute the other
+        if DIRECTION == LEFT:
+            OTHER_DIRECTION = RIGHT
         else:
-            other_direction = LEFT
-        other_child = node[other_direction]
+            OTHER_DIRECTION = LEFT
 
-        node[PARENT][parent_direction] = child
-        child[PARENT] = node[PARENT]
+        # Pointer to the child or the other node.
+        child = node[DIRECTION]
+        other_child = child[OTHER_DIRECTION]
 
-        child[other_direction] = node
+        # Swap node with it's child.
+        # Update pointers for parent, node, child and other_child.
+        parent[PARENT_DIRECTION] = child
+        child[PARENT] = parent
+        child[OTHER_DIRECTION] = node
         node[PARENT] = child
-
-        node[direction] = child[other_direction]
-        child[other_direction][PARENT] = node
+        node[DIRECTION] = other_child
+        other_child[PARENT] = node
 
     @staticmethod
     def node_to_string(node):
@@ -414,19 +447,6 @@ class BST(object):
         return "[{parent}, {key}, {left}, {right}, {size}]".format( \
                                     parent=parent, key=node[KEY], left=left,
                                     right=right, size=node[SIZE])
-
-    @classmethod
-    def tree_to_string(cls, root):
-        """ Prints the tree structure in a readable way. """
-        # TODO fix this!
-        node = root
-        while node:
-            print "({parent})->({left});".format(parent=cls.node_to_string(node),
-                                        left=cls.node_to_string(node[LEFT]))
-            print "({parent})->({right});".format(parent=cls.node_to_string(node),
-                                        right=cls.node_to_string(node[RIGHT]))
-            cls.tree_to_string(node[LEFT])
-            cls.tree_to_string(node[RIGHT])
 
     @staticmethod
     def build(keys):
@@ -456,12 +476,106 @@ class RedBlackTree(BST):
     the same number of black nodes.
     """
 
-    # Coloring of nodes.
-    RED = 0x100
-    BLACK = 0x101
-
     def __init__(self):
         BST.__init__(self)
 
     def insert(self, key):
-        """ Insert a key in the RB tree preserving the invariants. """
+        """ Insert a key in the RB tree preserving the invariants.
+
+        Returns:
+            List representing the newly inserted node.
+        """
+        inserted_node = BST.insert(self, key)
+
+        # If the inserted node is root, we're done.
+        if inserted_node is self.root:
+            inserted_node[COLOR] = BLACK
+            return inserted_node
+
+        # By default the inserted node is red.
+        inserted_node[COLOR] = RED
+
+        # If the parent of the inserted node is black, we're done.
+        parent = inserted_node[PARENT]
+        if parent[COLOR] == BLACK:
+            return inserted_node
+
+        self.fix_double_red(inserted_node)
+        return inserted_node
+
+    def fix_double_red(self, node):
+        """ This method fixes the case when node and it's parent are both red.
+
+        When parent node is red, the grand-parent node is necessarely black.
+        Then it depends on the color of the uncle, ie the sibling of the
+        parent of the inserted node.
+
+        There are two cases:
+        1. uncle is also red.
+        2. uncle is black.
+
+        TODO finish implementation and tests of this method.
+
+        Args:
+            node: list, representing the node which is violating the `double
+                  consecutive reds` invariant in an existing RB tree.
+        """
+        parent = node[PARENT]
+        grand_parent = parent[PARENT]
+
+        if grand_parent[LEFT] == parent:
+            uncle = grand_parent[RIGHT]
+        else:
+            uncle = grand_parent[LEFT]
+
+        # First case.
+        if uncle[COLOR] == RED:
+            self.recolor(grand_parent) # Recolor to red.
+            self.recolor(parent) # Recolor to black.
+            self.recolor(uncle) # Recolor to black.
+
+            if grand_parent == self.root:
+                self.recolor(grand_parent)
+                return
+
+            grand_grand_parent = grand_parent[PARENT]
+            if grand_grand_parent[COLOR] == RED:
+                self.fix_double_red(grand_parent)
+                return
+
+        if uncle[COLOR] == BLACK:
+            pass
+
+    def delete(self, key):
+        """ Removes a node with a given key. """
+        # TODO implement this deletion.
+        return BST.delete(self, key)
+
+    def recolor(self, node):
+        """ Flips the color of a given node from red to black or from black
+        to red. Defaults to BLACK if node has no color.
+
+        Args:
+            node: the node to recolor.
+        """
+        if COLOR in node:
+            if node[COLOR] is RED:
+                node[COLOR] = BLACK
+            else:
+                node[COLOR] = RED
+        else:
+            node[COLOR] = BLACK
+
+class AVLTree(BST):
+    """ Implements a ballanced binary tree using the AVL method.
+
+    AVL Trees maintain a measurement called the 'ballance factor' for each
+    node in the tree. This is computed as such:
+        height(left_subtree) - height(right_subtree)
+    If this value is not in {-1, 0, 1} then rotations are required.
+    """
+
+class SplayTree(BST):
+    """ Adds to the base default Ballanced Search Tree a splaying method which
+    promotes frequently accessed nodes closer to the root.
+    """

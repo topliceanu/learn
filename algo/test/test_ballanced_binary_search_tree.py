@@ -19,6 +19,21 @@ class TestBST(unittest.TestCase):
     def test_build(self):
         b = BST.build([3,1,2,5,4])
 
+    def test_insert(self):
+        b = BST.build([])
+        actual = b.insert(3)
+        expected = [None, 3, None, None, 1]
+        self.assertEqual(actual, expected, 'should have inserted the '+
+                                    'correct single node into the BST')
+
+        actual = b.insert(1)
+        self.assertEqual(actual[PARENT][KEY], 3, 'should be a child of 3')
+        self.assertIsNone(actual[LEFT], 'should have no left child')
+        self.assertIsNone(actual[RIGHT], 'should have not right child')
+        self.assertEqual(actual[SIZE], 1, 'new node is a leaf')
+
+        self.assertEqual(b.root[SIZE], 2, 'root can access 2 nodes')
+
     def test_search(self):
         b = BST.build([3,1,2,5,4])
 
@@ -155,4 +170,41 @@ class TestBST(unittest.TestCase):
         self.assertIsNone(b.rank(6), 'key 6 does not exist')
 
     def test_rotate(self):
+        """ Test the following right rotation, switching 5 and 7.
+                (3)                      (3)
+               /   \                    /   \
+            (1)     (5)              (1)     (7)
+              \     / \         =>     \     / \
+             (2)  (4) (7)             (2)  (5) (8)
+                      /  \                /  \
+                    (6)  (8)            (4)  (6)
+        """
+        b = BST.build([3,1,2,5,4,7,8,6])
+        b.rotate(b.search(5), RIGHT)
+
+        root = b.search(3)
+        node = b.search(5)
+        child = b.search(7)
+
+        self.assertEqual(root[LEFT][KEY], 1, 'root right child unchanged')
+        self.assertEqual(root[RIGHT][KEY], 7, '7 swapped places with 5')
+        self.assertEqual(node[PARENT][KEY], 7, '7 new parent of 5')
+        self.assertEqual(node[LEFT][KEY], 4, 'left child of 5 remains unchanged')
+        self.assertEqual(node[RIGHT][KEY], 6, 'left child of 7 becomes new '+
+                                              'right child of 5')
+        self.assertEqual(child[PARENT][KEY], 3, 'new parent of 7 is root')
+        self.assertEqual(child[LEFT][KEY], 5, 'left child of 7 is now '+
+                                              'its old parent 5')
+        self.assertEqual(child[RIGHT][KEY], 8, '7 old right child is unchanged')
+
+    def test_red_black_insert_root(self):
+        pass
+
+    def test_red_black_insert_root_child(self):
+        pass
+
+    def test_red_black_insert_node_with_red_uncle(self):
+        pass
+
+    def test_red_black_insert_node_with_black_uncle(self):
         pass
