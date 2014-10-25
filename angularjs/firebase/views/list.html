@@ -1,0 +1,10 @@
+<input type="text" ng-model="search"/>
+
+<ul>
+    <li ng-repeat="project in projects | filter:search | orderBy:'name'">
+        <a ng-href="{{project.site}}">{{project.name}}</a>
+        <span>{{project.description}}</span>
+        <a ng-href="#/edit/{{project.$id}}"><i class="icon-pencil"></i></a>
+        <a ng-click="remove()"><i class="icon-trash"></i></a>
+    </li>
+</ul>

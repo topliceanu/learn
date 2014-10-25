@@ -1,0 +1,15 @@
+<form>
+    <div class="control-group">
+        <label for="name">Name: </label>
+        <input type="text" name="name" ng-model="project.name"/>
+    </div>
+    <div class="control-group">
+        <label for="name">Site: </label>
+        <input type="url" name="site" ng-model="project.site"/>
+    </div>
+    <label>Description: </label>
+    <textarea name="description" ng-model="project.description"></textarea>
+
+    <a href="#/" class="btn">Cancel</a>
+    <button ng-click="save()">Save</button>
+</form>
