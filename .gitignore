@@ -58,3 +58,6 @@ target/
 # Javascript package managers.
 node_modules
 bower_components
+
+# Node debug log.
+npm-debug.log
