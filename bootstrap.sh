@@ -14,4 +14,7 @@ su - vagrant -c "cd /home/vagrant/node-v$NODE_VERSION; make"
 su - vagrant -c "cd /home/vagrant/node-v$NODE_VERSION; sudo make install"
 
 # Install dependencies.
-apt-get install git-core
+apt-get install -y git-core
+
+# Install D programming language.
+apt-get install -y gdc
