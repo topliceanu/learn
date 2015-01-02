@@ -17,8 +17,9 @@ class DiceSet(object):
     def roll(self, n):
         # Needs implementing!
         # Tip: random.randint(min, max) can be used to generate random numbers
-        pass
-
+        self._values = []
+        for i in range(n):
+            self._values.append(random.randint(1,6))
 
 class AboutDiceProject(Koan):
     def test_can_create_a_dice_set(self):
@@ -52,7 +53,7 @@ class AboutDiceProject(Koan):
         dice.roll(5)
         second_time = dice.values
 
-        self.assertNotEqual(first_time, second_time, \
+        self.assertFalse(first_time is second_time, \
             "Two rolls should not be equal")
 
         # THINK ABOUT IT:

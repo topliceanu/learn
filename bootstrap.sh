@@ -18,3 +18,8 @@ apt-get install -y git-core
 
 # Install D programming language.
 apt-get install -y gdc
+
+# Setup the python virtualenv.
+sudo apt-get install -y python-pip python-dev
+sudo pip install virtualenv
+sudo pip install virtualenvwrapper

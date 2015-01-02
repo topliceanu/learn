@@ -24,3 +24,20 @@ def retry (f):
                 sleep(10 * attempt)
 
     return wrapped_f
+
+
+class documenter(object):
+    """ Adds documentation to a method if it does not already have it. """
+
+    def __init__(self, *args):
+        self.fn_doc = args[0]
+
+    def __call__(self, fn):
+        def decorated_function(*args):
+            return fn(*args)
+
+        if fn.__doc__:
+            decorated_function.__doc__ = fn.__doc__ + ": " + self.fn_doc
+        else:
+            decorated_function.__doc__ = self.fn_doc
+        return decorated_function

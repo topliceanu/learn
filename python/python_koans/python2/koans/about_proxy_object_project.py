@@ -25,8 +25,13 @@ class Proxy(object):
 
         #initialize '_obj' attribute last. Trust me on this!
         self._obj = target_object
+        self.channel = None
+        self.is_on = False
 
     # WRITE CODE HERE
+    def power():
+        self.is_on = True
+        pass
 
 
 # The proxy object should pass the following Koan:
