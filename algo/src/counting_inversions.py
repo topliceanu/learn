@@ -34,14 +34,12 @@ def sort_and_count_split_inversions (left, right):
             # Count an inversion when an element in the right array
             # is larger the the one in the left array.
             count += n - i
-    if i is n:
-        while j < m:
-            out.append(right[j])
-            j += 1
-    if j is m:
-        while i < n:
-            out.append(left[i])
-            i += 1
+
+    if i == n:
+        out.extend(right[j:])
+    elif j == m:
+        out.extend(left[i:])
+
     return [out, count]
 
 
@@ -58,23 +56,24 @@ def sort_and_count_inversions (arr):
             A tuple with (sorted_arr, num_inversions)
     """
     n = len(arr)
+
     # Base case.
     if n is 1:
         return [arr, 0]
-    else:
-        # Split the input array in two in the middle.
-        left = arr[0:int(floor(n/2))]
-        right = arr[int(ceil(n/2)):]
 
-        # Count inversions in each of the smaller arrays.
-        [left_sorted, left_count] = sort_and_count_inversions(left)
-        [right_sorted, right_count] = sort_and_count_inversions(right)
+    # Split the input array in two in the middle.
+    left = arr[0:n/2]
+    right = arr[n/2:]
 
-        # Count inversions only across the arrays.
-        [arr_sorted, split_count] = sort_and_count_split_inversions(
-                                            left_sorted, right_sorted)
+    # Count inversions in each of the smaller arrays.
+    [left_sorted, left_count] = sort_and_count_inversions(left)
+    [right_sorted, right_count] = sort_and_count_inversions(right)
 
-        # Sum up all inversions.
-        count = left_count + right_count + split_count
+    # Count inversions only across the arrays.
+    [arr_sorted, split_count] = sort_and_count_split_inversions(
+                                        left_sorted, right_sorted)
 
-        return [arr_sorted, count]
+    # Sum up all inversions.
+    count = left_count + right_count + split_count
+
+    return [arr_sorted, count]
