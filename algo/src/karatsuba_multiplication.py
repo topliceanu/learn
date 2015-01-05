@@ -2,26 +2,13 @@
 
 from math import ceil, floor
 
-def to_int (x, default=10):
-    """ Function takes a string as argument and returns a number.
-
-    Except for the string '0' which will return 10.
-
-    Params:
-        x: int
-        default: int
-
-    Returns:
-        x if x can be cast to an integer or the default value.
-    """
-    if x is '0':
-        return default
-    return int(x)
-
 
 def multiply (x, y):
     """ Multiplies two integers (x and y) recursively by
-        splitting both terms in two number.
+    splitting both terms in two number.
+
+    NOTE! The difference between the two numbers should be of at most one order
+    of magnitude! Otherwise this algorithm will not work.
 
     Params:
         x: int, positive non-zero integer
@@ -30,32 +17,23 @@ def multiply (x, y):
     Returns:
         int, value of x*y
     """
-    # Make sure they're both strings.
-    x = str(x)
-    y = str(y)
+    if x < 10 or y < 10:
+        return x * y
 
-    # Calculate length of numbers.
-    n = len(x)
-    m = len(y)
+    n = max(len(str(x)), len(str(y)))
+    m = int(ceil(float(n)/2))
 
-    if n is 1 or m is 1:
-        return to_int(x) * to_int(y)
-    else:
-        # Compute segments of the initial numbers.
-        a = x[0:int(floor(n/2))]
-        b = x[int(ceil(n/2)):]
-        c = y[0:int(floor(m/2))]
-        d = y[int(ceil(m/2)):]
+    # Compute segments of the initial numbers.
+    a = int(floor(x / 10**m))
+    b = int(x % (10**m))
+    c = int(floor(y / 10**m))
+    d = int(y % (10**m))
 
-        # Compute Karatsuba multiplication terms.
-        ac = multiply(a, c)
-        bd = multiply(b, d)
-        ab = to_int(a) + to_int(b)
-        cd = to_int(c) + to_int(d)
-        adbc = multiply(ab, cd) - ac - bd
+    # Compute Karatsuba multiplication terms.
+    ac = multiply(a, c)
+    bd = multiply(b, d)
+    abcd = multiply((a+b), (c+d))
+    adbc = abcd - ac - bd
 
-        # Compute Karatsuba multiplication powers.
-        pow1 = int(ceil(n/2)) + int(ceil(m/2))
-        pow2 = max(int(floor(n/2)), int(floor(m/2)))
-
-        return ac*(10**pow1) + adbc*(10**pow2) + bd
+    # Return Karatsuba multiplication result.
+    return int(ac*(10**(m*2)) + adbc*(10**m) + bd)

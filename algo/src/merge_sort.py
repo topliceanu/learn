@@ -3,11 +3,11 @@
 from math import floor, ceil
 
 def merge (left, right):
-    """ Joins two sorted lists.
+    """ Joins two sorted lists into a third list and returns that list.
 
     Args:
-        left: a sorted list of elements
-        right: a sorted list of elements
+        left: a sorted list of elements.
+        right: a sorted list of elements.
 
     Returns:
         A list produced by merging the two received lists.

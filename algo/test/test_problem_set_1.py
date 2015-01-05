@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Download the text file here. (Right click and save link as)
+Download the text file here. Use IntegerArray.txt
 
 This file contains all of the 100,000 integers between 1 and 100,000
 (inclusive) in some order, with no integer repeated.
@@ -30,10 +30,21 @@ import os
 
 from src.counting_inversions import sort_and_count_inversions
 
+
 numbers = []
 with open('{base}/test/IntegerArray.txt'.format(base=os.getcwd()), 'r') as f:
     for line in f:
         numbers.append(int(line))
 
 sorted_arr, num_inversions = sort_and_count_inversions(numbers)
-print num_inversions
+print num_inversions # should be 2407905288
+
+
+## Brute force approach.
+#num_inversions = 0
+#n = len(numbers)
+#for i in xrange(n):
+#    for j in xrange(i, n):
+#        if numbers[i] > numbers[j]:
+#            num_inversions += 1
+#print num_inversions

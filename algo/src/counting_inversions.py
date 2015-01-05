@@ -7,7 +7,8 @@ def sort_and_count_split_inversions (left, right):
     """
         Counts the number of inversions accross left and right.
 
-        An inversion is any pair (i,j), i from left and j from right, where i > j.
+        An inversion is any pair (i,j), i from left array and j from right
+        array, such that i > j.
 
         Params:
             left: sorted list
