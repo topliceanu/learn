@@ -39,13 +39,15 @@ def partition(arr, l, r):
     (arr[i-1], arr[pos]) = (arr[pos], arr[i-1])
     return (i - 1)
 
-def quick_sort(arr, l, r):
+def quick_sort(arr, l, r, partition=partition, pick_pivot=pick_pivot):
     """ Sorts the input array using the 'quick sort' method.
 
     Params:
-    arr - a list of elements.
-    l - left most index of the array
-    r - right most index of the array
+    arr - list of elements.
+    l - int, left most index of the array
+    r - int, right most index of the array
+    partition - function, arranges elemnts around a pivot.
+    pick_pivot - function, pick a pivot element from a list.
 
     Returns:
     A list of sorted elements.
