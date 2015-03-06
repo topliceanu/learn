@@ -1,0 +1,372 @@
+<!doctype html>
+<html class="no-js">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta charset="utf-8">
+    <title>RightFunnel</title>
+    <meta name="description" content="RightFunnel.com - hands-free marketing automation">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" href="/favicon.ico">
+    <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+    <!-- build:css(.) styles/vendor.css -->
+    <!-- bower:css -->
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css" />
+    <!-- endbower -->
+    <!-- endbuild -->
+    <!-- build:css(.tmp) styles/main.css -->
+    <link rel="stylesheet" href="styles/flatly.css">
+    <link rel="stylesheet" href="styles/main.css">
+    <!-- endbuild -->
+  </head>
+  <body>
+    <!--[if lt IE 10]>
+      <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+    <![endif]-->
+    <a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
+
+    <!--
+        Header Navigation.
+    -->
+    <nav class="navbar navbar-transparent navbar-default navbar-static-top">
+        <div class="container-fluid">
+
+            <!-- Navigation Button, displays only on smaller devices -->
+            <div class="navbar-header">
+                <a href="/index.html" class="navbar-brand">
+                    <img src="images/logo-white.png" alt="">
+                </a>
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+            </div>
+            <!-- End Navigation Button -->
+
+            <!-- list of navigation links -->
+            <div id="navbar" class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li class="active">
+                        <a href="index.html">
+                            <b>overview</b>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="campaigns.html">
+                            <b>campaigns</b>
+                        </a>
+                    </li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="settings.html">
+                            <b>shop.com</b>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" alt="log out">
+                            <span class="hidden-sm hidden-md hidden-lg">
+                                <b>log out</b>
+                            </span>
+                            <i class="glyphicon glyphicon-log-out"></i>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <!-- end list of navigation links -->
+
+        </div>
+    </nav>
+
+    <div class="container-fluid" id="content">
+        <!--
+            Main Content.
+            Four columns arranged like so:
+            - on xs <768 one column per row,
+            - on sm [768, 992) have two columns per row,
+            - on lg >992 have four columns.
+        -->
+        <div class="row">
+
+            <div class="col-xs-12 col-sm-6 col-md-3">
+                <div class="row text-center">
+                    <div class="col-xs-12">
+                        <h3>Landing</h3>
+                    </div>
+                </div>
+
+                <!-- cartouche -->
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <b>Number of Users</b>
+                                <i class="glyphicon glyphicon-info-sign pull-right" data-toggle="tooltip" title="Shows the number of visitors, and it's evolution in time"></i>
+                            </div>
+                            <div class="panel-body">
+                                <strong>125,768</strong>
+                                <span class="label label-success">+10.5%</span>
+                                <div class="plain-chart"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- end cartouche -->
+
+                <!-- start pie chart -->
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <b>New and Returning Users</b>
+                                <i class="glyphicon glyphicon-info-sign pull-right" data-toggle="tooltip" title="Returning visitors made at least 2 visits to the site."></i>
+                            </div>
+                            <div class="panel-body">
+                                <div class="pie-chart"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- end pie chart-->
+
+                <!-- start column chart -->
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <b>Top Source of Traffic</b>
+                                <i class="glyphicon glyphicon-info-sign pull-right" data-toggle="tooltip" title="Sites users visited just before coming to your site."></i>
+                            </div>
+                            <div class="panel-body">
+                                <div class="column-chart"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- end pie chart-->
+
+            </div>
+
+            <div class="col-xs-12 col-sm-6 col-md-3">
+                <div class="row text-center">
+                    <div class="col-xs-12">
+                        <h3>Activity</h3>
+                    </div>
+                </div>
+
+                <!-- start line chart -->
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <b>Number of Recorded Events</b>
+                                <i class="glyphicon glyphicon-info-sign pull-right" data-toggle="tooltip" title="How many user events were received by the rightfunnel api."></i>
+                            </div>
+                            <div class="panel-body">
+                                <strong>736,211</strong>
+                                <span class="label label-danger">-1.3%</span>
+                                <div class="plain-chart"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- end line chart -->
+
+                <!-- start vertical column chart -->
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <b>Time spent on site</b>
+                                <i class="glyphicon glyphicon-info-sign pull-right" data-toggle="tooltip" title="Shows how many users spent a given time interval on site"></i>
+                            </div>
+                            <div class="panel-body">
+                                <div class="vertical-column-chart"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- end vertical column chart-->
+
+                <!-- start vertical column chart -->
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <b>Number of Sessions Per User</b>
+                                <i class="glyphicon glyphicon-info-sign pull-right" data-toggle="tooltip" title="Display how many users have returned more than once to the site."></i>
+                            </div>
+                            <div class="panel-body">
+                                <div class="vertical-column-chart-2"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- end vertical column chart-->
+
+            </div>
+
+            <div class="col-xs-12 col-sm-6 col-md-3">
+                <div class="row text-center">
+                    <div class="col-xs-12">
+                        <h3>Conversions</h3>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <b>Number of Collected Emails</b>
+                                <i class="glyphicon glyphicon-info-sign pull-right" data-toggle="tooltip" title="Show how many emails the product collected in the last period."></i>
+                            </div>
+                            <div class="panel-body">
+                                <strong>263</strong>
+                                <span class="label label-success">+7.9%</span>
+                                <div class="plain-chart"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- start double-line chart -->
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <b>Recovered Abandoned Carts</b>
+                                <i class="glyphicon glyphicon-info-sign pull-right" data-toggle="tooltip" title="Shows how many carts were abandoned and how many were rescued by the product."></i>
+                            </div>
+                            <div class="panel-body">
+                                <div class="double-line-chart"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- end double-line chart-->
+
+                <!-- start cartouche -->
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <b>Click Rate on Recommended Items</b>
+                                <i class="glyphicon glyphicon-info-sign pull-right" data-toggle="tooltip" title="Click rate is the ratio between the number of displayed recommended products and the number of clicks on the items."></i>
+                            </div>
+                            <div class="panel-body">
+                                <strong>75.34%</strong>
+                                <span class="label label-success">+1.9%</span>
+                                <div class="plain-chart"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- end cartouche -->
+            </div>
+
+            <div class="col-xs-12 col-sm-6 col-md-3">
+                <div class="row text-center">
+                    <div class="col-xs-12">
+                        <h3>Follow-ups</h3>
+                    </div>
+                </div>
+
+                <!-- start cartouche -->
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <b>Search Retargetting Conversion</b>
+                                <i class="glyphicon glyphicon-info-sign pull-right" data-toggle="tooltip" title="Displays the ratio between emails sent with recommended search results and clicks on products."></i>
+                            </div>
+                            <div class="panel-body">
+                                <strong>75.34%</strong>
+                                <span class="label label-danger">-11.4%</span>
+                                <div class="plain-chart"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- end cartouche -->
+
+                <!-- start cartouche -->
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <b>"Thank you" Emails Click-through</b>
+                                <i class="glyphicon glyphicon-info-sign pull-right" data-toggle="tooltip" title="Shows a ratio between the number of emails sent and the number of clicks on links in those emails."></i>
+                            </div>
+                            <div class="panel-body">
+                                <strong>23.34%</strong>
+                                <span class="label label-success">+4.4%</span>
+                                <div class="plain-chart"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- end cartouche -->
+
+                <!-- start cartouche -->
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <b>New&Recommended For You Emails</b>
+                                <i class="glyphicon glyphicon-info-sign pull-right" data-toggle="tooltip" title="Shows a ratio between the number of emails sent and the number of clicks on links in those emails"></i>
+                            </div>
+                            <div class="panel-body">
+                                <strong>75.34%</strong>
+                                <span class="label label-success">+1.9%</span>
+                                <div class="plain-chart"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- end cartouche -->
+            </div>
+
+            <div class="clearfix visible-xs-block"></div>
+        </div>
+    </div>
+
+
+    <!-- build:js(.) scripts/vendor.js -->
+    <!-- bower:js -->
+    <script src="bower_components/jquery/dist/jquery.js"></script>
+    <script src="bower_components/highcharts-release/highcharts.js"></script>
+    <script src="bower_components/highcharts-release/highcharts-more.js"></script>
+    <script src="bower_components/highcharts-release/modules/exporting.js"></script>
+    <!-- endbower -->
+    <!-- endbuild -->
+
+    <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
+    <script>
+      (function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+      function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+      e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+      e.src='//www.google-analytics.com/analytics.js';
+      r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+      ga('create','UA-XXXXX-X');ga('send','pageview');
+    </script>
+
+        <!-- build:js(.) scripts/plugins.js -->
+        <script src="bower_components/bootstrap/js/affix.js"></script>
+        <script src="bower_components/bootstrap/js/alert.js"></script>
+        <script src="bower_components/bootstrap/js/dropdown.js"></script>
+        <script src="bower_components/bootstrap/js/tooltip.js"></script>
+        <script src="bower_components/bootstrap/js/modal.js"></script>
+        <script src="bower_components/bootstrap/js/transition.js"></script>
+        <script src="bower_components/bootstrap/js/button.js"></script>
+        <script src="bower_components/bootstrap/js/popover.js"></script>
+        <script src="bower_components/bootstrap/js/carousel.js"></script>
+        <script src="bower_components/bootstrap/js/scrollspy.js"></script>
+        <script src="bower_components/bootstrap/js/collapse.js"></script>
+        <script src="bower_components/bootstrap/js/tab.js"></script>
+        <!-- endbuild -->
+
+        <!-- build:js({app,.tmp}) scripts/main.js -->
+        <script src="scripts/main.js"></script>
+        <!-- endbuild -->
+    </body>
+</html>

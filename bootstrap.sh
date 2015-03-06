@@ -4,7 +4,7 @@
 apt-get update
 
 # Install node.
-NODE_VERSION=0.10.32
+NODE_VERSION=0.12.0
 apt-get -y install g++ gcc make
 wget http://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION.tar.gz -O /tmp/nodejs.tar.gz
 tar -xzvf /tmp/nodejs.tar.gz -C /home/vagrant

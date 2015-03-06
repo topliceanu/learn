@@ -1,0 +1,9 @@
+{
+  "name": "bootstrap",
+  "private": true,
+  "dependencies": {
+    "bootstrap": "~3.2.0",
+    "highcharts": "~4.1.1",
+    "seiyria-bootstrap-slider": "~4.5.1"
+  }
+}

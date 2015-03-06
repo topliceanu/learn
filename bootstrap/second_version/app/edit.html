@@ -1,0 +1,184 @@
+<!doctype html>
+<html class="no-js">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta charset="utf-8">
+    <title>RightFunnel</title>
+    <meta name="description" content="RightFunnel.com - hands-free marketing automation">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" href="/favicon.ico">
+    <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+    <!-- build:css(.) styles/vendor.css -->
+    <!-- bower:css -->
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css" />
+    <!-- endbower -->
+    <!-- endbuild -->
+    <!-- build:css(.tmp) styles/main.css -->
+    <link rel="stylesheet" href="styles/flatly.css">
+    <link rel="stylesheet" href="styles/main.css">
+    <!-- endbuild -->
+  </head>
+  <body>
+    <!--[if lt IE 10]>
+      <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+    <![endif]-->
+    <a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
+
+    <!--
+        Header Navigation.
+    -->
+    <nav class="navbar navbar-transparent navbar-default navbar-static-top">
+        <div class="container-fluid">
+
+            <!-- Navigation Button, displays only on smaller devices -->
+            <div class="navbar-header">
+                <a href="/index.html" class="navbar-brand">
+                    <img src="images/logo-white.png" alt="">
+                </a>
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+            </div>
+            <!-- End Navigation Button -->
+
+            <!-- list of navigation links -->
+            <div id="navbar" class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li class="active">
+                        <a href="index.html">
+                            <b>overview</b>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="campaigns.html">
+                            <b>campaigns</b>
+                        </a>
+                    </li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="settings.html">
+                            <b>shop.com</b>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" alt="log out">
+                            <span class="hidden-sm hidden-md hidden-lg">
+                                <b>log out</b>
+                            </span>
+                            <i class="glyphicon glyphicon-log-out"></i>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <!-- end list of navigation links -->
+
+        </div>
+    </nav>
+
+    <div class="container-fluid" id="content">
+        <div class="row">
+            <div class="col-xs-12 text-left">
+                <h3>Recover Abandoned Carts</h3>
+            </div>
+        </div>
+        <div class="row">
+
+            <!-- Detailed campaign reports -->
+            <div class="col-sm-12 col-md-6">
+                <ul class="nav nav-tabs" role="tablist">
+                    <li role="presentation" class="active">
+                        <a href="#overview" aria-controls="overview" role="tab" data-toggle="tab">Overview</a>
+                    </li>
+                    <li role="presentation">
+                        <a href="#custom" aria-controls="custom" role="tab" data-toggle="tab"><i class="glyphicon glyphicon-plus-sign"></i> Custom</a>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div role="tabpanel" class="tab-pane active" id="overview">
+                        <div class="detailed-events-report"></div>
+                    </div>
+                    <div role="tabpanel" class="tab-pane" id="custom">
+                        <h1>Add custom report form here!</h1>
+                    </div>
+                </div>
+            </div>
+            <!-- End detailed campaign reports -->
+
+            <!-- Campaign Configuration -->
+            <div class="col-sm-12 col-md-6">
+                <ul class="nav nav-tabs" role="tablist">
+                    <li role="presentation" class="active">
+                        <a href="#variation-1" aria-controls="variation-1" role="tab" data-toggle="tab">Variation #1</a>
+                    </li>
+                    <li role="presentation">
+                        <a href="#add-new-variation" aria-controls="add-new-variation" role="tab" data-toggle="tab"><i class="glyphicon glyphicon-plus-sign"></i> New Variation</a>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div role="tabpanel" class="tab-pane active" id="variation-1">
+                        <form class="form">
+                            <div class="form-group">
+                                <textarea class="form-control" name="integration-code" rows="15"></textarea>
+                            </div>
+                            <div class="form-group form-group-sm">
+                                <div class="col-xs-12 text-center">
+                                    <button type="submit" class="btn btn-default btn-sm">Preview</button>
+                                    <button type="submit" class="btn btn-default btn-sm">Save</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div role="tabpanel" class="tab-pane" id="add-new-variation">
+                        <h1>Add New Variation Here!</h1>
+                    </div>
+                </div>
+            </div>
+            <!-- End campaign configuration -->
+
+        </div>
+    </div>
+
+
+    <!-- build:js(.) scripts/vendor.js -->
+    <!-- bower:js -->
+    <script src="bower_components/jquery/dist/jquery.js"></script>
+    <script src="bower_components/highcharts-release/highcharts.js"></script>
+    <script src="bower_components/highcharts-release/highcharts-more.js"></script>
+    <script src="bower_components/highcharts-release/modules/exporting.js"></script>
+    <!-- endbower -->
+    <!-- endbuild -->
+
+    <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
+    <script>
+      (function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+      function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+      e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+      e.src='//www.google-analytics.com/analytics.js';
+      r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+      ga('create','UA-XXXXX-X');ga('send','pageview');
+    </script>
+
+        <!-- build:js(.) scripts/plugins.js -->
+        <script src="bower_components/bootstrap/js/affix.js"></script>
+        <script src="bower_components/bootstrap/js/alert.js"></script>
+        <script src="bower_components/bootstrap/js/dropdown.js"></script>
+        <script src="bower_components/bootstrap/js/tooltip.js"></script>
+        <script src="bower_components/bootstrap/js/modal.js"></script>
+        <script src="bower_components/bootstrap/js/transition.js"></script>
+        <script src="bower_components/bootstrap/js/button.js"></script>
+        <script src="bower_components/bootstrap/js/popover.js"></script>
+        <script src="bower_components/bootstrap/js/carousel.js"></script>
+        <script src="bower_components/bootstrap/js/scrollspy.js"></script>
+        <script src="bower_components/bootstrap/js/collapse.js"></script>
+        <script src="bower_components/bootstrap/js/tab.js"></script>
+        <!-- endbuild -->
+
+        <!-- build:js({app,.tmp}) scripts/main.js -->
+        <script src="scripts/main.js"></script>
+        <!-- endbuild -->
+    </body>
+</html>
