@@ -11,10 +11,11 @@
     <!-- build:css(.) styles/vendor.css -->
     <!-- bower:css -->
     <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="bower_components/bootswatch/flatly/bootstrap.css" />
+    <link rel="stylesheet" href="bower_components/codemirror/lib/codemirror.css" />
     <!-- endbower -->
     <!-- endbuild -->
     <!-- build:css(.tmp) styles/main.css -->
-    <link rel="stylesheet" href="styles/flatly.css">
     <link rel="stylesheet" href="styles/main.css">
     <!-- endbuild -->
   </head>
@@ -32,7 +33,7 @@
 
             <!-- Navigation Button, displays only on smaller devices -->
             <div class="navbar-header">
-                <a href="/index.html" class="navbar-brand">
+                <a href="index.html" class="navbar-brand">
                     <img src="images/logo-white.png" alt="">
                 </a>
                 <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
@@ -89,7 +90,7 @@
         -->
         <div class="row">
 
-            <div class="col-xs-12 col-sm-6 col-md-3">
+            <div class="col-xs-12 col-sm-6 col-md-3 first-column">
                 <div class="row text-center">
                     <div class="col-xs-12">
                         <h3>Landing</h3>
@@ -148,7 +149,7 @@
 
             </div>
 
-            <div class="col-xs-12 col-sm-6 col-md-3">
+            <div class="col-xs-12 col-sm-6 col-md-3 second-column">
                 <div class="row text-center">
                     <div class="col-xs-12">
                         <h3>Activity</h3>
@@ -207,7 +208,7 @@
 
             </div>
 
-            <div class="col-xs-12 col-sm-6 col-md-3">
+            <div class="col-xs-12 col-sm-6 col-md-3 third-column">
                 <div class="row text-center">
                     <div class="col-xs-12">
                         <h3>Conversions</h3>
@@ -264,7 +265,7 @@
                 <!-- end cartouche -->
             </div>
 
-            <div class="col-xs-12 col-sm-6 col-md-3">
+            <div class="col-xs-12 col-sm-6 col-md-3 forth-column">
                 <div class="row text-center">
                     <div class="col-xs-12">
                         <h3>Follow-ups</h3>
@@ -337,6 +338,7 @@
     <script src="bower_components/highcharts-release/highcharts.js"></script>
     <script src="bower_components/highcharts-release/highcharts-more.js"></script>
     <script src="bower_components/highcharts-release/modules/exporting.js"></script>
+    <script src="bower_components/codemirror/lib/codemirror.js"></script>
     <!-- endbower -->
     <!-- endbuild -->
 

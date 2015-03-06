@@ -449,4 +449,15 @@ $(function () {
         }]
     });
 
+
+    // CONFIGURE CODEMIRROR
+    CodeMirror.fromTextArea(document.getElementById('template-editor'), {
+        value: '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title></title></head><body></body></html>',
+        mode: 'text/html',
+        lineNumbers: true,
+        showCursorWheSelecting: true,
+
+    }).refresh();
+
+
 });

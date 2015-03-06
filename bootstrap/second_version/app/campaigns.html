@@ -11,10 +11,11 @@
     <!-- build:css(.) styles/vendor.css -->
     <!-- bower:css -->
     <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="bower_components/bootswatch/flatly/bootstrap.css" />
+    <link rel="stylesheet" href="bower_components/codemirror/lib/codemirror.css" />
     <!-- endbower -->
     <!-- endbuild -->
     <!-- build:css(.tmp) styles/main.css -->
-    <link rel="stylesheet" href="styles/flatly.css">
     <link rel="stylesheet" href="styles/main.css">
     <!-- endbuild -->
   </head>
@@ -32,7 +33,7 @@
 
             <!-- Navigation Button, displays only on smaller devices -->
             <div class="navbar-header">
-                <a href="/index.html" class="navbar-brand">
+                <a href="index.html" class="navbar-brand">
                     <img src="images/logo-white.png" alt="">
                 </a>
                 <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
@@ -86,12 +87,12 @@
                     <table class="table table-hover table-bordered">
                         <thead>
                             <tr>
-                                <th>Type</th>
+                                <th class="text-center">Campaign</th>
                                 <th>Name</th>
                                 <th>Evolution</th>
                                 <th>Conversion</th>
-                                <th>Status</th>
-                                <th>Controls</th>
+                                <th class="text-center">Status</th>
+                                <th class="text-center">Controls</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -112,7 +113,7 @@
                                     <span class="label label-success">running</span>
                                 </td>
                                 <td class="text-center">
-                                    <button type="button" class="btn btn-default btn-xs"><i class="glyphicon glyphicon-pause"></i>Pause</button>
+                                    <a href="#" role="button" class="btn btn-default btn-xs"><i class="glyphicon glyphicon-pause"></i>Pause</a>
                                     <a href="edit.html" role="button" class="btn btn-default btn-xs"><i class="glyphicon glyphicon-edit"></i>Edit</a>
                                 </td>
                             </tr>
@@ -133,7 +134,7 @@
                                     <span class="label label-success">running</span>
                                 </td>
                                 <td class="text-center">
-                                    <button type="button" class="btn btn-default btn-xs"><i class="glyphicon glyphicon-pause"></i>Pause</button>
+                                    <a href="#" role="button" class="btn btn-default btn-xs"><i class="glyphicon glyphicon-pause"></i>Pause</a>
                                     <a href="edit.html" role="button" class="btn btn-default btn-xs"><i class="glyphicon glyphicon-edit"></i>Edit</a>
                                 </td>
                             </tr>
@@ -154,7 +155,7 @@
                                     <span class="label label-warning">test mode</span>
                                 </td>
                                 <td class="text-center">
-                                    <button type="button" class="btn btn-default btn-xs"><i class="glyphicon glyphicon-pause"></i>Pause</button>
+                                    <a href="#" role="button" class="btn btn-default btn-xs"><i class="glyphicon glyphicon-pause"></i>Pause</a>
                                     <a href="edit.html" role="button" class="btn btn-default btn-xs"><i class="glyphicon glyphicon-edit"></i>Edit</a>
                                 </td>
                             </tr>
@@ -175,7 +176,7 @@
                                     <span class="label label-danger">stopped</span>
                                 </td>
                                 <td class="text-center">
-                                    <button type="button" class="btn btn-default btn-xs"><i class="glyphicon glyphicon-pause"></i>Pause</button>
+                                    <a href="#" role="button" class="btn btn-default btn-xs"><i class="glyphicon glyphicon-pause"></i>Pause</a>
                                     <a href="edit.html" role="button" class="btn btn-default btn-xs"><i class="glyphicon glyphicon-edit"></i>Edit</a>
                                 </td>
                             </tr>
@@ -185,10 +186,10 @@
 
                 <div class="row">
                     <div class="col-md-2 col-md-offset-10 text-right">
-                        <button class="btn btn-primary btn-sm">
+                        <a class="btn btn-primary btn-sm">
                             <i class="glyphicon glyphicon-plus"></i>
                             Create a New Campaign
-                        </button>
+                        </a>
                     </div>
                 </div>
 
@@ -203,6 +204,7 @@
     <script src="bower_components/highcharts-release/highcharts.js"></script>
     <script src="bower_components/highcharts-release/highcharts-more.js"></script>
     <script src="bower_components/highcharts-release/modules/exporting.js"></script>
+    <script src="bower_components/codemirror/lib/codemirror.js"></script>
     <!-- endbower -->
     <!-- endbuild -->
 

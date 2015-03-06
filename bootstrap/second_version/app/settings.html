@@ -11,10 +11,11 @@
     <!-- build:css(.) styles/vendor.css -->
     <!-- bower:css -->
     <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="bower_components/bootswatch/flatly/bootstrap.css" />
+    <link rel="stylesheet" href="bower_components/codemirror/lib/codemirror.css" />
     <!-- endbower -->
     <!-- endbuild -->
     <!-- build:css(.tmp) styles/main.css -->
-    <link rel="stylesheet" href="styles/flatly.css">
     <link rel="stylesheet" href="styles/main.css">
     <!-- endbuild -->
   </head>
@@ -32,7 +33,7 @@
 
             <!-- Navigation Button, displays only on smaller devices -->
             <div class="navbar-header">
-                <a href="/index.html" class="navbar-brand">
+                <a href="index.html" class="navbar-brand">
                     <img src="images/logo-white.png" alt="">
                 </a>
                 <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
@@ -78,11 +79,12 @@
         </div>
     </nav>
 
+
     <div class="container-fluid" id="content">
         <div class="row">
-
-            <!-- email and shop url. -->
             <div class="col-xs-12 col-sm-6 col-lg-4">
+
+                <!-- email and shop url. -->
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <b>General Details</b>
@@ -90,92 +92,28 @@
                     <div class="panel-body">
                         <form class="form-horizontal">
                             <div class="form-group form-group-sm">
-                                <label class="control-label col-xs-4" for="login-email">Email</label>
-                                <div class="col-xs-8">
+                                <label class="control-label col-xs-3" for="login-email">Email</label>
+                                <div class="col-xs-9">
                                     <input type="email" class="form-control" id="login-email" placeholder="Enter Email" value="contact@shop.com">
                                 </div>
                             </div>
                             <div class="form-group form-group-sm">
-                                <label class="control-label col-xs-4" for="shop-url">Shop Url</label>
-                                <div class="col-xs-8">
+                                <label class="control-label col-xs-3" for="shop-url">Shop Url</label>
+                                <div class="col-xs-9">
                                     <input type="url" class="form-control" id="shop-url" placeholder="Enter Shop Url" value="https://shop.com">
                                 </div>
                             </div>
                             <div class="form-group form-group-sm">
-                                <div class="col-xs-8 col-xs-offset-4">
+                                <div class="col-xs-9 col-xs-offset-3">
                                     <button type="submit" class="btn btn-default btn-sm">Update</button>
                                 </div>
                             </div>
                         </form>
                     </div>
                 </div>
-            </div>
-            <!-- end email and shop url -->
+                <!-- end email and shop url -->
 
-            <!-- password -->
-            <div class="col-xs-12 col-sm-6 col-lg-4">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <b>Password</b>
-                    </div>
-                    <div class="panel-body">
-                        <form class="form-horizontal">
-                            <div class="form-group form-group-sm">
-                                <label class="control-label col-xs-4" for="current-password">Current</label>
-                                <div class="col-xs-8">
-                                    <input type="password" class="form-control" id="current-password" placeholder="your current password">
-                                </div>
-                            </div>
-                            <div class="form-group form-group-sm">
-                                <label class="control-label col-xs-4" for="new-password">New</label>
-                                <div class="col-xs-8">
-                                    <input type="password" class="form-control" id="new-password" placeholder="your new password">
-                                </div>
-                            </div>
-                            <div class="form-group form-group-sm">
-                                <label class="control-label col-xs-4" for="new-password-repeat">Repeat</label>
-                                <div class="col-xs-8">
-                                    <input type="password" class="form-control" id="new-password-repeat" placeholder="repeat the new password">
-                                </div>
-                            </div>
-                            <div class="form-group form-group-sm">
-                                <div class="col-xs-8 col-xs-offset-4">
-                                    <button type="submit" class="btn btn-default btn-sm">Update Password</button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-            <!-- end password -->
-
-            <!-- integration code -->
-            <div class="col-xs-12 col-sm-6 col-lg-4">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <b>Integration code</b>
-                    </div>
-                    <div class="panel-body">
-                        <form class="form">
-                            <div class="form-group">
-                                <textarea class="form-control" name="integration-code" rows="5"></textarea>
-                                <span class="help-block">
-                                    Paste this code into your shop's html header!
-                                </span>
-                            </div>
-                            <div class="form-group form-group-sm">
-                                <div class="col-xs-12 text-center">
-                                    <button type="submit" class="btn btn-default btn-sm">Copy to Clipboard</button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-            <!-- end integration code -->
-
-            <!-- api keys -->
-            <div class="col-xs-12 col-sm-6 col-lg-4">
+                <!-- api keys -->
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <b>API Keys</b>
@@ -212,8 +150,80 @@
                         </form>
                     </div>
                 </div>
+                <!-- end integration code -->
+
             </div>
-            <!-- end integration code -->
+            <div class="col-xs-12 col-sm-6 col-lg-4">
+
+                <!-- password -->
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <b>Password</b>
+                    </div>
+                    <div class="panel-body">
+                        <form class="form-horizontal">
+                            <div class="form-group form-group-sm">
+                                <label class="control-label col-xs-3" for="current-password">Current</label>
+                                <div class="col-xs-9">
+                                    <input type="password" class="form-control" id="current-password" placeholder="your current password">
+                                </div>
+                            </div>
+                            <div class="form-group form-group-sm">
+                                <label class="control-label col-xs-3" for="new-password">New</label>
+                                <div class="col-xs-9">
+                                    <input type="password" class="form-control" id="new-password" placeholder="your new password">
+                                </div>
+                            </div>
+                            <div class="form-group form-group-sm">
+                                <label class="control-label col-xs-3" for="new-password-repeat">Repeat</label>
+                                <div class="col-xs-9">
+                                    <input type="password" class="form-control" id="new-password-repeat" placeholder="repeat the new password">
+                                </div>
+                            </div>
+                            <div class="form-group form-group-sm">
+                                <div class="col-xs-9 col-xs-offset-3">
+                                    <button type="submit" class="btn btn-default btn-sm">Update Password</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <!-- end password -->
+
+            </div>
+            <div class="col-xs-12 col-sm-6 col-lg-4">
+
+                <!-- integration code -->
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <b>Integration code</b>
+                    </div>
+                    <div class="panel-body">
+                        <form class="form">
+                            <div class="form-group">
+                                <textarea class="form-control" name="integration-code" rows="5"><script>(function(){var l = document.createElement("script"); l.type = "text/javascript"; l.async = true;l.src="http://cdn.rightfunnel.com/loaders/shop.com.js";var s = document.getElementsByTagName("script")[0];s.parentNode.insertBefore(l, s);window._vteq = window._vteq || [];})();</script></textarea>
+                                <span class="help-block">
+                                    Paste this code into your shop's html header on all pages!
+                                </span>
+                            </div>
+                            <div class="form-group form-group-sm">
+                                <div class="col-xs-12 text-center">
+                                    <button class="btn btn-default btn-sm">
+                                        <i class="glyphicon glyphicon-copy"></i>
+                                        Copy to Clipboard
+                                    </button>
+                                    <button class="btn btn-default btn-sm">
+                                        Test Integration
+                                        <i class="glyphicon glyphicon-ok"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <!-- end integration code -->
+
+            </div>
 
         </div>
     </div>
@@ -225,6 +235,7 @@
     <script src="bower_components/highcharts-release/highcharts.js"></script>
     <script src="bower_components/highcharts-release/highcharts-more.js"></script>
     <script src="bower_components/highcharts-release/modules/exporting.js"></script>
+    <script src="bower_components/codemirror/lib/codemirror.js"></script>
     <!-- endbower -->
     <!-- endbuild -->
 

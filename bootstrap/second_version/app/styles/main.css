@@ -82,7 +82,30 @@
   }
 }
 
+/* Color the selected text */
 ::selection {
     color: white;
     background: #18bc9c;
+}
+
+
+/* gradient */
+.first-column .panel .panel-heading{
+    background-color: #ecf0f1;
+    border-color: #ecf0f1;
+}
+
+.second-column .panel .panel-heading{
+    background-color: #cddde0;
+    border-color: #cddde0;
+}
+
+.third-column .panel .panel-heading{
+    background-color: #adc7cc;
+    border-color: #adc7cc;
+}
+
+.forth-column .panel .panel-heading{
+    background-color: #8eb2b8;
+    border-color: #8eb2b8;
 }
