@@ -6,7 +6,8 @@ from collections import deque
 def bfs(graph, start_vertex):
     """ Parses all the graph using the breadth first search.
 
-    Done in O(|V|+|E|) where n - number of vertices, m - number of edges
+    Done in O(|V|+|E|) where |V| - cardinality of vertices set.
+                             |E| - cardinality of edges set.
     Not so usefull for directed graphs.
 
     Args:

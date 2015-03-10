@@ -88,21 +88,31 @@ class Graph:
         return output
 
     def adjacent(self, tail, head):
-        """ Returns whether or not there is an edge betwee tail and head. """
+        """ Returns whether or not there is an edge between tail and head. """
         if tail in self.table:
             if head in self.table[tail]:
                 return True
         return False
 
     def neighbours(self, vertex):
-        """ Returns a list of all vertices reachable from vertex. """
+        """ Returns a list of all vertices reachable from vertex.
+
+        Args:
+            vertex: str, name of vertex whos neighbours we want.
+
+        Returns:
+            A list of neighbouring vertices.
+        """
         if vertex not in self.table:
             return []
         else:
             return self.table[vertex].keys()
 
     def incident(self, vertex):
-        """ Returns a list of all vertices from which you can reach vertex. """
+        """ Returns a list of all vertices from which you can reach vertex.
+
+            This is relevant for directed graphs!
+        """
         out = set()
         for tail, edges in self.table.iteritems():
             if vertex in edges:
@@ -155,7 +165,7 @@ class Graph:
     def remove_edge(self, edge):
         """ Removes an edge from the graph.
 
-        If the graph is undirected the reverse edge will be removed as well.
+        If the graph is not directed the reverse edge will be removed as well.
 
         Args:
             edge: tuple for format (tail, head, value) representing a graph edge
