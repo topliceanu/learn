@@ -28,11 +28,11 @@ def pick_middle(arr):
         arr: list of elements.
 
     Returns:
-        The value of the elment in the middle of the list.
+        The index of the elment in the middle of the list.
     """
-    arr = merge_sort(arr)
-    middle = int(round(len(arr)/2))
-    return arr[middle]
+    tmp = merge_sort(arr)
+    middle = int(round(len(tmp)/2))
+    return arr.index(tmp[middle])
 
 def deterministic_pick_pivot(arr):
     """ Pick the best pivot possible in a deterministic manner.
@@ -43,7 +43,7 @@ def deterministic_pick_pivot(arr):
         arr: list of elements
 
     Returns:
-        A value representing the picked pivot.
+        The index of the picked pivot in the given array.
     """
     if len(arr) < 5:
         return pick_middle(arr)
@@ -59,13 +59,16 @@ def deterministic_selection(arr, n, i):
     The ideea is to always compute the best pivot by using the median of medians
     recursive call which runs in logarithmic time.
 
+    Note: StackOverflow explanation of why this is a good choice:
+    http://stackoverflow.com/questions/12545795/explanation-of-the-median-of-medians-algorithm
+
     Params:
         arr: list of elements
         n: size of the arr
         i: which order statistic to pick from the array.
 
     Returns:
-        The value on the ith position in the sorter arr.
+        The value on the ith position in the sorted arr.
     """
     pos = deterministic_pick_pivot(arr)
     arr[pos], arr[0] = arr[0], arr[pos]
@@ -75,6 +78,6 @@ def deterministic_selection(arr, n, i):
     if pos == i:
         return arr[pos]
     elif pos > i:
-        return randomized_selection(arr[0:pos], (pos - 1), i)
+        return deterministic_selection(arr[0:pos], (pos - 1), i)
     else:
-        return randomized_selection(arr[pos+1:], (n - pos - 1), (i - pos - 1))
+        return deterministic_selection(arr[pos+1:], (n - pos - 1), (i - pos - 1))

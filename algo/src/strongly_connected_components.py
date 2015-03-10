@@ -52,8 +52,8 @@ def dfs_compute_ordering(g):
                         # Format {vertex: finishing_time}
 
     # 1. shuffle node ordering for running dfs.
-    tmp = xrange(len(vertices))
-    ordering = xrange(len(vertices))
+    tmp = range(len(vertices))
+    ordering = range(len(vertices))
     random.shuffle(ordering)
     for index, order in enumerate(ordering):
         tmp[order] = vertices[index]
@@ -77,7 +77,7 @@ def dfs_compute_ordering(g):
             first_dfs(g, vertex)
 
     # 4. Process the results to get a list of vertex orderings.
-    out = xrange(len(vertices))
+    out = range(len(vertices))
     for vertex, f in finishing_time.iteritems():
         out[f-1] = vertex
 

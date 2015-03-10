@@ -20,13 +20,18 @@ class TestDeterministicSelection(unittest.TestCase):
     def test_pick_middle(self):
         a = [1,8,3,2,9,5,4,7,6,0,11,12,13]
         actual = pick_middle(a)
-        expected = 6
+        expected = 8
         self.assertEqual(actual, expected, 'should pick the correct middle')
 
     def test_deterministic_pick_pivot(self):
         a = [11,8,3,12,9,5,4,7,6,0,1,2,13]
         actual = deterministic_pick_pivot(a)
-        expected = 5
+        expected = 2
+        self.assertEqual(actual, expected, 'should pick the best pivot')
+
+        a = [10, 8, 2, 4]
+        actual = deterministic_pick_pivot(a)
+        expected = 1
         self.assertEqual(actual, expected, 'should pick the best pivot')
 
     def test_deterministic_selection(self):
