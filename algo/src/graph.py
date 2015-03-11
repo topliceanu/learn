@@ -213,6 +213,12 @@ class Graph:
                     self.table[tail][new] = self.table[tail][old]
                 del self.table[tail][old]
 
+    def clone(self):
+        """ Clones the current graph, makes sure the mutable properties of the
+        input graph are not modified by operations in the second graph.
+        """
+        return Graph.build(self.get_vertices(), self.get_edges(), self.directed)
+
     @staticmethod
     def build(vertices=[], edges=[], directed = False):
         """ Builds a graph from the given vertices and edges.

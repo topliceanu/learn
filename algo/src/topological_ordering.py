@@ -3,6 +3,10 @@
 import random
 
 
+# Topological ordering is used in sequencing tasks while respecting precendence constraints.
+# Note! The input graphs must NOT have cycles and must be connected.
+
+
 VISITED = 0x100
 
 def dfs_loop(g):

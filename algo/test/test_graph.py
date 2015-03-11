@@ -242,3 +242,17 @@ class TestGraph(unittest.TestCase):
         actual = g.egress(1)
         expected = [(1, 2, 10), (1, 3, 11)]
         self.assertEqual(actual, expected, 'should return ingress edges')
+
+    def test_clone(self):
+        g1 = Graph(False)
+        g1.add_edge((1,2,10))
+        g1.add_edge((2,3,20))
+        g1.add_edge((3,1,30))
+
+        g2 = g1.clone()
+        g2.set_edge_value((1,2), 100)
+        self.assertEqual(g1.get_edge_value((1,2)), 10,
+                'should not have modified the value of the edge in g1')
+
+        g2.add_vertex((3,4,40))
+        self.assertFalse(g1.adjacent(3,4), 'g1 should not have vertex 4')

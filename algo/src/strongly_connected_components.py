@@ -9,7 +9,7 @@ NOT_VISITED = 0x101
 def scc(g):
     """ Computes strongly connected components of a acyclic directed graph.
 
-    Uses the Kosaraju two-pass algorithm, with the following steps:
+    Uses the Rao Kosaraju two-pass algorithm, with the following steps:
     1. reverse all the edges in a graph.
     2. run DFS on the reverse graph to compute finishing times for each
        vertex ie. an ordering of the vertices.
@@ -29,7 +29,6 @@ def scc(g):
     leader = {}
 
     # Reset visited value of each vertex.
-    #import pdb; pdb.set_trace()
     for vertex in g.get_vertices():
         g.set_vertex_value(vertex, NOT_VISITED)
 

@@ -19,4 +19,3 @@ class DepthFirstSearch(unittest.TestCase):
                                ('b', 'c'), ('d', 'c'), ('d', 'e'), ('c', 'e')],
                         directed=False)
         path = dfs(g, 's')
-        print g.values

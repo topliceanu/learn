@@ -7,7 +7,7 @@ def bfs_shortest_path_distance(graph, start):
     given a graph.
 
     Works the same as classic BFS except that it keep track
-    of how many hops there are from the start point to
+    of how many hops there are from the start point to each vertex.
 
     Params:
         graph: a datastructure holding all vertices and edges.
@@ -19,7 +19,7 @@ def bfs_shortest_path_distance(graph, start):
     explored_vertices = []
     explored_vertices.append(start)
     queue = deque()
-    queue.appendleft(start)
+    queue.append(start)
     graph.set_vertex_value(start, 0)
 
     while len(queue) != 0:
@@ -28,7 +28,7 @@ def bfs_shortest_path_distance(graph, start):
         for neighbour in graph.neighbours(vertex):
             if neighbour not in explored_vertices:
                 explored_vertices.append(neighbour)
-                queue.appendleft(neighbour)
+                queue.append(neighbour)
                 graph.set_vertex_value(neighbour, vertex_level + 1)
 
     return graph
