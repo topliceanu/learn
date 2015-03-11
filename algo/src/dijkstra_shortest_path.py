@@ -87,14 +87,14 @@ def push_frontier(graph, heap, frontier):
 
 def shortest_path_naive(graph, start_vertex):
     """ Computes single source shortest paths to every other vertex
-    in a directed graph.
+    in a directed graph starting from the start_vertex.
 
     Assumptions:
     - there is a directed path from start_vertex to any other
-    vertex in the graph.
-    - edge weights are non-negative.
+    vertex in the graph. If there isn't, a value of inf is returned.
+    - edge weights are non-negative!
 
-    It's the naive implementation because it's not very fast O(n^2)
+    Note: It's the naive implementation because it's not very fast, ie. O(n^2).
 
     Args:
         graph: data structure exposing graph operations.

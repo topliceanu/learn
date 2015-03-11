@@ -17,6 +17,9 @@ def scc(g):
 
     Args:
         g: instance of src.graph.Graph, a data structure encapsulating graphs.
+
+    Returns:
+        List of lists of vertices, one list for each SCC.
     """
     global t
     global finishing_time
@@ -42,7 +45,14 @@ def scc(g):
     return connected_components
 
 def dfs_compute_ordering(g):
-    """ First pass of Rao Kosaraju's algorithm. """
+    """ First pass of Rao Kosaraju's algorithm.
+
+    Args:
+        g: instance of src.graph.Graph, a data structure encapsulating graphs.
+
+    Returns:
+        list of vertices names sorted in the order of their finishing times.
+    """
     vertices = g.get_vertices()
     global t
     global finishing_time
@@ -76,14 +86,22 @@ def dfs_compute_ordering(g):
             first_dfs(g, vertex)
 
     # 4. Process the results to get a list of vertex orderings.
-    out = range(len(vertices))
+    order_by_finishing_time = range(len(vertices))
     for vertex, f in finishing_time.iteritems():
-        out[f-1] = vertex
+        order_by_finishing_time[f-1] = vertex
 
-    return out
+    return order_by_finishing_time
 
 def dfs_discover_connected_components(g, vertices_ordering):
-    """ The second pass through the graph in Kosaraju's algorithm. """
+    """ The second pass through the graph in Kosaraju's algorithm.
+
+    Args:
+        g: object, instance of src.graph.Graph
+        vertices_ordering: list, of vertices sorted by finishing times.
+
+    Returns:
+        List of lists of vertices names, one list of vertices for each SCC.
+    """
     global s
     global leader
     s = None # Stores the leader of the current node: the most recent vertex

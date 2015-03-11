@@ -45,3 +45,21 @@ class TestTopologicalSort(unittest.TestCase):
         self.assertIn(ordering['b'], [2,3])
         self.assertIn(ordering['c'], [2,3])
         self.assertEqual(ordering['d'], 4)
+
+    def test_topological_ordering_on_a_cyclic_graph(self):
+        """ Given the following graph:
+                /-->(v)---\
+              /      |     \v
+            (s)------+----->(w)
+             ^\      v      /
+               \----(t)<---/
+        """
+        g = Graph.build(edges=[('s', 'v'), ('v', 'w'),
+                               ('w', 't'), ('t', 's'),
+                               ('s', 'w'), ('v', 't')],
+                        directed=True)
+        ordering = dfs_loop(g)
+        self.assertEqual(ordering['s'], 1)
+        self.assertEqual(ordering['t'], 4)
+        self.assertEqual(ordering['w'], 3)
+        self.assertEqual(ordering['v'], 2)
