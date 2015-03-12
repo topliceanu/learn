@@ -19,7 +19,6 @@ class TestBfsShortestPath(unittest.TestCase):
         g = Graph.build(edges=edges, directed=False)
 
         g = bfs_shortest_path_distance(g, 's')
-        print g.values
 
         self.assertEqual(g.get_vertex_value('s'), 0, 'correct distance')
         self.assertEqual(g.get_vertex_value('a'), 1, 'correct distance')

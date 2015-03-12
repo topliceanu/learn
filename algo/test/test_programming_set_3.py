@@ -23,19 +23,19 @@ find.) Write your numeric answer in the space provided. So e.g., if your answer
 is 5, just type 5 in the space provided.
 """
 
-import os
-
-from src.graph import Graph
-from src.minimum_cut import minimum_cut
-
-
-g = Graph(directed=False)
-
-with open('{base}/test/KargerMinCut.txt'.format(base=os.getcwd()), 'r') as f:
-    for line in f:
-        vertices = line.split()
-        for i in range(1, len(vertices)):
-            g.add_edge((vertices[0], vertices[i]))
-
-cuts = minimum_cut(g, 1000)
-print '>>>>>>>>>', cuts, len(cuts)
+#import os
+#
+#from src.graph import Graph
+#from src.minimum_cut import minimum_cut
+#
+#
+#g = Graph(directed=False)
+#
+#with open('{base}/test/KargerMinCut.txt'.format(base=os.getcwd()), 'r') as f:
+#    for line in f:
+#        vertices = line.split()
+#        for i in range(1, len(vertices)):
+#            g.add_edge((vertices[0], vertices[i]))
+#
+#cuts = minimum_cut(g, 1000)
+#print '>>>>>>>>>', cuts, len(cuts)

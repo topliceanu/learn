@@ -29,19 +29,19 @@ we strongly suggest that you exchange tips for doing this on the discussion
 forums.
 """
 
-import os
-
-from src.graph import Graph
-from src.strongly_connected_components import scc
-
-
-g = Graph(directed=True)
-
-with open('{base}/test/SCC.txt'.format(base=os.getcwd())) as f:
-    for line in f:
-        g.add_edge(tuple(line.split()))
-
-
-sccs = scc(g)
-sorted_sccs = sorted(sccs, key=lambda s: -len(s))
-print '>>>>', sorted_sccs[:5]
+#import os
+#
+#from src.graph import Graph
+#from src.strongly_connected_components import scc
+#
+#
+#g = Graph(directed=True)
+#
+#with open('{base}/test/SCC.txt'.format(base=os.getcwd())) as f:
+#    for line in f:
+#        g.add_edge(tuple(line.split()))
+#
+#
+#sccs = scc(g)
+#sorted_sccs = sorted(sccs, key=lambda s: -len(s))
+#print '>>>>', sorted_sccs[:5]

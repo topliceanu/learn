@@ -26,22 +26,22 @@ on some small test files or your own devising. Then post your best
 test cases to the discussion forums to help your fellow students!]
 """
 
-import os
-import unittest
-
-from src.counting_inversions import sort_and_count_inversions
-
-
-class ProblemSet1Test(unittest.TestCase):
-
-    def test_count_inversions_for_large_dataset(self):
-        numbers = []
-        with open('{base}/test/IntegerArray.txt'.format(base=os.getcwd()), 'r') as f:
-            for line in f:
-                numbers.append(int(line))
-
-        sorted_arr, num_inversions = sort_and_count_inversions(numbers)
-        self.assertEqual(num_inversions, 2407905288, 'should return the correct value')
+#import os
+#import unittest
+#
+#from src.counting_inversions import sort_and_count_inversions
+#
+#
+#class ProblemSet1Test(unittest.TestCase):
+#
+#    def test_count_inversions_for_large_dataset(self):
+#        numbers = []
+#        with open('{base}/test/IntegerArray.txt'.format(base=os.getcwd()), 'r') as f:
+#            for line in f:
+#                numbers.append(int(line))
+#
+#        sorted_arr, num_inversions = sort_and_count_inversions(numbers)
+#        self.assertEqual(num_inversions, 2407905288, 'should return the correct value')
 
 
 ## Brute force approach.

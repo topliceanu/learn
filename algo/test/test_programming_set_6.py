@@ -1,11 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import os
-
-from src.hash_table import two_sum_problem_sort, two_sum_problem_hash
-from src.heap import Median
-
-
 """
 ## Question 1.
 
@@ -30,6 +24,12 @@ own hash table for it. For example, you could compare performance under the
 chaining and open addressing approaches to resolving collisions.
 """
 
+#import os
+#
+#from src.hash_table import two_sum_problem_sort, two_sum_problem_hash
+#from src.heap import Median
+#
+#
 #numbers = []
 #with open('{base}/test/Sum.txt'.format(base=os.getcwd())) as f:
 #    for line in f:
@@ -66,13 +66,13 @@ OPTIONAL EXERCISE: Compare the performance achieved by heap-based and
 search-tree-based implementations of the algorithm.
 """
 
-sum_medians = 0
-median_maintenance = Median()
-
-with open('{base}/test/Median.txt'.format(base=os.getcwd())) as f:
-    for line in f:
-        new_median = median_maintenance.add(int(line))
-        #print '>>>', len(median_maintenance.h_low), map(abs, reversed(median_maintenance.h_low[:2])), new_median, median_maintenance.h_high[:2], len(median_maintenance.h_high)
-        sum_medians += new_median
-
-print '>>>>>>>>>', sum_medians % 10000 # should be 1213
+#sum_medians = 0
+#median_maintenance = Median()
+#
+#with open('{base}/test/Median.txt'.format(base=os.getcwd())) as f:
+#    for line in f:
+#        new_median = median_maintenance.add(int(line))
+#        #print '>>>', len(median_maintenance.h_low), map(abs, reversed(median_maintenance.h_low[:2])), new_median, median_maintenance.h_high[:2], len(median_maintenance.h_high)
+#        sum_medians += new_median
+#
+#print '>>>>>>>>>', sum_medians % 10000 # should be 1213
