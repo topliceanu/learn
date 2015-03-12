@@ -37,6 +37,10 @@ def shortest_path_heap(graph, start_vertex):
     """ Computes shortest path using a dijkstra algorithm and speeding it up
     using a heap data structure.
 
+    Note! The reason dijkstra doesn't work with negative-length edges is
+    because the algorithm may take the negative edges in considerations
+    multiple times (ie. a cycle) in an effort to decrease the dijkstra score.
+
     Args:
         graph: data structure exposing graph operations.
         start_vertex: name of the vertex to start exploring
@@ -93,6 +97,10 @@ def shortest_path_naive(graph, start_vertex):
     - there is a directed path from start_vertex to any other
     vertex in the graph. If there isn't, a value of inf is returned.
     - edge weights are non-negative!
+
+    Note! The reason dijkstra doesn't work with negative-length edges is
+    because the algorithm may take the negative edges in considerations
+    multiple times (ie. a cycle) in an effort to decrease the dijkstra score.
 
     Note: It's the naive implementation because it's not very fast, ie. O(n^2).
 

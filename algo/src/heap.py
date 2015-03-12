@@ -183,7 +183,7 @@ class Heap(object):
         swaps to restore the heap property.
 
         Running time: O(log2 n) the max number of swaps == depth of the tree.
-        AKA. percolate up.
+        A.K.A. percolate up.
 
         Args:
             index: int, the key in the heap to bubble up.
@@ -200,13 +200,13 @@ class Heap(object):
                 index = parent
 
     def bubble_down(self, parent):
-        """ Bubbles down the element at position index (if it has any children).
+        """ Bubbles down the element at position <parent> (if it has any children).
 
         This is done by continuously swapping the parent node with the minimum
         of the two children nodes.
 
         Running time: O(log2 n) the max number of swaps == depth of the tree.
-        AKA. percolate down
+        A.K.A. percolate down
 
         Args:
             parent: int, the key in the heap to bubble down.
