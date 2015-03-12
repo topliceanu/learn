@@ -19,6 +19,9 @@ class Median(object):
     """ Class maintains a list of elements. Whenever a new element is added
     to the list the median value (n/2 order statistic) is recomputed.
 
+    Note! In python's heapq implementation, max heaps are not supported, so
+    we emulate them by using a min heap and inserting negated values in it!
+
     Arguments:
         h_low: list, a heap ordered list contaning the smallest n/2 numbers
         h_high: list, a heap ordered list containing the largest n/2 numbers
@@ -38,7 +41,7 @@ class Median(object):
             An int representing the new median after inserting new_value.
         """
         if len(self.h_low) > 0:
-            max_low = self.h_low[-1]
+            max_low = -self.h_low[0]
         else:
             max_low = float('inf')
 
@@ -48,22 +51,25 @@ class Median(object):
             min_high = float('-inf')
 
         if new_value < max_low:
-            heapq.heappush(self.h_low, new_value)
+            heapq.heappush(self.h_low, -new_value)
         else:
             heapq.heappush(self.h_high, new_value)
 
+        # Reballance the two heaps to keep running time low in such a way that
+        # when the number of imput elements is odd, h_low has exactly one
+        # element more than h_high.
         if len(self.h_low) > len(self.h_high) + 1:
-            extra = heapq.heappop(self.h_low)
+            extra = -heapq.heappop(self.h_low)
             heapq.heappush(self.h_high, extra)
 
-        if len(self.h_high) > len(self.h_low) + 1:
+        if len(self.h_high) > len(self.h_low):
             extra = heapq.heappop(self.h_high)
-            heapq.heappush(self.h_low, extra)
+            heapq.heappush(self.h_low, -extra)
 
-        if (len(self.h_low) > len(self.h_high)):
-            return self.h_low[-1]
-        else:
-            return self.h_high[0]
+        # When the number of elements in the structure is odd, pick the min of
+        # h_low, when it's even, also pick the min of h_low by convention.
+        median = -self.h_low[0]
+        return median
 
 class Heap(object):
     """ Implementation of a min-heap data structure.
@@ -152,7 +158,7 @@ class Heap(object):
         Returns:
             The element which was removed from the heap at index.
         """
-        if index > len(self.data):
+        if index >= len(self.data):
             return
         if index == len(self.data) - 1:
             return self.data.pop(-1)
@@ -185,9 +191,9 @@ class Heap(object):
         while True:
             parent = Heap.parent(index)
             if parent is None:
-                break
+                break # We are at the root.
             if self.compare(self.data[parent], self.data[index]) < 0:
-                break
+                break # The heap invariant is preserved.
             else:
                 (self.data[parent], self.data[index]) = \
                     (self.data[index], self.data[parent])
@@ -196,8 +202,8 @@ class Heap(object):
     def bubble_down(self, parent):
         """ Bubbles down the element at position index (if it has any children).
 
-        This is done by continuously swapping with the minimum of the two
-        children keys.
+        This is done by continuously swapping the parent node with the minimum
+        of the two children nodes.
 
         Running time: O(log2 n) the max number of swaps == depth of the tree.
         AKA. percolate down
@@ -210,7 +216,7 @@ class Heap(object):
             right = parent * 2 + 2
             min_index = self.get_min(parent, left, right)
             if min_index == parent:
-                break
+                break # The heap invariant is preserved.
 
             (self.data[parent], self.data[min_index]) = \
                 (self.data[min_index], self.data[parent])
@@ -235,7 +241,7 @@ class Heap(object):
         for index in [left, right]:
             if index < len(self.data) and \
                self.compare(self.data[min_index], self.data[index]) > 0:
-                min_index = index
+                    min_index = index
         return min_index
 
     def compare(self, left, right):
@@ -263,6 +269,11 @@ class Heap(object):
         Running time: O(n)
 
         NOTE! This is a class method to allow for inheritance in subclasses.
+        See: http://stackoverflow.com/a/9755805 for an explanation on why the
+        running time is O(n) and not O(nlogn). Basically, it's much better to
+        run bubble-down starting from the root, the to do bubble-up starting
+        from the leaves.
+
 
         Args:
             data: list, array of elements to organize into a heap.
@@ -307,6 +318,6 @@ class Heap(object):
             parent = Heap.parent(i)
             if parent is None:
                 continue
-            elif data[i] < data[Heap.parent(i)]:
+            elif data[i] < data[parent]:
                 return False
         return True

@@ -59,13 +59,18 @@ def ignore_duplicates(data):
     """
     pass
 
-def two_sum_problem_sort(data, total):
+def two_sum_problem_sort(data, total, distinct=False):
     """ Returns the pairs of number in input list which sum to the given total.
 
     Complexity O(nlogn)
 
     Args:
+        data: list, all the numbers available to compute the sums.
         total: int, the sum to look for.
+        distinct: boolean, whether to accept distinct values when computing sums.
+
+    Returns:
+        list, of pairs of numbers from data which sum up to total.
     """
     out = []
     data.sort()
@@ -73,17 +78,22 @@ def two_sum_problem_sort(data, total):
         if i > total:
             continue
         other = total - i
-        if other in data:
+        if (other in data) and ((distinct == True and i != other) or (distinct == False)):
             out.append((i, other))
     return out
 
-def two_sum_problem_hash(data, total):
+def two_sum_problem_hash(data, total, distinct=False):
     """ Returns the pairs of number in input list which sum to the given total.
 
     Complexity O(n)
 
     Args:
+        data: list, all the numbers available to compute the sums.
         total: int, the sum to look for.
+        distinct: boolean, whether to accept distinct values when computing sums.
+
+    Returns:
+        list, of pairs of numbers from data which sum up to total.
     """
     h = {}
     for i in data:
@@ -92,6 +102,6 @@ def two_sum_problem_hash(data, total):
     out = []
     for i in data:
         other = total - i
-        if other in h:
+        if (other in h) and ((distinct == True and i != other) or (distinct == False)):
             out.append((i, other))
     return out

@@ -39,9 +39,25 @@ class TestHashTable(unittest.TestCase):
         actual = two_sum_problem_sort(a, total)
         self.assertEqual(actual, expected, 'should return all matching pairs')
 
+    def test_two_sum_problem_sort_with_distinct_results(self):
+        a = [0,1,2,3,3,4,5,6]
+        total = 6
+        expected = [(0,6), (1,5), (2,4), (4,2), (5,1), (6,0)]
+        actual = two_sum_problem_sort(a, total, distinct=True)
+        self.assertEqual(actual, expected,
+            'should return all matching pairs with distinct results')
+
     def test_two_sum_problem_hash(self):
         a = [4,3,2,6,5,8,9,1,0,7]
         total = 7
         expected = [(4,3), (3,4), (2,5), (6,1), (5,2), (1,6), (0,7), (7,0)]
         actual = two_sum_problem_hash(a, total)
         self.assertEqual(actual, expected, 'should return all matching pairs')
+
+    def test_two_sum_problem_hash_with_distinct_results(self):
+        a = [0,1,2,3,3,4,5,6]
+        total = 6
+        expected = [(0,6), (1,5), (2,4), (4,2), (5,1), (6,0)]
+        actual = two_sum_problem_hash(a, total, distinct=True)
+        self.assertEqual(actual, expected,
+            'should return all matching pairs with distinct results')

@@ -18,13 +18,25 @@ class TestHeap(unittest.TestCase):
         self.assertEqual(median, 1, 'fist elem')
 
         median = m.add(5)
-        self.assertEqual(median, 5, 'fist elem')
+        self.assertEqual(median, 1, 'fist elem')
 
         median = m.add(3)
         self.assertEqual(median, 3, 'fist elem')
 
         median = m.add(100)
-        self.assertEqual(median, 5, 'fist elem')
+        self.assertEqual(median, 3, 'fist elem')
+
+    def test_median_maintenance_for_longer_lists(self):
+        m = Median()
+        numbers = [4,3,1,5,1,3,34,6,2,7,8,2,45,7,2,4,7,23,
+                   4,73,8,323,45,7,3,2,3,6,3,5,3,62,3,46,9]
+        for number in numbers:
+            median = m.add(number)
+
+        numbers.sort()
+        expected = numbers[len(numbers)/2]
+        self.assertEqual(median, expected,
+            'should return the element corresponding to the n/2 order statistic')
 
     # HEAP IMPLEMENTATION
 

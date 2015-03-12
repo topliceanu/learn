@@ -51,8 +51,9 @@ with open('{base}/test/DijkstraData.txt'.format(base=os.getcwd())) as f:
             [head, value] = parts[i].split(',')
             g.add_edge((tail, head, int(value)))
 
-path_lengths = shortest_path_heap(g, '1')
-#path_lengths = shortest_path_naive(g, '1')
+# NOTE! the heap implementation is not correct! and it runs an order of magnitude slower!
+#path_lengths = shortest_path_heap(g, '1')
+path_lengths = shortest_path_naive(g, '1')
 
 print '>>> 7      ', path_lengths['7']
 print '>>> 37     ', path_lengths['37']
