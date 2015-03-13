@@ -218,6 +218,53 @@ class TestBST(unittest.TestCase):
         self.assertEqual(b.search(5)[SIZE], 3, 'rotated node has new size')
         self.assertEqual(b.search(7)[SIZE], 5, 'rotated node has new size')
 
+    def test_rotate_in_isolation(self):
+        """ Test makes sure the rotation operation works in isolation:
+        No parent P, no subtrees A,B or C. Here's the tree format:
+
+        Schema (for right rotations):
+
+               (None)                     (None)
+                 |                          |
+                (2)                        (3)
+               /   \           =>         /   \
+           (None)  (3)                 (2)  (None)
+                  /   \               /   \
+              (None) (None)       (None) (None)
+
+        Schema (for left rotations):
+
+               (None)                     (None)
+                 |                          |
+                (3)                        (2)
+               /   \           =>         /   \
+            (2)  (None)                 (A)   (3)
+           /   \                             /   \
+       (None) (None)                     (None) (None)
+        """
+        b1 = BST.build([2,3])
+        n2 = b1.search(2)
+        n3 = b1.search(3)
+        b1.rotate(n2, RIGHT)
+        self.assertEqual(b1.root[KEY], 3, 'root has changed')
+        self.assertEqual(n2[PARENT], n3)
+        self.assertIsNone(n2[LEFT])
+        self.assertIsNone(n2[RIGHT])
+        self.assertIsNone(n3[PARENT])
+        self.assertEqual(n3[LEFT], n2)
+        self.assertIsNone(n3[RIGHT])
+
+        b2 = BST.build([3,2])
+        n2 = b2.search(2)
+        n3 = b2.search(3)
+        b2.rotate(n3, LEFT)
+        self.assertEqual(b2.root[KEY], 2, 'root has changed')
+        self.assertIsNone(n2[PARENT])
+        self.assertIsNone(n2[LEFT])
+        self.assertEqual(n2[RIGHT], n3)
+        self.assertEqual(n3[PARENT], n2)
+        self.assertIsNone(n3[LEFT])
+        self.assertIsNone(n3[RIGHT])
 
     def test_is_binary_search_tree(self):
         """ Construct two trees, a plain one and a binary search tree:

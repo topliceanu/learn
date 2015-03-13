@@ -387,7 +387,7 @@ class BST(object):
         left child.
         This operation is done in O(1) and preserves the search tree property.
 
-        Schema (for left rotations):
+        Schema (for right rotations):
 
                 (P)                        (P)
                  |                          |
@@ -397,7 +397,7 @@ class BST(object):
                   /   \               /   \
                 (B)    (C)          (A)    (B)
 
-        Schema (for right rotations):
+        Schema (for left rotations):
 
                 (P)                        (P)
                  |                          |
@@ -407,6 +407,8 @@ class BST(object):
            /   \                             /   \
          (A)   (B)                        (B)    (C)
 
+        Note! P, A, B and/or C can be None, this method accomodates that case.
+
         Args:
             node: list, format [parent, key, left, right, size]
             DIRECTION: number, either LEFT or RIGHT constants.
@@ -414,10 +416,11 @@ class BST(object):
         # Build a reference to the parent node and the direction of node
         # in relation to it's parent.
         parent = node[PARENT] # coresponds to P from schemas.
-        if parent[LEFT] == node:
-            PARENT_DIRECTION = LEFT
-        else:
-            PARENT_DIRECTION = RIGHT
+        if parent != None:
+            if parent[LEFT] == node:
+                PARENT_DIRECTION = LEFT
+            else:
+                PARENT_DIRECTION = RIGHT
 
         # Compute the other
         if DIRECTION == LEFT:
@@ -425,45 +428,50 @@ class BST(object):
         else:
             OTHER_DIRECTION = LEFT
 
-        # Pointer to the child and the other node.
+        # Compute pointers to the nodes that will move position:
         child = node[DIRECTION] # Coresponds to Y from schemas.
-        other_child = child[OTHER_DIRECTION] # Corresponds to Y's sibling.
+        other_child = child[OTHER_DIRECTION] # Corresponds to B in schemas.
 
         # Update sizes for rotated nodes.
         child[SIZE] = node[SIZE]
-        node[SIZE] = 1 + node[OTHER_DIRECTION][SIZE] + child[OTHER_DIRECTION][SIZE]
+        node[SIZE] = 1
+        if node[OTHER_DIRECTION] != None:
+            node[SIZE] += node[OTHER_DIRECTION][SIZE]
+        if child[OTHER_DIRECTION] != None:
+            node[SIZE] += child[OTHER_DIRECTION][SIZE]
 
         # Swap node with it's child.
-        # Update pointers for parent, node, child and other_child.
-        parent[PARENT_DIRECTION] = child
+        # Rewire pointers for parent, node, child and other_child.
+        if parent != None:
+            parent[PARENT_DIRECTION] = child
         child[PARENT] = parent
         child[OTHER_DIRECTION] = node
         node[PARENT] = child
         node[DIRECTION] = other_child
-        other_child[PARENT] = node
+        if other_child != None:
+            other_child[PARENT] = node
+        if parent == None:
+            self.root = child
 
-    @staticmethod
-    def node_to_string(node):
-        """ Prints the given node in a human readable way.
-
-        Args:
-            node: list, format [parent, key, left, right, size]
+    def to_string(self):
+        """ Prints a human readable version of the current tree.
 
         Return:
-            str, text representation of an the node.
+            str, text representation of the current tree
         """
-        def print_key(node):
-            if node is None:
-                return 'None'
-            else:
-                return node[KEY]
-
-        parent = print_key(node[PARENT])
-        left = print_key(node[LEFT])
-        right = print_key(node[RIGHT])
-        return "[{parent}, {key}, {left}, {right}, {size}]".format( \
-                                    parent=parent, key=node[KEY], left=left,
-                                    right=right, size=node[SIZE])
+        out = ''
+        nodes = [self.root]
+        while (len(nodes) != 0):
+            node = nodes.pop()
+            if node[LEFT] != None:
+                nodes.insert(0, node[LEFT])
+                out += '{parent}-l>{left}; '.format(parent=node[KEY],
+                                                   left=node[LEFT][KEY])
+            if node[RIGHT] != None:
+                nodes.insert(0, node[RIGHT])
+                out += '{parent}-r>{right}; '.format(parent=node[KEY],
+                                                    right=node[RIGHT][KEY])
+        return out
 
     @staticmethod
     def is_binary_search_tree(root):
