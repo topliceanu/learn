@@ -5,12 +5,6 @@ KEY = 1
 LEFT = 2
 RIGHT = 3
 SIZE = 4
-COLOR = 5
-
-# Coloring of nodes.
-RED = 0x100
-BLACK = 0x101
-
 
 class BST(object):
     """ Implements the operations needed for a Ballanced Binary Search Tree.
@@ -25,7 +19,8 @@ class BST(object):
     All operations have a complexity of O(log n)
 
     Attributes:
-        root: list, represents the root node, format: [parent, key, left, right]
+        root: list, represents the root node, format:
+            [parent, key, left, right, size]
     """
 
     def __init__(self):
@@ -99,7 +94,7 @@ class BST(object):
                 search routine. Otherwise the tree's root will be used.
 
         Returns:
-            A node [parent, key, left, right] with max key in the tree.
+            A node [parent, key, left, right, size] with max key in the tree.
         """
         if root is None:
             root = self.root
@@ -121,7 +116,7 @@ class BST(object):
                 search routine. Otherwise the tree's root will be used.
 
         Returns:
-            A node [parent, key, left, right] with min key in the tree.
+            A node [parent, key, left, right, size] with min key in the tree.
         """
         if root is None:
             root = self.root
@@ -134,7 +129,7 @@ class BST(object):
                 node = node[LEFT]
 
     def predecessor(self, key):
-        """ Finds the node with the largest key smaller the the given one.
+        """ Finds the node with the largest key smaller than the given one.
 
         First find the node with key, then, if it's left subtree exists,
         find the maximum in it, otherwise move up through it's ancestors to
@@ -146,7 +141,8 @@ class BST(object):
             key: int, value in the tree to find predecessor of.
 
         Returns:
-            The immediate predecessor of key format [parent, key, left, right]
+            The immediate predecessor of given key. Format;
+                [parent, key, left, right, size]
         """
         node = self.search(key)
         if node is None:
@@ -172,7 +168,8 @@ class BST(object):
             key: int, value in the tree to find predecessor of.
 
         Returns:
-            The immediate successor of key format [parent, key, left, right]
+            The immediate successor of given key. Format:
+                [parent, key, left, right, size]
         """
         node = self.search(key)
         if node is None:
@@ -226,16 +223,18 @@ class BST(object):
         new swapped node.
 
         This method also decrements the size of all ancestors of the deleted
-        node.
+        node. The size of a node is the number of nodes in it's subtree.
 
         Complexity: O(log n)
 
         Args:
             key: int, a number to remove from the tree.
-                 list, represents a node with the format [parent, key, left, right]
+                 list, represents a node with the format:
+                    [parent, key, left, right, size]
 
         Returns:
-            The node just deleted is returned. Note! that is contains pointers.
+            The node just deleted is returned. Note! that is still contains
+            old pointers.
         """
         if type(key) == int:
             node = self.search(key)
@@ -252,13 +251,13 @@ class BST(object):
         else:
             direction = RIGHT
 
-        # First case.
+        # First case: node is leaf.
         if node[LEFT] is None and node[RIGHT] is None:
             parent[direction] = None
             self.decrement_sizes(parent)
             return node
 
-        # Second case.
+        # Second case: node has only one child.
         if node[LEFT] is None or node[RIGHT] is None:
             if node[LEFT] is None:
                 parent[direction] = node[RIGHT]
@@ -269,10 +268,10 @@ class BST(object):
             self.decrement_sizes(parent)
             return node
 
-        # Third case.
+        # Third case: node has both children.
         predecessor = self.predecessor(node[KEY])
         node[KEY], predecessor[KEY] = predecessor[KEY], node[KEY]
-        self.delete(predecessor)
+        return self.delete(predecessor)
 
     def select(self, index, node = None):
         """ Finds the i'th order statistic in the containing data structure.
@@ -281,8 +280,8 @@ class BST(object):
 
         Args:
             index: int, the order of the element to find. Order starts with 0.
-            root: list, format [parent, key, left, right, size] the
-                root of the search.
+            node: list, format [parent, key, left, right, size] the root
+                node of the search.
 
         Returns:
             The key of element on the index position in the sorted list.
@@ -302,9 +301,12 @@ class BST(object):
         else:
             return self.select(index - left - 1, node[RIGHT])
 
-    def rank(self, key, node=None):
+    def rank(self, key):
         """ Given a key, computes how many elements are stritcly smaller than
         that key in the tree.
+
+        This is possible because we are keeping score on the number of nodes
+        in the subtree for each node, ie. SIZE.
 
         Complexity: O(log n)
 
@@ -317,14 +319,18 @@ class BST(object):
         """
         if self.search(key) is None:
             return None
-        if node is None:
-            node = self.root
+        node = self.root
         return self.recursive_rank(key, node)
 
     def recursive_rank(self, key, node):
         """ Recursive pair of .rank() method.
 
         The idea is to traverse the tree starting from the root.
+
+        Args:
+            key: int, the key we are looking for.
+            node: list, the node we are currently investigating. Format:
+                [parent, key, left, right, size]
         """
         if node is None:
             return 0
@@ -344,6 +350,8 @@ class BST(object):
     def list_sorted(self):
         """ In-order traversal of a binary search tree.
 
+        For each node, first traverse the left subtree then the right.
+
         Returns:
             A list with all elements in the data structure in sorted order.
         """
@@ -359,8 +367,10 @@ class BST(object):
         traversal(self.root)
         return output
 
+    # UTILITIES
+
     def decrement_sizes(self, node):
-        """ Decrements the sizes of node and all it's acestors.
+        """ Decrements the sizes of a given node and all it's acestors.
 
         Args:
             node: list, of format [parent, key, left, right, size]
@@ -381,9 +391,9 @@ class BST(object):
 
                 (P)                        (P)
                  |                          |
-                (x)                        (y)
+                (X)                        (Y)
                /   \           =>         /   \
-            (A)    (y)                 (x)    (C)
+            (A)    (Y)                 (X)    (C)
                   /   \               /   \
                 (B)    (C)          (A)    (B)
 
@@ -391,19 +401,19 @@ class BST(object):
 
                 (P)                        (P)
                  |                          |
-                (x)                        (y)
+                (X)                        (Y)
                /   \           =>         /   \
-            (y)    (C)                 (A)    (x)
+            (Y)    (C)                 (A)    (X)
            /   \                             /   \
          (A)   (B)                        (B)    (C)
 
         Args:
             node: list, format [parent, key, left, right, size]
-            DIRECTION: number, either LEFT or RIGHT.
+            DIRECTION: number, either LEFT or RIGHT constants.
         """
         # Build a reference to the parent node and the direction of node
         # in relation to it's parent.
-        parent = node[PARENT]
+        parent = node[PARENT] # coresponds to P from schemas.
         if parent[LEFT] == node:
             PARENT_DIRECTION = LEFT
         else:
@@ -415,9 +425,13 @@ class BST(object):
         else:
             OTHER_DIRECTION = LEFT
 
-        # Pointer to the child or the other node.
-        child = node[DIRECTION]
-        other_child = child[OTHER_DIRECTION]
+        # Pointer to the child and the other node.
+        child = node[DIRECTION] # Coresponds to Y from schemas.
+        other_child = child[OTHER_DIRECTION] # Corresponds to Y's sibling.
+
+        # Update sizes for rotated nodes.
+        child[SIZE] = node[SIZE]
+        node[SIZE] = 1 + node[OTHER_DIRECTION][SIZE] + child[OTHER_DIRECTION][SIZE]
 
         # Swap node with it's child.
         # Update pointers for parent, node, child and other_child.
@@ -434,6 +448,9 @@ class BST(object):
 
         Args:
             node: list, format [parent, key, left, right, size]
+
+        Return:
+            str, text representation of an the node.
         """
         def print_key(node):
             if node is None:
@@ -449,7 +466,41 @@ class BST(object):
                                     right=right, size=node[SIZE])
 
     @staticmethod
-    def build(keys):
+    def is_binary_search_tree(root):
+        """ Static method verifies the binary search tree requirement for all
+        nodes in the tree.
+
+        That is for each node in the tree, it's left child, if it exists, is
+        smaller, while it's right child, if it exists, must be larger.
+
+        Complexity: O(nlogn)
+
+        Args:
+            root: list, format [parent, key, left, right, size] is the root
+                of the tree under inspection.
+
+        Returns:
+            bool
+        """
+        def check(node):
+            if node[LEFT] is not None:
+                if node[LEFT][KEY] > node[KEY]:
+                    return False
+                else:
+                    node = node[LEFT]
+                    return check(node)
+            if node[RIGHT] is not None:
+                if node[RIGHT][KEY] < node[KEY]:
+                    return False
+                else:
+                    node = node[RIGHT]
+                    return check(node)
+            return True
+
+        return check(root)
+
+    @classmethod
+    def build(cls, keys):
         """ Static method which builds a binary search tree.
 
         Args:
@@ -458,124 +509,7 @@ class BST(object):
         Returns:
             An instance of BST class.
         """
-        b = BST()
+        b = cls()
         for key in keys:
             b.insert(key)
         return b
-
-
-class RedBlackTree(BST):
-    """ Implements ballanced red-black trees as a subclass of
-    binary search tree.
-
-    The RB invariants are:
-    1. each node is either Red or Black.
-    2. root is always black
-    3. never have two red nodes in a row.
-    4. every path you can take from a root to a NULL path passes through
-    the same number of black nodes.
-    """
-
-    def __init__(self):
-        BST.__init__(self)
-
-    def insert(self, key):
-        """ Insert a key in the RB tree preserving the invariants.
-
-        Returns:
-            List representing the newly inserted node.
-        """
-        inserted_node = BST.insert(self, key)
-
-        # If the inserted node is root, we're done.
-        if inserted_node is self.root:
-            inserted_node[COLOR] = BLACK
-            return inserted_node
-
-        # By default the inserted node is red.
-        inserted_node[COLOR] = RED
-
-        # If the parent of the inserted node is black, we're done.
-        parent = inserted_node[PARENT]
-        if parent[COLOR] == BLACK:
-            return inserted_node
-
-        self.fix_double_red(inserted_node)
-        return inserted_node
-
-    def fix_double_red(self, node):
-        """ This method fixes the case when node and it's parent are both red.
-
-        When parent node is red, the grand-parent node is necessarely black.
-        Then it depends on the color of the uncle, ie the sibling of the
-        parent of the inserted node.
-
-        There are two cases:
-        1. uncle is also red.
-        2. uncle is black.
-
-        TODO finish implementation and tests of this method.
-
-        Args:
-            node: list, representing the node which is violating the `double
-                  consecutive reds` invariant in an existing RB tree.
-        """
-        parent = node[PARENT]
-        grand_parent = parent[PARENT]
-
-        if grand_parent[LEFT] == parent:
-            uncle = grand_parent[RIGHT]
-        else:
-            uncle = grand_parent[LEFT]
-
-        # First case.
-        if uncle[COLOR] == RED:
-            self.recolor(grand_parent) # Recolor to red.
-            self.recolor(parent) # Recolor to black.
-            self.recolor(uncle) # Recolor to black.
-
-            if grand_parent == self.root:
-                self.recolor(grand_parent)
-                return
-
-            grand_grand_parent = grand_parent[PARENT]
-            if grand_grand_parent[COLOR] == RED:
-                self.fix_double_red(grand_parent)
-                return
-
-        if uncle[COLOR] == BLACK:
-            pass
-
-    def delete(self, key):
-        """ Removes a node with a given key. """
-        # TODO implement this deletion.
-        return BST.delete(self, key)
-
-    def recolor(self, node):
-        """ Flips the color of a given node from red to black or from black
-        to red. Defaults to BLACK if node has no color.
-
-        Args:
-            node: the node to recolor.
-        """
-        if COLOR in node:
-            if node[COLOR] is RED:
-                node[COLOR] = BLACK
-            else:
-                node[COLOR] = RED
-        else:
-            node[COLOR] = BLACK
-
-class AVLTree(BST):
-    """ Implements a ballanced binary tree using the AVL method.
-
-    AVL Trees maintain a measurement called the 'ballance factor' for each
-    node in the tree. This is computed as such:
-        height(left_subtree) - height(right_subtree)
-    If this value is not in {-1, 0, 1} then rotations are required.
-    """
-
-class SplayTree(BST):
-    """ Adds to the base default Ballanced Search Tree a splaying method which
-    promotes frequently accessed nodes closer to the root.
-    """

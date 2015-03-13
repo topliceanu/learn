@@ -112,16 +112,20 @@ class TestBST(unittest.TestCase):
     def test_delete(self):
         b = BST.build([3,1,2,5,4])
 
-        b.delete(2)
+        removed = b.delete(2) # Node is a leaf.
+        self.assertEqual(removed[KEY], 2, 'returns the removed node')
         self.assertIsNone(b.search(2), 'should not find 2 anymore')
         self.assertIsNone(b.search(1)[RIGHT], '1 has no more children')
 
-        b.delete(5)
+        removed = b.delete(5) # Node has only one child.
+        self.assertEqual(removed[KEY], 5, 'returns the removed node')
         self.assertIsNone(b.search(5), 'should have removed 5')
         self.assertEqual(b.search(4)[PARENT][KEY], 3, 'should have hoisted 4')
 
-        b.delete(3)
+        removed = b.delete(3) # Node has both children.
+        self.assertEqual(removed[KEY], 3, 'returns the removed node')
         self.assertIsNone(b.search(3), 'should have removed 3')
+        self.assertEqual(b.root[KEY], 1, 'new root is 1')
 
     def test_node_size_gets_modified_on_insertion(self):
         b = BST.build([3,1,2,5,4])
@@ -140,15 +144,15 @@ class TestBST(unittest.TestCase):
         b = BST.build([3,1,2,5,4])
         self.assertEqual(b.search(3)[SIZE], 5, '3 has size 6')
 
-        b.delete(2)
+        b.delete(2) # Node is a leaf.
         self.assertEqual(b.search(1)[SIZE], 1, '1 has no more children')
         self.assertEqual(b.search(3)[SIZE], 4, 'root has 4 children now')
 
-        b.delete(5)
+        b.delete(5) # Node is in the middle.
         self.assertEqual(b.search(4)[SIZE], 1, 'the size of 1 is unchanged')
         self.assertEqual(b.search(3)[SIZE], 3, 'root has 3 children after del')
 
-        b.delete(3)
+        b.delete(3) # Node is the root.
         self.assertEqual(b.search(4)[SIZE], 1, 'the size of 1 is unchanged')
         self.assertEqual(b.search(1)[SIZE], 2, 'the new root is 1 and has size of 2')
 
@@ -197,14 +201,55 @@ class TestBST(unittest.TestCase):
                                               'its old parent 5')
         self.assertEqual(child[RIGHT][KEY], 8, '7 old right child is unchanged')
 
-    def test_red_black_insert_root(self):
-        pass
+    def test_rotate_correctly_updates_sizes(self):
+        """ Makes sure the rotate operation updates node sizes accordingly.
+                (3)                      (3)
+               /   \                    /   \
+            (1)     (5)              (1)     (7)
+              \     / \         =>     \     / \
+             (2)  (4) (7)             (2)  (5) (8)
+                      /  \                /  \
+                    (6)  (8)            (4)  (6)
+        """
+        b = BST.build([3,1,2,5,4,7,8,6])
+        b.rotate(b.search(5), RIGHT)
 
-    def test_red_black_insert_root_child(self):
-        pass
+        self.assertEqual(b.search(3)[SIZE], 8, 'root has the same size')
+        self.assertEqual(b.search(5)[SIZE], 3, 'rotated node has new size')
+        self.assertEqual(b.search(7)[SIZE], 5, 'rotated node has new size')
 
-    def test_red_black_insert_node_with_red_uncle(self):
-        pass
 
-    def test_red_black_insert_node_with_black_uncle(self):
-        pass
+    def test_is_binary_search_tree(self):
+        """ Construct two trees, a plain one and a binary search tree:
+        - binary search tree -    - non-search-tree -
+                (3)                      (3)
+               /   \                    /   \
+            (1)     (5)              (9)     (7)
+              \     / \                \     / \
+             (2)  (4) (7)             (2)  (5) (4)
+                      /  \                /  \
+                    (6)  (8)            (10)  (6)
+        """
+        n10 = [None, 10, None, None]
+        n6 = [None, 6, None, None]
+        n4 = [None, 4, None, None]
+        n2 = [None, 2, None, None]
+        n5 = [None, 5, n10, n6]
+        n10[PARENT] = n5
+        n6[PARENT] = n5
+        n7 = [None, 7, n5, n4]
+        n5[PARENT] = n7
+        n4[PARENT] = n7
+        n9 = [None, 9, None, n2]
+        n2[PARENT] = n9
+        n3 = [None, 3, n9, n7]
+        n9[PARENT] = n3
+        n7[PARENT] = n3
+        notSearchTree = n3
+
+        trueSearchTree = BST.build([3,1,2,5,4,7,8,9]).root
+
+        self.assertTrue(BST.is_binary_search_tree(trueSearchTree),
+            'should detect a correct search tree')
+        self.assertFalse(BST.is_binary_search_tree(notSearchTree),
+            'should detect a when a tree is not search tree')
