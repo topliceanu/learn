@@ -9,6 +9,8 @@ def bfs_shortest_path_distance(graph, start):
     Works the same as classic BFS except that it keep track
     of how many hops there are from the start point to each vertex.
 
+    Running-time: O(m+n)
+
     Params:
         graph: a datastructure holding all vertices and edges.
         start: a vertex name to start the graph exploration from.

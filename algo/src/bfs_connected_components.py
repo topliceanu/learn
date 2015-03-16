@@ -9,6 +9,8 @@ def bfs_connected_components(graph):
     It does so by iterating over all non-visited elements in a graph
     and running bfs over it.
 
+    Complexity: O(n+m)
+
     Args:
         graph: instance of src.graph.Graph class which encapsulates all
             edges, vertices as well as values for edges and vertices.

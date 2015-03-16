@@ -143,8 +143,7 @@ class RedBlackTree(BST):
 
 
     def delete(self, key):
-        """ Removes a node with a given key. """
-        # TODO implement this deletion.
+        """ Removes a node with a given key and maintains Red-Black invariants."""
         return BST.delete(self, key)
 
 
