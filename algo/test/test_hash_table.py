@@ -2,33 +2,73 @@
 
 import unittest
 
-from src.hash_table import Hash, two_sum_problem_sort, two_sum_problem_hash
+from src.hash_table import ChainingHash, OpenAddressingHash, \
+                           two_sum_problem_sort, two_sum_problem_hash
 
 
 class TestHashTable(unittest.TestCase):
 
-    # Hash Table implementation.
+    # Hash Table implementation with chaining conflict resolution.
 
     def test_hash_insert(self):
         """ Forces a hash collision. """
-        h = Hash(7)
+        h = ChainingHash(7)
         h.insert(14)
         h.insert(21)
         self.assertEqual(h.data[0], [14, 21], 'should have created a collision')
 
     def test_hash_lookup(self):
-        h = Hash(5)
+        h = ChainingHash(5)
         h.insert(20)
         self.assertTrue(h.lookup(20), 'should find the value 20')
 
     def test_hash_delete(self):
-        h = Hash(5)
+        h = ChainingHash(5)
 
         h.insert(20)
         self.assertTrue(h.lookup(20), 'should find the value 20')
 
         h.delete(20)
         self.assertFalse(h.lookup(20), '20 is no more in the hash')
+
+    def test_export(self):
+        h = ChainingHash(5)
+        for number in range(1,20):
+            h.insert(number)
+        self.assertEqual(set(range(1,20)), set(h.export()),
+            'should return all the input data')
+
+    # Hash Table implementation with open addressing (double hashing)
+    # conflict resolution.
+
+    def test_hash_insert(self):
+        """ Forces a hash collision. """
+        h = OpenAddressingHash(7)
+        h.insert(14)
+        h.insert(21)
+        self.assertEqual(h.data[0], 14, 'should have avaoided collision')
+        self.assertEqual(h.data[4], 21, 'should have created a collision')
+
+    def test_hash_lookup(self):
+        h = OpenAddressingHash(5)
+        h.insert(20)
+        self.assertTrue(h.lookup(20), 'should find the value 20')
+
+    def test_hash_delete(self):
+        h = OpenAddressingHash(5)
+
+        h.insert(20)
+        self.assertTrue(h.lookup(20), 'should find the value 20')
+
+        h.delete(20)
+        self.assertFalse(h.lookup(20), '20 is no more in the hash')
+
+    def test_export(self):
+        h = OpenAddressingHash(100)
+        for number in range(1,20):
+            h.insert(number)
+        self.assertEqual(set(range(1,20)), set(h.export()),
+            'should return all the input data')
 
     # Hash Table use cases.
 
