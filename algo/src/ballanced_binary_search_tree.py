@@ -7,7 +7,7 @@ RIGHT = 3
 SIZE = 4
 
 class BST(object):
-    """ Implements the operations needed for a Ballanced Binary Search Tree.
+    """ Implements the operations needed for a Unballanced Binary Search Tree.
 
     Search Tree Property: for any node k, all keys in the left subtree are
     smaller than k and all keys in the right three are larger than k

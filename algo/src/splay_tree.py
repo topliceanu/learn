@@ -17,6 +17,28 @@ class SplayTree(BST):
     def splay(self, node):
         """ The splay operation hoists the indicated node to the root.
 
+        There are three cases where rotations are employed to hoist a node
+        (let x be the input node, p be x's parent and g be x's grand parent).
+
+        ZIG (p is root, g is None)
+                (p)            (x)
+               /        =>        \
+             (x)                  (p)
+
+        ZIG-ZIG (x is p's LEFT child, p is g's LEFT child and otherwise)
+                 (g)           (x)
+                /                \
+              (p)        =>      (p)
+             /                     \
+           (x)                     (g)
+
+        ZIG-ZAG (x is p's LEFT child, p is g's RIGHT child and otherwise)
+                  (g)
+                 /                 (x)
+               (p)        =>      /   \
+                 \              (p)   (g)
+                 (x)
+
         Args:
             node: list, a representation of a node, format [PARENT, KEY, LEFT, RIGHT, SIZE]
 

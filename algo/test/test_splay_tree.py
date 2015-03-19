@@ -2,7 +2,7 @@
 
 import unittest
 
-import SplayTree from src.splay_tree
+from src.splay_tree import SplayTree
 
 
 class SplayTreeTest(unittest.TestCase):
