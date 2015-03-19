@@ -411,7 +411,8 @@ class BST(object):
 
         Args:
             node: list, format [parent, key, left, right, size]
-            DIRECTION: number, either LEFT or RIGHT constants.
+            DIRECTION: number, either LEFT or RIGHT constants indicates the
+                direction of the "soon to be rotated" node.
         """
         # Build a reference to the parent node and the direction of node
         # in relation to it's parent.

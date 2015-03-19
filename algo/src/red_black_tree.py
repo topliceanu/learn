@@ -24,6 +24,8 @@ class RedBlackTree(BST):
     nodes.
 
     See: http://en.wikipedia.org/wiki/Red-black_tree for implementation.
+    See: https://en.wikipedia.org/wiki/Left-leaning_red-black_tree for a
+    simpler implementation.
 
     Each node is represented as a list with the format:
         [parent, key, left, right, size, color]
