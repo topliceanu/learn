@@ -220,7 +220,7 @@ class BST(object):
         2. if node has only one child, swap the child with the removed node.
         3. if the node has both children, compute it's predecessor, swap the
         predecessor in place of the deleted node, then call delete again on the
-        new swapped node.
+        new swapped node (ie. recurse).
 
         This method also decrements the size of all ancestors of the deleted
         node. The size of a node is the number of nodes in it's subtree.

@@ -143,9 +143,85 @@ class RedBlackTree(BST):
 
 
     def delete(self, key):
-        """ Removes a node with a given key and maintains Red-Black invariants."""
-        return BST.delete(self, key)
+        """ Removes a node with a given key and maintains Red-Black invariants.
+        TODO make this work!
+        """
+        if node[LEFT] == None and node[RIGHT] != None:
+            child = node[RIGHT]
+        if node[LEFT] != None and node[RIGHT] == None:
+            child = node[LEFT]
 
+        self.replace_node(node, child)
+        if node[COLOR] == BLACK:
+            if child[COLOR] == RED:
+                child[COLOR] = BLACK
+            else:
+                self.delete_case_1(child)
+
+    def delete_case_1(self, node):
+        if node[PARENT] != None:
+            self.delete_case_2(node)
+
+    def delete_case_2(self, node):
+        sibling = self.get_sibling(node)
+        if sibling[COLOR] == RED:
+            node[PARENT][COLOR] = RED
+            sibling[COLOR] = BLACK
+            if node == node[PARENT][LEFT]:
+                self.rotate(RIGHT, node[parent])
+            else:
+                self.rotate(LEFT, node[parent])
+        self.delete_case_3(node)
+
+    def delete_case_3(self, node):
+        sibling = self.get_sibling(node)
+        if node[PARENT][COLOR] == BLACK and \
+           sibling[COLOR] == BLACK and \
+           sibling[LEFT][COLOR] == BLACK and \
+           sibling[RIGHT][COLOR] == BLACK:
+                sibling[COLOR] = RED
+                self.delete_case_1(node[parent])
+        else:
+            self.delete_case_4(node)
+
+    def delete_case_4(self, node):
+        sibling = self.get_sibling(node)
+        if node[PARENT][COLOR] == RED and \
+           sibling[COLOR] == BLACK and \
+           sibling[LEFT][COLOR] == BLACK and \
+           sibling[RIGHT][COLOR] == BLACK:
+                sibling[COLOR] = RED
+                node[PARENT][COLOR] = BLACK
+        else:
+            self.delete_case_5(n)
+
+    def delete_case_5(self, node):
+        sibling = self.get_sibling(node)
+        if sibling[COLOR] == BLACK:
+            if node == node[PARENT][LEFT] and \
+               sibling[RIGHT][COLOR] == BLACK and \
+               sibling[LEFT][COLOR] == RED:
+                    sibling[COLOR] = RED
+                    sibling[LEFT][COLOR] = BLACK
+            elif node == node[PARENT][RIGHT] and \
+                 sibling[LEFT][COLOR] == BLACK and \
+                 sibling[RIGHT][COLOR] == RED:
+                    sibling[COLOR] = RED
+                    sibling[RIGHT][COLOR] = BLACK
+                    self.rotate(RIGHT, sibling)
+        self.delete_case_6(node)
+
+    def delete_case_6(self, node):
+        sibling = self.get_sibling(node)
+        sibling[COLOR] = node[PARENT][COLOR]
+        node[PARENT][COLOR] = BLACK
+
+        if (node == node[PARENT][LEFT]):
+            sibling[RIGHT][COLOR] = BLACK
+            self.rotate(RIGHT, node[PARENT])
+        else:
+            sibling[LEFT][COLOR] = BLACK
+            self.rotate(LEFT, node[PARENT])
 
     # UTILITIES
 
@@ -165,110 +241,30 @@ class RedBlackTree(BST):
         else:
             return node[PARENT][LEFT]
 
+    def replace_nodes(self, node1, node2):
+        """ Replaces node1 and node2 by rewiring the pointers (parent, left
+        and right) of the two nodes.
 
+        Args:
+            node1: list, structure contains a node with format:
+                [PARENT, KEY, LEFT, RIGHT, SIZE]
+            node2: list, structure contains a node with format:
+                [PARENT, KEY, LEFT, RIGHT, SIZE]
+        """
+        node1[PARENT][DIRECTION1], node2[PARENT][DIRECTION2] = \
+            node2[PARENT][DIRECTION2], node1[PARENT][DIRECTION1]
+        node1[PARENT], node2[PARENT] = node2[PARENT], node1[PARENT]
 
-
-
-
-
-    #def insert(self, key):
-    #    """ Insert a key in the RB tree preserving the invariants.
-
-    #    Args:
-    #        key: int, the identifier of the node to insert.
-
-    #    Returns:
-    #        List representing the newly inserted node.
-    #    """
-    #    inserted_node = BST.insert(self, key)
-
-    #    # If the inserted node is root, we're done.
-    #    if inserted_node is self.root:
-    #        inserted_node[COLOR] = BLACK
-    #        return inserted_node
-
-    #    # By default the inserted node is red.
-    #    inserted_node[COLOR] = RED
-
-    #    # If the parent of the inserted node is black, we're done.
-    #    parent = inserted_node[PARENT]
-    #    if parent[COLOR] == BLACK:
-    #        return inserted_node
-
-    #    # If the parent if RED we'be broken the third invariant.
-    #    self.fix_double_red(inserted_node)
-    #    return inserted_node
-
-    #def fix_double_red(self, node):
-    #    """ This method fixes the case when node and it's parent are both red.
-
-    #    When parent node is red, the grand-parent node is necessarely black.
-    #    Then it depends on the color of the uncle, ie the sibling of the
-    #    parent of the inserted node.
-
-    #    There are two cases:
-    #    1. uncle is also red.
-    #    2. uncle is black.
-
-    #    Args:
-    #        node: list, representing the node which is violating the `double
-    #              consecutive reds` invariant in an existing RB tree.
-    #    """
-    #    parent = node[PARENT]
-    #    grand_parent = self.get_grand_parent(node)
-    #    uncle = self.get_sibling(parent)
-
-    #    if parent[COLOR] == uncle[COLOR] == RED:
-    #        self.recolor(parent) # from RED to BLACK.
-    #        self.recolor(uncle) # from RED to BLACK
-    #        self.recolor(grand_parent) # grand_parent is BLACK because of invariant 3, recolor it to RED.
-
-    #        # Grand_parent being RED may violate invariant 2
-    #        if grand_parent == self.root:
-    #            self.recolor(grand_parent) # Turn from RED to BLACK.
-    #            return
-
-    #        grand_uncle = self.get_sibling(grand_parent)
-    #        if grand_uncle[COLOR] == grand_parent[COLOR] == RED: # violates invariant 3.
-    #            self.fix_double_red(grand_parent)
-    #            return
-
-    #    if parent[COLOR] == RED and uncle[COLOR] == BLACK:
-
-
-
-    #    ## First case.
-    #    #if uncle[COLOR] == RED:
-    #    #    self.recolor(grand_parent) # Recolor to red.
-    #    #    self.recolor(parent) # Recolor to black.
-    #    #    self.recolor(uncle) # Recolor to black.
-
-    #    #    if grand_parent == self.root:
-    #    #        self.recolor(grand_parent)
-    #    #        return
-
-    #    #    grand_grand_parent = grand_parent[PARENT]
-    #    #    if grand_grand_parent[COLOR] == RED:
-    #    #        self.fix_double_red(grand_parent)
-    #    #        return
-
-    #    #if uncle[COLOR] == BLACK:
-    #    #    pass
-
-
-
+        for direction in [LEFT, RIGHT]:
+            node1[direction][PARENT], node2[direction][PARENT] = \
+                node2[direction][PARENT], node1[direction][PARENT]
+            node1[direction], node2[direction] = node2[direction], node1[direction]
 
 
 #class SplayTree(BST):
 #    """ Adds to the base default Ballanced Search Tree a splaying method which
 #    promotes frequently accessed nodes closer to the root.
 #    """
-#
-#class BTree(object): - important for databases
-#    pass
-#
-#class BPlusTree(object): - important for databases.
-#    pass
 #
 #class AVLTree(BST):
 #    """ Implements a ballanced binary tree using the AVL method.
@@ -278,4 +274,3 @@ class RedBlackTree(BST):
 #        height(left_subtree) - height(right_subtree)
 #    If this value is not in {-1, 0, 1} then rotations are required.
 #    """
-
