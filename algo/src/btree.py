@@ -7,6 +7,7 @@ class BTreeNode(object):
     """ A node in a btree structure.
 
     Args:
+        m: rank fo the  node
         parent: object, pointer to the parent node of this node.
         keys: list, of keys stored in this node.
         children: list, pointers to other nodes or None, such that for each
@@ -14,10 +15,11 @@ class BTreeNode(object):
             keys arein that interval.
     """
 
-    def __init__(self):
+    def __init__(self, m):
         self.parent = None
-        self.keys = []
-        self.children = []
+        self.keys = [None for i in range(m-1)]
+        self.children = [None for i in range(m)]
+
 
 class BTree(BST):
     """ Implements a BTree data structure.
@@ -32,7 +34,8 @@ class BTree(BST):
     - the root has at least two children if it's not a leaf.
 
     Args:
-        m: int, the order of the b-tree.
+        m: int, the order of the b-tree (ie. the max number of children a node
+            can have)
 
     See: http://www.cs.cornell.edu/courses/cs3110/2009sp/recitations/rec25.html
     Also: https://gist.github.com/teepark/572734
