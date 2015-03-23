@@ -15,10 +15,11 @@ class UnionFind(object):
             layers to reach the root.
     2. union by rank - maintain for each node, the depth of the subgraph it
             is rooting for. On union, merge the smaller rank leader under the
-            larger rank leader. Only if the the two groups have the same rank
+            larger rank leader. Only if the two groups have the same rank
             leader than the new leader has to increase it's rank by one.
     3. path compression - on finds, update the parent of each node you traverse
-            to reach a leader with the actual leader.
+            to reach a leader with the actual leader. This assumes that finds
+            occur less times than unions, which is ofter the case.
 
     Even though the find/union operations both take O(log n), after m operations,
     one can prove that the running time is O(m*log_star n)
@@ -41,12 +42,18 @@ class UnionFind(object):
     def make_set(self, item):
         """ Adds a new item to the data structure.
 
+        When the item is already present in the data structure it is not
+        inserted again, instead the existing data is returned.
+
         Args:
             item: hashable data structure.
 
         Returns:
             The leader of the current set which is itself.
         """
+        if item in self.leader:
+            return self.find(item)
+
         self.leader[item] = item
         self.rank[item] = 0
         return item
@@ -73,7 +80,7 @@ class UnionFind(object):
     def union(self, item1, item2):
         """ Merges two sets toghether ie. both sets will have the same leader.
 
-        Each set is represented by one of it's containing element.
+        Each set is represented by one of it's containing elements.
         As an optimization, this method will reuse the `union by rank` method:
         update the set containing the least elements of the two. To do this
         we maintian a rank for each node which is the depth of the tree whose
@@ -101,6 +108,7 @@ class UnionFind(object):
             self.leader[root1] = root2
             return root2
 
-        self.rank[root1] += 1
-        self.leader[root2] = root1
-        return root1
+        if self.rank[root1] == self.rank[root2]:
+            self.rank[root1] += 1
+            self.leader[root2] = root1
+            return root1

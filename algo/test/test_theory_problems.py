@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 
 import unittest
+import random
 
 from src.heap import Heap
+from src.graph import Graph
+from src.strongly_connected_components import scc
 
 
 class TheoryProblems(unittest.TestCase):
@@ -98,53 +101,138 @@ class TheoryProblems(unittest.TestCase):
         cannot afford to look at all of them. Hint: Think about what types of
         recurrences would give you the desired upper bound.)
 
-        Solution: use master method:
-        - if d = 1 and a < b, then O(n) - harder!
-        - if d = 0 and a = b, then O(n) - split the array in four at each
-            recursion. In combine step simply concat the resulting lists of
-            local mins.
+        Solution: Divide and conquer similar to the closest pair problem.
+        See: http://courses.csail.mit.edu/6.006/spring11/lectures/lec02.pdf
+        In master method, if d = 0 and a = b, then O(n) - split the array in
+            four at each recursion. In combine step simply concat the resulting
+            lists of local mins.
+        Also, we need to find __any__ local minimum!
         """
-        def find_local_minimum():
-            # TODO
-            return []
+        #def add_padding(arr):
+        #    INF = floag('-inf')
+        #    n = len(arr)
 
-        # A corner local minimum.
-        numbers = [
-            [1,2,3,4],
-            [2,3,4,5],
-            [3,4,5,6],
-            [4,5,6,5]
-        ]
-        expected = set([1, 5])
+        #    out = []
+        #    out.append(INF * (n+2))
+        #    for lin in arr:
+        #        out.append([INF].extend(line).append(INF))
+        #    out.append(INF * (n+2))
+        #    return out
 
-        # An edge local minimum
-        numbers = [
-            [2,2,3,4],
-            [1,3,4,5],
-            [3,4,5,3],
-            [4,5,6,7]
-        ]
-        expected = set([1, 3])
+        #def find_min(arr):
+        #    pass
 
-        # A center local minimum.
-        numbers = [
-            [1,2,3,4],
-            [2,3,2,5],
-            [3,1,5,6],
-            [4,5,6,7]
-        ]
-        expected = set([1, 2])
+        #def recurse_local_minimum(arr, li, ri, lj, rj):
+        #    if ri-li <= 1 and rj - lj <= 1:
+        #        return
+
+        #    center_row_index = (ri-li)/2
+        #    center_col_index = (rj-lj)/2
+        #    center_row = arr[center_row_index][lj:rj]
+        #    center_col = arr[li:ri][center_col_index]
+
+        #    (min_row, min_row_index) = find_min(center_row)
+        #    (min_col, min_col_index) = find_min(center_col)
+
+        #    if is_local_min(arr, center_row_index, min_row_index):
+        #        return arr[center_row_index][min_row_index]
+
+        #    if is_local_min(arr, min_col_index, center_col_index):
+        #        return arr[min_col_index][center_col_index]
+
+        #    return recurse_local_minimum(arr)
+
+        #def find_local_minimum(arr):
+        #    arr = add_padding(arr)
+        #    n = len(arr) - 1
+        #    m = len(arr[0]) - 1
+        #    return recurse_local_minimum(arr, 0, n, 0, m)
+
+        ## A corner local minimum.
+        #numbers = [
+        #    [1,2,3,4],
+        #    [2,3,4,5],
+        #    [3,4,5,6],
+        #    [4,5,6,5]
+        #]
+        #expected = [1, 5]
+        #actual = find_local_minimum(numbers)
+        #self.assertIn(actual, expected, 'should have found a local minima')
+
+        ## An edge local minimum
+        #numbers = [
+        #    [2,2,3,4],
+        #    [1,3,4,5],
+        #    [3,4,5,3],
+        #    [4,5,6,7]
+        #]
+        #expected = [1, 3]
+        #actual = find_local_minimum(numbers)
+        #self.assertIn(actual, expected, 'should have found a local minima')
+
+        ## A center local minimum.
+        #numbers = [
+        #    [1,2,3,4],
+        #    [2,3,2,5],
+        #    [3,1,5,6],
+        #    [4,5,6,7]
+        #]
+        #expected = [1, 2]
+        #actual = find_local_minimum(numbers)
+        #self.assertIn(actual, expected, 'should have found a local minima')
 
     def test_problem_8(self):
         """ Given an array of n distinct (but unsorted) elements x1,x2,...,xn
-        with positive weights w1,w2,...,wn such that sum(wi)=W, where i in [1,n],
-        a weighted median is an element xk for which the total weight of all
+        with positive weights w1,w2,...,wn such that sum(wi)=W, where i in [1,n].
+
+        A weighted median is an element xk for which the total weight of all
         elements with value less than xk (i.e., sum(wi), where xi<xk) is at most
         W/2, and also the total weight of elements with value larger than xk
         (i.e., sum(wi), where xi>xk) is at most W/2. Observe that there are at
-        most two weighted medians. Show how to compute all weighted medians in
-        O(n) worst-case time.
+        most two weighted medians.
+
+        Show how to compute all weighted medians in O(n) worst-case time.
+
+        Solution: Modified RSelect (randomized selection).
         """
+        #def modified_partition(arr, l, r, p):
+        #    arr[l], arr[p] = arr[p], arr[l]
+        #    pos = l # pos denotes the position of the pivot.
+        #    i = pos + 1
+        #    for j in xrange(pos+1, r+1):
+        #        if arr[j][1] < arr[pos][1]:
+        #            arr[i], arr[j] = arr[j], arr[i]
+        #            i += 1
+        #    # Finally move the pivot from the first position into it's correct order.
+        #    (arr[i-1], arr[pos]) = (arr[pos], arr[i-1])
+        #    return (i - 1)
+
+        #def compute_weight(start_weight, arr, pivot):
+        #    if pivot is 0:
+        #        return start_weight
+        #    return sum(i for __, i in arr)
+
+        #def modified_randomized_select(arr, left, right, weight, left_weight, right_weight):
+        #    pivot = random.randint(left, right)
+        #    pivot = modified_partition(arr, left, right, pivot)
+
+        #    if pivot is 0:
+        #        tmp_left_weight = left_weight
+        #    else:
+        #        tmp_left_weight = left_weight + sum(i for __, i in arr[:pivot-1])
+        #    tmp_right_weight = right_weight + sum(i for __, i in arr[pivot+1:])
+
+        #    if tmp_left_weight <= weight/2 and tmp_right_weight <= weight/2:
+        #        return arr[pivot]
+        #    elif tmp_left_weight > weight/2:
+        #        return modified_randomized_select(arr, left, pivot, weight, left_weight, tmp_right_weight)
+        #    elif tmp_right_weight > weight/2:
+        #        return modified_randomized_select(arr, pivot, right, weight, tmp_left_weight, right_weight)
+
+        #pairs = [('a', 5), ('b', 1), ('c', 3), ('d', 7),
+        #         ('e', 4), ('f', 8), ('g', 2), ('h', 6)]
+        #actual = modified_randomized_select(pairs, 0, len(pairs)-1, 30, 0, 0)
+        #self.assertIn(actual, [('h', 6), ('d', 7)], 'should find the weighted median')
 
     def test_problem_11(self):
         """ In the 2SAT problem, you are given a set of clauses, where each
@@ -158,7 +246,35 @@ class TheoryProblems(unittest.TestCase):
         assignment, just decide whether or not one exists.) Your algorithm
         should run in O(m+n) time, where m and n are the number of clauses and
         variables, respectively. [Hint: strongly connected components.]
+
+        Solution: strongly connected components on a graph representation of
+        the set of clauses: the vertices are variables, the edges are ORs. A
+        solution exists iff there is no variable that belongs to the same SCC
+        as it's negotiation.
+
+        See http://en.wikipedia.org/wiki/2-satisfiability
+
+        Example:
+        (x_0 or x_2) and (x_0 or not x_3) and (x_1 or not x_3) and (x_1 or not x_4) and
+        (x_2 or not x_4) and (x_0 or  not x_5) and (x_1 or not x_5) and (x_2 or not x_5) and
+        (x_3 or x_6) and (x_4 or x_6) and (x_5 or x_6).
         """
+        def is_2sat_solution(g):
+            connected_components = scc(g)
+            for vertices in connected_components:
+                # Performance boost: a set in python uses hashtables
+                # (unlike a list which uses an array) so lookup is O(1)
+                s = set(vertices)
+                for vertex in s:
+                    if '!{vertex}'.format(vertex=vertex) in s:
+                        return False
+            return True
+
+        g = Graph.build(edges=[('x0', 'x2'), ('x0', '!x3'), ('x1', '!x3'),
+            ('x1', 'x4'), ('x2', '!x4'), ('x0', '!x5'), ('x1', '!x5'),
+            ('x2', '!x5'), ('x3', 'x6'), ('x4', 'x6'), ('x5', 'x6')],
+            directed=True)
+        self.assertTrue(is_2sat_solution(g), 'should have a solution')
 
     def test_problem_12(self):
         """ In lecture we define the length of a path to be the sum of the

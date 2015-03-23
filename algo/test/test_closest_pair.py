@@ -19,3 +19,22 @@ class TestClosestPair(unittest.TestCase):
         actual = closest_pair(points)
         expected = [(3,5), (6,4)]
         self.assertItemsEqual(actual, expected, 'compute expected closest points')
+
+    def test_losest_pair_from_clustering(self):
+        """ The point space looks like this:
+        | *a(9,1)
+        |                                *e(8,8)
+        |                            *c(7,7)
+        |
+        |
+        |
+        |
+        |                            *d(7,3)
+        |                                *f(8,2)
+        | *b(1,1)
+        +--------------------------------------------->
+        """
+        points = [(1,9,'a'), (1,1,'b'), (7,7,'c'), (8,8,'e'), (7,3,'d'), (8,2,'f')]
+        actual = closest_pair(points)
+        expected = ((7, 3, 'd'), (8, 2, 'f'))
+        self.assertEqual(actual, expected, 'should find the first closest pair')

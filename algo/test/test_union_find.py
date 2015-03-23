@@ -27,3 +27,15 @@ class TestUnionFind(unittest.TestCase):
         uf.union(1, 4)
         self.assertEqual(uf.find(2), uf.find(3), '2 and 3 are now in the '+
                                     'same set because 1 and 4 were joined')
+
+    def test_make_set_existing_key(self):
+        uf = UnionFind()
+
+        leader = uf.make_set(1)
+        leader = uf.make_set(1)
+        self.assertEqual(leader, 1, 'the leader is the same element')
+
+        uf.make_set(2)
+        uf.union(1, 2)
+        leader = uf.make_set(2)
+        self.assertEqual(leader, 1, 'the leader of 2 is still 1')

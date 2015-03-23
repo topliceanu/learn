@@ -4,7 +4,7 @@ import math
 
 
 def closest_pair(points):
-    """ Computes the closest pair from a given set of points in a plain.
+    """ Computes the closest pair from a given set of points in 2D.
 
     Running time is O(nlogn) time.
     Uses divide and conquer with the following steps:

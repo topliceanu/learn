@@ -16,6 +16,8 @@ def prims_suboptimal_mst(graph):
     A greedy routine wereby we enlarge the set of explored vertices by always
     adding the edge on the frontier with the least cost.
 
+    Discovered in 1957 by Robert Prim, 1959 by Edsger Dijkstra, 1930 by Iarnik.
+
     Args:
         graph: object, undirected graph where each edge has an associated cost
             (which can be negative).
@@ -71,7 +73,8 @@ class VertexHeap(Heap):
         return cmp(left[1], right[1])
 
     def remove(self, vertex):
-        """ Overrides parent method to remove a vertex by it's vertex not cost.
+        """ Overrides parent method to remove a vertex by it's vertex name,
+        not cost.
 
         Args
             vertex: str, name of the vertex to remove.
@@ -80,11 +83,11 @@ class VertexHeap(Heap):
         return Heap.remove(self, index)
 
 def prims_heap_mst(graph):
-    """ Computes minimal spanning tree using a heap data structure to make
-    things faster.
+    """ Computes minimal spanning tree using a heap data structure to store
+    unexplored vertices.
 
-    The difference is that it sticks the frontier of the explored MST in a
-    heap, as such always computing the min vertex is O(logm), where m is the
+    The difference is that it maintains the frontier of the explored MST in a
+    heap, as such always computing the min vertex in O(logm), where m is the
     number of edges.
 
     The heap is used to store the vertices not the edges as in the previous
@@ -145,6 +148,8 @@ def kruskal_suboptimal_mst(graph):
     creates a cycle which is O(n).
     This algorithm also works for directed graphs.
 
+    Discovered in 1956 by Joseph Kruskal.
+
     Args:
         graph: object, data structure to hold the graph data.
 
@@ -159,19 +164,17 @@ def kruskal_suboptimal_mst(graph):
     edges.sort(key=lambda e: e[2])
 
     index = 0
+    mst = Graph.build(edges=[], directed=False)
     while index < num_vertices:
         edge = edges[index]
-        [tail, head, value] = graph.split_edge(edge)
         index += 1
 
-        # Ensure that the added edge does not create a cycle using
-        # breadth first search. Complexity is O(m*n).
-        mst = Graph.build(edges=mst_edges, directed=False)
+        # Make sure the picked edge does not create a cycle in the existing MST.
+        [tail, head, __] = graph.split_edge(edge)
         explored = bfs(mst, tail)
         if head not in explored:
-            mst_edges.append(edge)
+            mst.add_edge(edge)
 
-    mst = Graph.build(edges=mst_edges, directed=False)
     return mst
 
 def kruskal_union_find_mst(graph):
@@ -203,3 +206,9 @@ def kruskal_union_find_mst(graph):
 
     mst = Graph.build(edges=mst_edges, directed=False)
     return mst
+
+def minimum_spanning_bottleneck_tree(graph):
+    """ A minimum spanning bottleneck tree is a subgraph of a connected,
+    undirected graph which connects all vertices in the graph but minimizes
+    the maximum picked edge costs.
+    """

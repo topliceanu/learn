@@ -1,15 +1,17 @@
 # -*- coding: utf8 -*-
 
+import random
+
 from src.union_find import UnionFind
 from src.closest_pair import closest_pair
 
 
-def cluster(points, k, distance):
+def single_link(points, k, distance):
     """ Clusters a group of elements into subgroups using an optimization
     approach, ie. define a objective function and optimize.
 
-    The method of clustering is called `single-link clustering`, same as
-    Kruskel's MST algorithm, with the exception that the iteration stops
+    The method of clustering is called `single-link clustering`, and is similar
+    to Kruskel's MST algorithm, with the exception that the iteration stops
     when the number of clusters needed is reached.
 
     Args:
@@ -18,9 +20,9 @@ def cluster(points, k, distance):
         distance: function, determins the distance between two points.
 
     Returns:
-        A dicts with format {point, cluster_name}.
+        A dicts with format {cluster_leader: [list of points in cluster]}.
     """
-
+    cloned_points = points[:]
     union_find = UnionFind()
     for point in points:
         union_find.make_set(point)
@@ -29,8 +31,68 @@ def cluster(points, k, distance):
 
     while numClusters > k:
         (p, q) = closest_pair(points)
+        if p == q:
+            continue
+
         union_find.union(p, q)
         points.remove(q)
         numClusters -= 1
 
-    return union_find.leader
+    out = {}
+    for point in cloned_points:
+        leader = union_find.find(point)
+        if leader not in out:
+            out[leader] = []
+        out[leader].append(point)
+    return out
+
+def cluster_k_means(points, k, distance, num_iterations=10):
+    """ CLusters a group of points into k groups given a distance function
+    between two points.
+
+    Algorithm:
+    1. initialization: pick k points at random and set them as initial means
+       of the clusters.
+    2. for each point compute the distance to the current means and assign
+       it to the cluster who's mean is closest.
+    3. for each clusters, compute the mean of all points in the cluster
+    4. repeat 2 and 3 until convergence, ie. until global error falls under
+       a specified threshold.
+
+    Args:
+        points: list of tuples, format (x, y) where x and y are the coordinates.
+        k: int, number of clusters to generate.
+        distance: function, computes distance between two points.
+        num_iterations: int, the number of iterations before stopping.
+
+    Returns:
+        A dicts with format {cluster_leader: [list of points in cluster]}.
+    """
+
+    # Initialization.
+    means = random.sample(points, k)
+    clusters = dict((mean, [mean]) for mean in means)
+
+    for __ in range(num_iterations):
+        new_means = []
+        for mean, cluster_points in clusters.iteritems():
+            new_mean_x = (sum(x for (x, __, __) in cluster_points))/len(cluster_points)
+            new_mean_y = (sum(y for (__, y, __) in cluster_points))/len(cluster_points)
+            new_means.append((new_mean_x, new_mean_y))
+
+        clusters = dict((mean, []) for mean in new_means)
+        means = new_means
+
+        for point in points:
+            min_dist = float('inf')
+            new_mean = None
+            for mean in means:
+                dist = distance(point, mean)
+                if min_dist > dist:
+                    min_dist = dist
+                    new_mean = mean
+            clusters[new_mean].append(point)
+
+    return clusters
+
+
