@@ -11,6 +11,9 @@ SYMBOL = 3
 class HuffmanCode(object):
     """ Huffman variable length prefix-free codes.
 
+    TODO: This does not follow the course pseudo-code, but the course model
+    explanations. Implement the actual pseudo-code for this conversion.
+
     Attrs:
         symbols: dict, format {key: frequency}
         tree: object, root of the transformation tree.
@@ -83,11 +86,23 @@ class HuffmanCode(object):
                 pointer = self.tree # Reset to the root.
             elif bit == '1':
                 pointer = pointer[RIGHT]
-
-                is_leaf = pointer[LEFT] == None and pointer[RIGHT] == None
-                if is_leaf:
+                if pointer[SYMBOL] != None:
                     out += pointer[SYMBOL]
+                    pointer = self.tree
         return out
+
+    def to_string(self):
+        """ String representation of the current huffman encode/decode tree. """
+        def traverse(node):
+            if node == None:
+                return
+            if node[LEFT] != None:
+                print 'left: {left}'.format(left=node[LEFT][SYMBOL])
+            if node[RIGHT] != None:
+                if node[RIGHT][SYMBOL] != None:
+                    print 'right: {right}'.format(right=node[RIGHT][SYMBOL])
+                traverse(node[RIGHT])
+        traverse(self.tree)
 
     # STATIc METHODS.
 
@@ -132,12 +147,12 @@ class HuffmanCode(object):
         """
         hist = {}
         for char in list(text):
-            if char in hist:
+            if char not in hist:
                 hist[char] = 0
             hist[char] += 1
 
         text_len = len(text)
         for char, count in hist.iteritems():
-            hist[char] = hist[char] / text_len
+            hist[char] = float(hist[char]) / float(text_len)
 
         return hist

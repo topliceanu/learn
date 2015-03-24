@@ -32,3 +32,17 @@ class PrefixFreeTest(unittest.TestCase):
         expected = '010111110'
         actual = hc.encode(original)
         self.assertEqual(expected, actual, 'should correctly encode the data')
+
+    def test_static_encode_decode_large_text(self):
+        text = 'Flux is an application architecture for building complex user '\
+            'interfaces. It eschews MVC in favor of unidirectional data flow. '\
+            'What this means is that data enters through a single place (your '\
+            'actions) and then flows outward through to their state manager '\
+            '(the store) and finally onto the view. The view can then restart '\
+            'the flow by calling other actions in response to user input.'\
+
+        encoded = HuffmanCode.encode_text(text)
+        symbol_table = HuffmanCode.extract_frequencies(text)
+        decoded = HuffmanCode.decode_text(symbol_table, encoded)
+        self.assertEqual(text, decoded,
+            'should encode and decode to the same text')
