@@ -51,6 +51,7 @@ class Clustering(unittest.TestCase):
 
         clusters = cluster_k_means(points, 4, distance, num_iterations=30)
         actual = clusters.values()
+
         self.assertIn([(1, 9, 'a')], actual, 'node a is in its own cluster')
         self.assertIn([(7, 7, 'c'), (8, 8, 'e')], actual, 'nodes c and e form a cluster')
         self.assertIn([(1, 9, 'a')], actual, 'node a is in its own cluster')
