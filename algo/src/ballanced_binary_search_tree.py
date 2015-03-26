@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 
+from src.merge_sort import merge
+
+
 PARENT = 0
 KEY = 1
 LEFT = 2
@@ -351,6 +354,8 @@ class BST(object):
         """ In-order traversal of a binary search tree.
 
         For each node, first traverse the left subtree then the right.
+        See: http://www.geeksforgeeks.org/serialize-deserialize-binary-tree/ for
+        ways to serialize binary search trees efficiently.
 
         Returns:
             A list with all elements in the data structure in sorted order.
@@ -522,3 +527,74 @@ class BST(object):
         for key in keys:
             b.insert(key)
         return b
+
+    @classmethod
+    def from_sorted(cls, sorted_list):
+        """ Static method which transforms a sorted list of keys into a
+        ballanced binary search tree.
+
+        Args:
+            sorted_list: list, of values in _ascending_ sorted order.
+
+        Returns:
+            object, instance of BST
+        """
+
+        def traverse(sorted_list, start, end):
+            #import pdb; pdb.set_trace()
+            if start > end:
+                return None
+
+            mid = (start + end) / 2
+            left = traverse(sorted_list, start, mid-1)
+            right = traverse(sorted_list, mid+1, end)
+
+            # Compute size of root!
+            if left == None and right == None:
+                size = 1
+            elif left != None and right != None:
+                size = max(left[SIZE], right[SIZE]) + 1
+            elif left != None:
+                size = left[SIZE] + 1
+            elif right != None:
+                size = right[SIZE] + 1
+
+            root = [None, sorted_list[mid], left, right, size]
+
+            # Hookup pointers to the parent for left/right nodes.
+            if left != None:
+                left[PARENT] = root
+            if right != None:
+                right[PARENT] = root
+
+            return root
+
+        bst = cls()
+        bst.root = traverse(sorted_list, 0, len(sorted_list)-1)
+        return bst
+
+    @classmethod
+    def join(cls, tree1, tree2):
+        """ Joins two ballanced binary search trees toghether into a new
+        ballanced binary search tree.
+
+        What is important is to maintain the search tree property, make sure
+        it is ballanced and correctly update each node's size.
+
+        Methods: (n - # nodes of self; m - # nodes of other)
+        1. Take all nodes in other and inserts them in self. Complexity O(mlogn)
+        2. Convert self and other to sorted lists O(n) O(m), join them O(m+n),
+        convert a sorted list into a ballanced binary search tree O(m+n)
+
+        Args:
+            tree1: object, instance of BST
+            tree2: object, instance of BST
+
+        Return:
+            object, instance of BST
+        """
+        sorted1 = map(lambda node: node[KEY], tree1.list_sorted())
+        sorted2 = map(lambda node: node[KEY], tree2.list_sorted())
+        joined_sorted = merge(sorted1, sorted2)
+
+        return cls.from_sorted(joined_sorted)

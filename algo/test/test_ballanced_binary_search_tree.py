@@ -300,3 +300,61 @@ class TestBST(unittest.TestCase):
             'should detect a correct search tree')
         self.assertFalse(BST.is_binary_search_tree(notSearchTree),
             'should detect a when a tree is not search tree')
+
+    def test_join(self):
+        """ Tests the method to join the current tree with another one. """
+
+        bst1 = BST.build([1,3,5])
+        bst2 = BST.build([2,4,6])
+        joined = BST.join(bst1, bst2)
+
+        self.assertTrue(BST.is_binary_search_tree(joined.root),
+            'should have built a binary search tree')
+
+        self.assertEqual(joined.root[KEY], 3)
+        self.assertEqual(joined.root[SIZE], 3)
+        self.assertEqual(joined.root[LEFT][KEY], 1)
+        self.assertEqual(joined.root[LEFT][SIZE], 2)
+        self.assertEqual(joined.root[LEFT][RIGHT][KEY], 2)
+        self.assertEqual(joined.root[LEFT][RIGHT][SIZE], 1)
+        self.assertEqual(joined.root[RIGHT][KEY], 5)
+        self.assertEqual(joined.root[RIGHT][SIZE], 2)
+        self.assertEqual(joined.root[RIGHT][LEFT][KEY], 4)
+        self.assertEqual(joined.root[RIGHT][LEFT][SIZE], 1)
+        self.assertEqual(joined.root[RIGHT][RIGHT][KEY], 6)
+        self.assertEqual(joined.root[RIGHT][RIGHT][SIZE], 1)
+
+    def test_from_sorted(self):
+        """ Tests construction of a BST from a sorted array. """
+
+        a = [1,2,3,4,5,5,6]
+        tree = BST.from_sorted(a)
+        self.assertTrue(BST.is_binary_search_tree(tree.root),
+            'should have built a binary search tree')
+
+        self.assertEqual(tree.root[KEY], 4)
+        self.assertEqual(tree.root[SIZE], 3)
+        self.assertEqual(tree.root[LEFT][KEY], 2)
+        self.assertEqual(tree.root[LEFT][SIZE], 2)
+        self.assertEqual(tree.root[LEFT][LEFT][KEY], 1)
+        self.assertEqual(tree.root[LEFT][LEFT][SIZE], 1)
+        self.assertEqual(tree.root[LEFT][RIGHT][KEY], 3)
+        self.assertEqual(tree.root[LEFT][RIGHT][SIZE], 1)
+        self.assertEqual(tree.root[RIGHT][KEY], 5)
+        self.assertEqual(tree.root[RIGHT][SIZE], 2)
+        self.assertEqual(tree.root[RIGHT][LEFT][KEY], 5)
+        self.assertEqual(tree.root[RIGHT][LEFT][SIZE], 1)
+        self.assertEqual(tree.root[RIGHT][RIGHT][KEY], 6)
+        self.assertEqual(tree.root[RIGHT][RIGHT][SIZE], 1)
+
+    def test_from_sorted_with_an_inballanced_tree(self):
+        """ Tests construction of a BST from a sorted array. """
+
+        a = [1,2]
+        tree = BST.from_sorted(a)
+        self.assertTrue(BST.is_binary_search_tree(tree.root),
+            'should have built a binary search tree')
+        self.assertEqual(tree.root[KEY], 1)
+        self.assertEqual(tree.root[SIZE], 2)
+        self.assertEqual(tree.root[RIGHT][KEY], 2)
+        self.assertEqual(tree.root[RIGHT][SIZE], 1)
