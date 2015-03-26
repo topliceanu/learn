@@ -23,28 +23,21 @@ class HuffmanCode(object):
         self.tree = self.build_tree()
 
     def build_tree(self):
-        """ Builds the tree which corresponds to hoffman encoding algorithm.
+        """ Builds the Hoffman encoding tree recursively. """
 
-        Returns:
-            object, reference to the root of the encoding/decoding tree.
-        """
+        def recurse(symbols):
+            if len(symbols) == 1:
+                return [None, None, None, symbols[0][0]]
+
+            left = [None, None, None, symbols[0][0]]
+            right = recurse(symbols[1:])
+            root = [None, left, right, None]
+            left[PARENT] = root
+            right[PARENT] = root
+            return root
+
         sorted_symbols = sorted(self.symbols.items(), key=lambda t: t[1], reverse=True)
-        root = [None, None, None, None]
-
-        while len(sorted_symbols) > 0:
-            new_node = [None, None, None, sorted_symbols.pop()[0]]
-            if (root[LEFT] != None and root[RIGHT] != None):
-                new_root = [None, new_node, root, None]
-                root[PARENT] = new_root
-                new_node[PARENT] = new_root
-                root = new_root
-            elif root[LEFT] == None:
-                root[LEFT] = new_node
-                new_node[PARENT] = root
-            elif root[RIGHT] == None:
-                root[RIGHT] = new_node
-                new_node[PARENT] = root
-        return root
+        return recurse(sorted_symbols)
 
     def encode(self, text):
         """ Encodes given text using the hoffman tree.
@@ -70,7 +63,8 @@ class HuffmanCode(object):
         return out
 
     def decode(self, encoded):
-        """ Decodes encoded text into original version.
+        """ Decodes encoded text into original version by traversing the
+        hoffman tree.
 
         Args:
             encoded: str, a string of 1s and 0s.
@@ -82,13 +76,16 @@ class HuffmanCode(object):
         pointer = self.tree
         for bit in list(encoded):
             if bit == '0':
-                out += pointer[LEFT][SYMBOL]
-                pointer = self.tree # Reset to the root.
+                pointer = pointer[LEFT]
             elif bit == '1':
                 pointer = pointer[RIGHT]
-                if pointer[SYMBOL] != None:
-                    out += pointer[SYMBOL]
-                    pointer = self.tree
+
+            is_leaf = pointer[LEFT] == None and \
+                      pointer[RIGHT] == None and \
+                      pointer[SYMBOL] != None
+            if is_leaf:
+                out += pointer[SYMBOL]
+                pointer = self.tree
         return out
 
     def to_string(self):

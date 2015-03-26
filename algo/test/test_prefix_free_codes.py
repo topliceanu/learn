@@ -16,7 +16,7 @@ class PrefixFreeTest(unittest.TestCase):
         }
         hc = HuffmanCode(symbol_table)
         encoded = '0110111'
-        expected = 'ADC'
+        expected = 'ACD'
         actual = hc.decode(encoded)
         self.assertEqual(expected, actual, 'should correctly decode the data')
 
@@ -29,7 +29,7 @@ class PrefixFreeTest(unittest.TestCase):
         }
         hc = HuffmanCode(symbol_table)
         original = 'ABCD'
-        expected = '010111110'
+        expected = '010110111'
         actual = hc.encode(original)
         self.assertEqual(expected, actual, 'should correctly encode the data')
 
