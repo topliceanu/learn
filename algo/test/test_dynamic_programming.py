@@ -16,7 +16,7 @@ class DynamicProgrammingTest(unittest.TestCase):
         self.assertEqual(actual, expected, 'should compute the max weight '
                                            'of the independent set of vertices')
 
-    def xtest_max_weighted_independent_set_in_path_graph_2(self):
+    def test_max_weighted_independent_set_in_path_graph_2(self):
         weights = [1, 4, 5, 4, 6, 3, 9]
 
         actual = max_weighted_independent_set_in_path_graph(weights)
@@ -27,19 +27,34 @@ class DynamicProgrammingTest(unittest.TestCase):
     def test_knapsack(self):
         items = [('a', 3, 2), ('b', 4, 4), ('c', 2, 4), ('d', 1, 4)]
         capacity = 6
+        (max_value, picked_items) = knapsack(items, capacity)
 
-        max_value = knapsack(items, capacity)
-        self.assertEqual(max_value, 7, 'max value for the given capacity')
+        expected_value = 7
+        self.assertEqual(max_value, expected_value,
+            'max value for the given capacity')
+
+        #expected_items = [('a', 3, 2), ('b', 4, 4)]
+        #self.assertEqual(picked_items, expected_items,
+        #    'should have picked the correct items')
 
     def test_sequence_alignment(self):
+
+        def gap_penalty():
+            return 10
+
+        def mismatch_penalty(x, y):
+            if x == y:
+                return 0
+            return 5
+
         X = 'AGGGCT'
         Y = 'AGGCA'
-        actual = sequence_alignment(X,Y)
-        expected = d
+        actual = sequence_alignment(X, Y, mismatch_penalty, gap_penalty)
+        expected = 15 # one gap and one mismatch.
         self.assertEqual(actual, expected, 'strings are pretty close')
 
         X = 'AGGCA'
         Y = 'AGGCA'
-        actual = sequence_alignment(X,Y)
+        actual = sequence_alignment(X, Y, mismatch_penalty, gap_penalty)
         expected = 0
         self.assertEqual(actual, expected, 'strings are identical')
