@@ -23,13 +23,17 @@ class SkipList(object):
     - Enumerate O(n)
 
     Attrs:
-        head: list, of pointers to the first element in each level.
+        head: object, pointer to the first node in the structure, without value.
+        end: object, pointer to the last node in the structure, without value.
         levels: int, number of levels in the data structure.
     """
 
     def __init__(self, levels=10):
         self.levels = levels
-        self.head = [Node(float('-inf'), levels) for i in xrange(levels)]
+        self.head = Node(float('-inf'), levels)
+        self.end = Node(float('inf'), levels)
+        for level in xrange(levels):
+            self.head.next[level] = self.end
 
     def insert(self, value):
         """ Insert an element in the data structure.
@@ -45,11 +49,31 @@ class SkipList(object):
         node = Node(value, self.levels)
         max_level = random.choice(range(self.levels))
 
-        for level in xrange(max_level):
-            head = self.head[level]
-            while head != None and head.value > value:
+        for level in xrange(max_level+1):
+            head = self.head
+            while head.next[level].value < value and head.next[level] != self.end:
                 head = head.next[level]
+            node.next[level] = head.next[level]
             head.next[level] = node
+
+    def list_sorted(self, level=0):
+        """ Returns a list of all the containing data in sorted order for the
+        given level.
+
+        Params:
+            level: int, the level on which to print the succession of values.
+
+        Returns:
+            list, sorted items in the specified levels.
+        """
+        current = self.head.next[level]
+        out = []
+
+        while current != self.end:
+            out.append(current.value)
+            current = current.next[level]
+
+        return out
 
     def lookup(self, value):
         """ Lookup a value in the skip list.
@@ -67,21 +91,19 @@ class SkipList(object):
             boolean, whether or not the value is present.
         """
         level = self.levels - 1
-        pointer = self.head[level]
-        while pointer != None:
-            if pointer.value > value:
-                return False
-            elif pointer.value == value:
-                return True
-            elif pointer.value < value:
+        pointer = self.head
+        while pointer != self.end:
+            if pointer.next[level].value > value:
                 level -= 1
                 if level < 0:
-                    pointer = None
-                else:
-                    pointer = pointer.next[level]
+                    return False
+            elif pointer.next[level].value == value:
+                return True
+            elif pointer.next[level].value < value:
+                pointer = pointer.next[level]
         return False
 
-    def delete(self, value):
+    def remove(self, value):
         """ Removes a node from the data structure.
 
         Recurse on every level, whenever the element is found, the node is
@@ -95,12 +117,13 @@ class SkipList(object):
         Returns:
             boolean, whether or not the element was present in the first place.
         """
-        found = False
-        for level in xrange(self.levels-1, 0, -1):
-            head = self.head[level]
-            while head.next[level].value < value:
-                head = head.next[level]
-            if head.next[level].value == value:
-                found = True
-                head.next[level] = head.next[level].next[level]
-        return found
+        level = 0
+        pointer = self.head
+        while pointer.next[level] != self.end:
+            if pointer.next[level].value == value:
+                for level in xrange(self.levels):
+                    if pointer.next[level] != None:
+                        pointer.next[level] = pointer.next[level].next[level]
+                return True
+            pointer = pointer.next[level]
+        return False
