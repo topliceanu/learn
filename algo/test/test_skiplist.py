@@ -42,6 +42,13 @@ class SkipListTest(unittest.TestCase):
         self.assertTrue(sl.lookup(2), 'should detect that 2 is present')
         self.assertFalse(sl.lookup(6), 'should deted that 6 is not present')
 
+    def test_lookup_large_corpus(self):
+        sl = SkipList(10)
+        for i in xrange(100):
+            sl.insert(i)
+        self.assertTrue(sl.lookup(47), 'should find the number')
+        self.assertFalse(sl.lookup(123), 'should not find a number larger than 100')
+
     def test_delete(self):
         sl = SkipList(2)
         for i in [4, 2, 5, 1, 0, 3]:

@@ -8,6 +8,7 @@ class Node(object):
 
     Attrs:
         next: list, references to the next element each level of the skip list.
+        value: int, the key to store.
     """
     def __init__(self, value, levels):
         self.next = [None] * levels
@@ -16,18 +17,16 @@ class Node(object):
 class SkipList(object):
     """ Implements a skip list data structure with the dictionary interface.
 
-    Operations:
-    - Insertion O(log n)
-    - Removal O(log n)
-    - Lookup O(log n)
-    - Enumerate O(n)
+    See: http://igoro.com/archive/skip-lists-are-fascinating/ for a reference
+    implementation.
+    See: http://www.cs.umd.edu/~meesh/420/Notes/MountNotes/lecture11-skiplist.pdf
 
     Attrs:
         head: object, pointer to the first node in the structure, without value.
         end: object, pointer to the last node in the structure, without value.
-        levels: int, number of levels in the data structure.
+        levels: int, number of levels in the data structure. Usually the number
+            of levels depends on the number of keys n to store: log(n)
     """
-
     def __init__(self, levels=10):
         self.levels = levels
         self.head = Node(float('-inf'), levels)
@@ -59,6 +58,8 @@ class SkipList(object):
     def list_sorted(self, level=0):
         """ Returns a list of all the containing data in sorted order for the
         given level.
+
+        Complexity: O(n)
 
         Params:
             level: int, the level on which to print the succession of values.
@@ -117,13 +118,19 @@ class SkipList(object):
         Returns:
             boolean, whether or not the element was present in the first place.
         """
-        level = 0
+        level = self.levels - 1
         pointer = self.head
-        while pointer.next[level] != self.end:
-            if pointer.next[level].value == value:
+        while pointer != self.end:
+            if pointer.next[level].value > value:
+                level -= 1
+                if level < 0:
+                    return False
+            elif pointer.next[level].value == value:
+                # The element was found.
                 for level in xrange(self.levels):
                     if pointer.next[level] != None:
                         pointer.next[level] = pointer.next[level].next[level]
                 return True
-            pointer = pointer.next[level]
+            elif pointer.next[level].value < value:
+                pointer = pointer.next[level]
         return False
