@@ -3,7 +3,7 @@
 import unittest
 
 from src.dynamic_programming import max_weighted_independent_set_in_path_graph, \
-                                    knapsack, sequence_alignment
+                    knapsack, sequence_alignment, optimal_binary_search_tree
 
 
 class DynamicProgrammingTest(unittest.TestCase):
@@ -58,3 +58,9 @@ class DynamicProgrammingTest(unittest.TestCase):
         actual = sequence_alignment(X, Y, mismatch_penalty, gap_penalty)
         expected = 0
         self.assertEqual(actual, expected, 'strings are identical')
+
+    def test_optimal_binary_search_tree(self):
+        frequencies = [0.8, 0.1, 0.1]
+        optimal = 0.9
+        actual = optimal_binary_search_tree(frequencies)
+        self.assertEqual(optimal, actual, 'should not return the best tree')

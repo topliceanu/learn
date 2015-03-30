@@ -123,15 +123,69 @@ def sequence_alignment(X, Y, mismatch_penality, gap_penalty):
     # X[i] and Y[j]
     A = [[0]*(len(X)+1) for __ in xrange(len(Y)+1)]
 
+    # 1. Pad the array with the penalties when comparing a full string with an
+    # empty string.
     for i in xrange(len(X)+1):
         A[0][i] = i * gap_penalty()
     for j in xrange(len(Y)+1):
         A[j][0] = j * gap_penalty()
 
+    # 2. Compute all the subproblems.
     for i in xrange(1, len(X)+1):
         for j in xrange(1, len(Y)+1):
             A[j][i] = min(A[j-1][i-1] + mismatch_penality(X[i-1], Y[j-1]),
                           A[j-1][i] + gap_penalty(),
                           A[j][i-1] + gap_penalty())
 
+    # 3. Return the value
     return A[len(X)-1][len(Y)-1]
+
+    # 4. Implement trace-back to build up the modifications with produce
+    # optimal penalties. TODO
+
+def optimal_binary_search_tree(access_frequencies):
+    """ Build up an optimal search tree given a set of items and known
+    frequency of access for each of them.
+
+    The subproblems are all the contiguous subsets [i, j] of the
+    access_frequencies list, thus creating an array of results, ie. C.
+
+    Complexity: O(n^3) better then O(2^n) for brute force search.
+
+    Args:
+        access_frequencies: dict, format {key: access_frequency}
+
+    Returns:
+        object, an optimized binary search tree.
+    """
+    # 0. Initialization
+    n = len(access_frequencies)
+
+    # C[i][j] is the weighted search cost of an optimal BST for items i to j.
+    C = [[0]*n for __ in xrange(n)]
+
+    # 1. Compute all the subproblems:
+    # C[i][j] =  min   (sum(pk) + C[i][r-1] + C[r+1][j])  , given that i>=j
+    #           r=i->j  k=i->j
+    # C[i][j] = 0  , if i < j
+    for i in range(n): # i is the first index of the contiguous loop.
+        for s in range(n): # s is the size of the problem, ie j-i
+            if i+s >= n:
+                continue
+            min_cost = float('inf')
+            for r in range(i, i+s):
+                if r-1 < 0:
+                    left_cost = 0
+                else:
+                    left_cost = C[i][r-1]
+                if r+1 > n:
+                    right_cost = 0
+                else:
+                    right_cost = C[r+1][i+s]
+                tmp_min_cost = sum(access_frequencies[i:i+s]) + left_cost + right_cost
+                if tmp_min_cost < min_cost:
+                    min_cost = tmp_min_cost
+            C[i][i+s] = min_cost
+
+    # The end result is the value for the entire list of access frequencies.
+    return C[0][n-1]
