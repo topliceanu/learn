@@ -89,4 +89,5 @@ class Trie(object):
 
 
 class CompressedTrie(object):
+    """ Implements a space efficient Trie in O(n) """
     pass
