@@ -207,6 +207,20 @@ class OpenAddressingHash(object):
         return bucket_index
 
 
+class SequentialProbingHash(object):
+    """ Implement a hash table using sequential probing to resolve collitions.
+
+    The hash function is used to compute the array index. If that bucket is
+    occupied then the array is traversed until an open position is found.
+
+    TODO: how to fix the this
+
+    Args:
+        num_buckets: int, the size of the array containing the data.
+        data: list, the actual array containing the data.
+    """
+
+
 def two_sum_problem_sort(data, total, distinct=False):
     """ Returns the pairs of number in input list which sum to the given total.
 

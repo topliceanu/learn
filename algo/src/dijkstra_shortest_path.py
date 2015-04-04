@@ -46,8 +46,8 @@ def shortest_path_heap(graph, start_vertex):
         start_vertex: name of the vertex to start exploring
 
     Returns:
-        A dict containing all vertices in the graph as keys and the smallest
-        number of hops to get there from start_vertex.
+        A dict containing all vertices in the graph as keys and minimum cost
+            to get there from start_vertex.
     """
     INF = float('inf')
     S = [] # List of vertices processed so far.
