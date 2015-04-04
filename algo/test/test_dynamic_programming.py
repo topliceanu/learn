@@ -3,7 +3,8 @@
 import unittest
 
 from src.dynamic_programming import max_weighted_independent_set_in_path_graph, \
-                    knapsack, sequence_alignment, optimal_binary_search_tree
+                    knapsack, sequence_alignment, optimal_binary_search_tree, \
+                    binomial_coefficient
 
 
 class DynamicProgrammingTest(unittest.TestCase):
@@ -64,3 +65,9 @@ class DynamicProgrammingTest(unittest.TestCase):
         optimal = 0.9
         actual = optimal_binary_search_tree(frequencies)
         self.assertEqual(optimal, actual, 'should not return the best tree')
+
+
+    def test_binomial_coefficient(self):
+        actual = binomial_coefficient(2, 4)
+        self.assertEqual(actual, expected, 'should compute the correct value')
+

@@ -18,7 +18,8 @@ def max_weighted_independent_set_in_path_graph(weights):
         list, format [max_weight: int, vertices: list]
     """
 
-    # 0. Initialization.
+    # 0. Initialization: A[i] - max total weight of the independent set for
+    # the first i vertices in the graph.
     a = [0] * (len(weights)+1)
     a[0] = 0 # Max weight for empty graph.
     a[1] = weights[0] # Max weight for the graph with only the first weight.
@@ -50,6 +51,7 @@ def knapsack(items, capacity):
     such that you maximize the value of the items in the knapsack.
 
     Complexity: O(n*W), n - num of items, W - num of distinct capacity values.
+                NP-complete in the input size.
 
     Args:
         items: list of tuples, format [(name: str, value: int, size: int)]
@@ -189,3 +191,40 @@ def optimal_binary_search_tree(access_frequencies):
 
     # The end result is the value for the entire list of access frequencies.
     return C[0][n-1]
+
+def binomial_coefficient(m, n):
+    """ Given the equation (x+1)^n, return the coefficing of x^m.
+
+    Use as reference the triangle of Pascal:
+                1
+               1 1
+              1 2 1
+             1 3 3 1
+            1 4 6 4 1
+
+    Params:
+        m, int
+        n, int
+
+    Returns:
+        int
+    """
+    N = n+1
+    A = [[0]*N for __ in range(N)]
+
+    for i in range(N):
+        A[i][0] = 1
+        A[i][i] = 1
+
+    for i in range(1, N):
+        for j in range(1, i):
+            A[i][j] = A[i-1][j-1] + A[i-1][j]
+
+    return A[n][m]
+
+    # Recursive version.
+    #if n == 0:
+    #    return 1
+    #if m == 0 or m == n:
+    #    return 1
+    #return binomial_coefficient(m-1 , n-1) + binomial_coefficient(m, n-1)
