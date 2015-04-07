@@ -5,7 +5,7 @@ import unittest
 from src.dynamic_programming import max_weighted_independent_set_in_path_graph, \
                 knapsack, sequence_alignment, optimal_binary_search_tree, \
                 binomial_coefficient, maximum_monotone_sequence, min_coins, \
-                zig_zag
+                zig_zag, bad_neighbours, linear_partition
 
 
 class DynamicProgrammingTest(unittest.TestCase):
@@ -85,6 +85,18 @@ class DynamicProgrammingTest(unittest.TestCase):
         self.assertIn(max_sequence, possible_solutions,
             'should be one of the solutions')
 
+    def test_linear_partitions(self):
+        values = [100, 200, 300, 400, 500, 600, 700, 800, 900]
+        num_partitions = 3
+        expected_min_max_sum = 1700
+        expected_partitions = [[100, 200, 300, 400, 500], [600, 700], [800, 900]]
+
+        (min_max_sum, partitions) = linear_partition(values, num_partitions)
+        self.assertEqual(min_max_sum, expected_min_max_sum,
+            'should compute the expected min max sum of partition values')
+        self.assertEqual(partitions, expected_partitions,
+            'should return the correct partitions')
+
     def test_optimal_binary_search_tree(self):
         frequencies = [0.8, 0.1, 0.1]
         optimal = 0.9
@@ -135,4 +147,13 @@ class DynamicProgrammingTest(unittest.TestCase):
             self.assertEqual(max_length, expected[index], 'correct value')
 
     def test_bad_neighbours(self):
-        pass
+        sets = [
+            {'data': [10,3,2,5,7,8], 'max': 19, 'picked': [10,2,7]},
+            {'data': [1,2,3,4,5,1,2,3,4,5], 'max': 16, 'picked': [3,5,3,5]}
+        ]
+        for i in range(len(sets)):
+            (max_value, picked_values) = bad_neighbours(sets[i]['data'])
+            self.assertEqual(max_value, sets[i]['max'],
+                'computes max possible obtainable donations')
+            self.assertEqual(picked_values, sets[i]['picked'],
+                'computes the selected donations')

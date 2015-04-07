@@ -244,7 +244,7 @@ def maximum_monotone_sequence(s):
 
     return (max_length, max_sequence)
 
-def linear_partition(s, k):
+def linear_partition(values, num_partitions):
     """ Fairly partition a set of integers without rearrangement.
 
     Formally: Given an arrangement s of non-negative numbers and an integer k,
@@ -252,13 +252,60 @@ def linear_partition(s, k):
     ranges, without reordering the numbers.
 
     Params:
-        s: set, of non-negative integers representing job costs.
-        k: int, number of partitions in which to re-arrange the set
+        values: list, of non-negative integers representing job costs.
+        num_partitions: int, number of partitions in which to re-arrange the set
 
     Return:
-        list, of lists, representing the partitioned jobs.
+        tuple, format (min_max_sum, partitions)
+            min_max_sum: the min of max of the sums of elements in each partition.
+            partitions: list, of lists, representing the partitioned jobs.
     """
-    # TODO
+    # 0. Initialization
+    # A[i][j] - the min of max of sums of values for each
+    # partition, given that there are i partition in the first j elements in
+    # the set.
+    # A[i][j] = min
+    #
+    # - for 0 partitions, the value of A[0][j] = sum(v[0->j])
+    # - for 0 elements, the value of A[i][0] = 0
+    N = len(values)
+    A = [[0] * (N+1) for __ in range(num_partitions)]
+
+    for j in range(N+1):
+        A[0][j] = sum(values[:j])
+    for i in range(num_partitions):
+        A[i][0] = 0
+
+    # 1. Compute the partial problems.
+    for i in range(1, num_partitions):
+        for j in range(N+1):
+            # Split the [0,j] interval in two. Compute sum of the right
+            # elements and compare with the min of max sums computed in the
+            # previous step for the left elements.
+            minimum = float('inf')
+            for k in range(j):
+                sum_last_partition = sum(values[k:j])
+                maximum = max(A[i-1][k], sum_last_partition)
+                if maximum < minimum:
+                    minimum = maximum
+            A[i][j] = minimum
+    min_max_sum = A[num_partitions-1][N]
+
+    # 2. Trace-back to compute a partition. TODO this might not be correct.
+    partitions = []
+    last_partition = []
+    for i in range(N):
+        if sum(last_partition) + values[i] <= min_max_sum:
+            last_partition.append(values[i])
+        else:
+            partitions.append(last_partition[:])
+            last_partition = [values[i]]
+    if len(last_partition) > 0:
+        partitions.append(last_partition)
+
+    # 3. Return results.
+    return (min_max_sum, partitions)
+
 
 def optimal_binary_search_tree(access_frequencies):
     """ Build up an optimal search tree given a set of items and known
@@ -457,7 +504,58 @@ def bad_neighbours(values):
             max_value: int,
             picked_values: list
     """
-    pass # TODO
+    def max_donations(values):
+        """ Reduces the original problem to a non-circular list, ie. last and
+        first element are not considered neighbours.
+
+        Same input and output.
+        """
+        if len(values) < 2:
+            return
+
+        # 0. Initialization:
+        # A[i] - max donations which include the ith element.
+        # B[i] - for the max donation which includes ith element which was the
+        # position of the previous element which composes the solution.
+        N = len(values)
+        A = [0]*N
+        A[0] = values[0]
+        A[1] = values[1]
+        B = [None]*N
+
+        # 1. Compute the max donations values and remember choises made to
+        # help with rebuilding the solution.
+        for i in range(2, N):
+            maximum = float('-inf')
+            for j in range(i-1):
+                if maximum < A[j]:
+                    maximum = A[j]
+                    B[i] = j
+            A[i] = maximum + values[i]
+        maximum_donations = A[N - 1]
+
+        # 2. Compose the donations selection.
+        donations = []
+        i = N -1
+        while i != None:
+            donations.insert(0, values[i])
+            i = B[i]
+
+        # 3. Return the original values.
+        return (maximum_donations, donations)
+
+    # Because the list is circular, we will compute the result
+    # twice once for values[0:n-1] and once for values[1:n].
+    one = values[:-1] # exclude last value
+    two = values[1:] # exclude first value
+
+    (one_max_donation, one_donations) = max_donations(one)
+    (two_max_donation, two_donations) = max_donations(two)
+
+    if one_max_donation > two_max_donation:
+        return (one_max_donation, one_donations)
+    else:
+        return (two_max_donation, two_donations)
 
 def flower_garden(values):
     """
