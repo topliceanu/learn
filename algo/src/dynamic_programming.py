@@ -68,12 +68,12 @@ def knapsack(items, capacity):
     VALUE = 1
     SIZE = 2
 
-    # 0. Initialization: let V[i][x] be the intermediary solution, such that it
+    # 0. Initialization: let V[i][x] be the max weight, such that it
     # only uses the first i items and has at most x size.
     n = len(items)
     V = [[0]*(capacity+1) for __ in xrange(n+1)] # Max value for all solutions w/ 0 items is 0.
 
-    # 1. Compute the max possible value of the knapsack.
+    # 1. Compute the max possible value that fits in the knapsack.
     for i in xrange(1, n+1):
         for x in xrange(capacity+1):
             wi = items[i-1][SIZE]
@@ -86,16 +86,21 @@ def knapsack(items, capacity):
 
     # 2. Reconstruct the solution.
     picked_items = []
-    # TODO fix this.
-    #i = n
-    #x = capacity
-    #for i in xrange(n, 0, -1):
-    #    for x in xrange(capacity, 0, -1):
-    #        wi = items[i-i][SIZE]
-    #        vi = items[i-i][VALUE]
-    #        if wi < x and V[i-1][x-wi] + vi > V[i-1][x]:
-    #            #print '>>>>', i, x
-    #            picked_items.append(items[i-1])
+    i = n
+    x = capacity
+    while True:
+        [__, vi, wi] = items[i-1]
+        if wi > x:
+            i -= 1
+        else:
+            if V[i-1][x-wi] + vi > V[i-1][x]:
+                picked_items.insert(0, items[i-1])
+                i -= 1
+                x -= wi
+            else:
+                i -= 1
+        if i < 0 or x < 0:
+            break
 
     return (max_value, picked_items)
 
@@ -107,7 +112,7 @@ def sequence_alignment(X, Y, mismatch_penality, gap_penalty):
     (characters at corresponding indexes are different). The score is the
     minimum sum of such penalties which can express the diff between strings.
 
-    Creators: Saul B. Needleman Christian D. Wunsch
+    Creators: Saul B. Needleman and Christian D. Wunsch
 
     Args:
         X: str, first string
@@ -118,32 +123,142 @@ def sequence_alignment(X, Y, mismatch_penality, gap_penalty):
             characters.
 
     Returns:
-        float, the sum of penalties associated with dissimilarity between the
-            strings. If 0 then the inputs are identical.
+        tuple, format (total_penalty, x, y)
+        total_penalty: float, the sum of penalties associated with dissimilarity
+            between the strings. If 0 then the inputs are identical.
+        X_mod: str, the modified version of X with introduced gaps
+        Y_mod: str, the modified version of Y with introduced gaps
     """
     # 0. Initialization. A[i][j] is penalty for the optimal alignment between
     # X[i] and Y[j]
-    A = [[0]*(len(X)+1) for __ in xrange(len(Y)+1)]
+    A = [[0]*(len(Y)+1) for __ in xrange(len(X)+1)]
 
     # 1. Pad the array with the penalties when comparing a full string with an
     # empty string.
-    for i in xrange(len(X)+1):
-        A[0][i] = i * gap_penalty()
     for j in xrange(len(Y)+1):
-        A[j][0] = j * gap_penalty()
+        A[0][j] = j * gap_penalty()
+    for i in xrange(len(X)+1):
+        A[i][0] = i * gap_penalty()
 
     # 2. Compute all the subproblems.
     for i in xrange(1, len(X)+1):
         for j in xrange(1, len(Y)+1):
-            A[j][i] = min(A[j-1][i-1] + mismatch_penality(X[i-1], Y[j-1]),
-                          A[j-1][i] + gap_penalty(),
-                          A[j][i-1] + gap_penalty())
+            A[i][j] = min(A[i-1][j-1] + mismatch_penality(X[i-1], Y[j-1]),
+                          A[i-1][j] + gap_penalty(),
+                          A[i][j-1] + gap_penalty())
 
-    # 3. Return the value
-    return A[len(X)-1][len(Y)-1]
+    # 3. Compute total penalty.
+    total_penalty = A[len(X)][len(Y)]
 
     # 4. Implement trace-back to build up the modifications with produce
-    # optimal penalties. TODO
+    # optimal penalties.
+    X_mod = ''
+    Y_mod = ''
+    i = len(X)
+    j = len(Y)
+    while True:
+        a = A[i-1][j-1] + mismatch_penality(X[i-1], Y[j-1])
+        b = A[i-1][j] + gap_penalty()
+        c = A[i][j-1] + gap_penalty()
+        if A[i][j] == a: # There is missmatch between X and Y at position i.
+            X_mod = X[i-1] + X_mod
+            Y_mod = Y[j-1] + Y_mod
+            i -= 1
+            j -= 1
+        elif A[i][j] == b: # There is a gap in Y at position j.
+            X_mod = X[i-1] + X_mod
+            Y_mod = '-' + Y_mod
+            i -= 1
+        elif A[i][j] == c: # There is a gap in X at position i.
+            X_mod = '-' + X_mod
+            Y_mod = Y[j-1] + Y_mod
+            j -= 1
+        if i == 0 or j == 0:
+            break
+
+    # Add the left over gaps in front, if any.
+    if i == 0:
+        X_mod = ''.join(['-' for __ in range(j)]) + X_mod
+        Y_mod = ''.join(Y[:j]) + Y_mod
+    if j == 0:
+        X_mod = ''.join(X[:i]) + X_mod
+        Y_mod = ''.join(['-' for __ in range(i)]) + Y_mod
+
+    # 5. Return the results.
+    return (total_penalty, X_mod, Y_mod)
+
+
+# From Skienna: The Algorithm Design Manual, Dynamic Programming chapter.
+
+def match_substring(needle, haystack):
+    """ Find best approximate match of substring needle in a larger haystack.
+
+    Params:
+        needle: str, a pattern to look for.
+        haystack: str, a corpus to search for the pattern in.
+
+    Return:
+        str, the closest string to the pattern needle found in haystack.
+    """
+    pass # TODO
+
+def longest_common_subsequence(str1, str2):
+    """ Find the longest scattered substrings included in both inputs. """
+    pass # TODO
+
+def maximum_monotone_sequence(s):
+    """ Remove the fewest number of characters from input so that it leaves a
+    monotonically increasing subsequence.
+
+    Params:
+        s: str, input string
+
+    Returns:
+        tuple, format (max_length, max_sequence)
+        max_length: int, number of characters in subsequence
+        max_sequence: str, monotonically increasing subsequence.
+    """
+    # Initialize: A[i] is the length of the maximum increasing subsequence in
+    # the first i elements.
+    # B holds the predecessors for each value.
+    A = [1]*len(s)
+    B = [None]*len(s)
+
+    for i in range(1, len(s)):
+        max_length_so_far = 0
+        precedessor = None
+        for j in range(0, i):
+            if s[i] > s[j] and max_length_so_far < A[j]:
+                max_length_so_far = A[j]
+                precedessor = j
+        A[i] = max_length_so_far + 1
+        B[i] = precedessor
+
+    # Rebuild the solution.
+    max_length = A[len(s)-1]
+    max_sequence = ''
+    i = len(s) - 1
+    while i != None:
+        max_sequence = s[i] + max_sequence
+        i = B[i]
+
+    return (max_length, max_sequence)
+
+def linear_partition(s, k):
+    """ Fairly partition a set of integers without rearrangement.
+
+    Formally: Given an arrangement s of non-negative numbers and an integer k,
+    partition s into k or fewer ranges, to minimize the maximum sum over all
+    ranges, without reordering the numbers.
+
+    Params:
+        s: set, of non-negative integers representing job costs.
+        k: int, number of partitions in which to re-arrange the set
+
+    Return:
+        list, of lists, representing the partitioned jobs.
+    """
+    # TODO
 
 def optimal_binary_search_tree(access_frequencies):
     """ Build up an optimal search tree given a set of items and known
@@ -222,9 +337,131 @@ def binomial_coefficient(m, n):
 
     return A[n][m]
 
-    # Recursive version.
-    #if n == 0:
-    #    return 1
-    #if m == 0 or m == n:
-    #    return 1
-    #return binomial_coefficient(m-1 , n-1) + binomial_coefficient(m, n-1)
+
+# See topcoder tutorial on Dynamic Programming.
+
+def min_coins(coins, total):
+    """ Computes the minimum number of coins which sum up to total.
+
+    Params:
+        coins: list of non-negative integers representing the values of the coins.
+        total: int, in fact it has to be a non-negative integer.
+
+    Returns
+        tuple: (min_num_coins, picked_coins)
+            min_num_coins: int, the min number of coins
+            picked_coins: list, which coins are used which sum up to total.
+    """
+    # Initialize A[i] - the number of coins needed to sum up to value i.
+    # B[i] the coin chosen which yealds the min number of other coins to reach i.
+    A = [float('inf')] * (total + 1)
+    A[0] = 0
+    B = [None] * (total + 1)
+
+    # Compute subproblems.
+    for intermediary_total in range(1, total+1):
+        for coin in coins:
+            if coin > intermediary_total:
+                continue
+            if A[intermediary_total] > A[intermediary_total - coin] + 1:
+                A[intermediary_total] = A[intermediary_total - coin] + 1
+                B[intermediary_total] = coin
+
+    min_num_coins = A[total]
+
+    # Pick the last coin picked.
+    picked_coins = []
+    i = total
+    while i >= 0:
+        coin = B[i]
+        if coin == None:
+            break
+        picked_coins.append(coin)
+        i -= coin
+
+    return (min_num_coins, picked_coins)
+
+def zig_zag(numbers):
+    """ Determine the longest subsequence of numbers in input which form a
+    zig-zag sequence.
+
+    A sequence is zig-zag if the difference between successive numbers
+    alternates strictly between positive and negative.
+
+    See: http://community.topcoder.com/stat?c=problem_statement&pm=1259&rd=4493
+    for problem statement and test cases.
+
+    Params:
+        numbers: list, of ints.
+
+    Returns:
+        tuple, format (max_length, subsequence)
+            max_length: int, max length of a zig-zag sequence.
+            subsequence: list, the actual numbers.
+    """
+    # In the case where the numbers list is smaller than 2, simply return it.
+    if len(numbers) <= 2:
+        return (len(numbers), numbers)
+
+    # Initialization:
+    # A is a list of one and two elements is always zig-zag.
+    # B is a list which maintains for each i the previous position in the input
+    # which forms the longest zig-zag
+    A = [0] * len(numbers)
+    A[0] = 1
+    A[1] = 2
+    B = [None] * len(numbers)
+    B[1] = 0
+
+    def is_zig_zag(a, i, j, k):
+        """ Checks whether a[i], a[j] and a[k] are zig-zag. """
+        if i is None:
+            return True
+        return (a[i] - a[j] > 0 and a[j] - a[k] < 0) or \
+               (a[i] - a[j] < 0 and a[j] - a[k] > 0)
+
+    # Compute the max length zig-zag sequence.
+    for i in range(2, len(numbers)):
+        max_length = float('-inf')
+        predecessor = None
+        for j in range(i):
+            if is_zig_zag(numbers, B[j], j, i) and max_length < A[j] + 1:
+                max_length = A[j] + 1
+                predecessor = j
+        A[i] = max_length
+        B[i] = predecessor
+
+    max_index = A.index(max(A))
+
+    # Trace-back to compute one possible solution for longest zig-zag string.
+    i = max_index
+    subsequence = []
+    while i >= 0 and i != None:
+        subsequence.insert(0, numbers[i])
+        i = B[i]
+
+    return (A[max_index], subsequence)
+
+def bad_neighbours(values):
+    """ Maximize the values choosen from a circular list such that no two
+    values are neighbours.
+
+    See: http://community.topcoder.com/stat?c=problem_statement&pm=2402&rd=5009
+    for problem statement and test cases.
+
+    Params:
+        values: list, of integers
+
+    Returns:
+        tuple, format (max_value, picked_values)
+            max_value: int,
+            picked_values: list
+    """
+    pass # TODO
+
+def flower_garden(values):
+    """
+    See: http://community.topcoder.com/stat?c=problem_statement&pm=1918&rd=5006
+    for problem statement and test cases.
+    """
+    pass # TODO
