@@ -1,5 +1,7 @@
 # -*- coding:utf-8 -*-
 
+from src.ballanced_binary_search_tree import BST
+
 
 def max_weighted_independent_set_in_path_graph(weights):
     """ Computes the independent set with maximum total weight for a path graph.
@@ -264,8 +266,6 @@ def linear_partition(values, num_partitions):
     # A[i][j] - the min of max of sums of values for each
     # partition, given that there are i partition in the first j elements in
     # the set.
-    # A[i][j] = min
-    #
     # - for 0 partitions, the value of A[0][j] = sum(v[0->j])
     # - for 0 elements, the value of A[i][0] = 0
     N = len(values)
@@ -276,7 +276,10 @@ def linear_partition(values, num_partitions):
     for i in range(num_partitions):
         A[i][0] = 0
 
-    # 1. Compute the partial problems.
+    # 1. Compute the partial subproblems. The Recurstion is the following:
+    #            j                   j
+    # A[i][j] = min[ max(A[i-1][k], sum(v[p])) ]
+    #           k=0                 p=k
     for i in range(1, num_partitions):
         for j in range(N+1):
             # Split the [0,j] interval in two. Compute sum of the right
@@ -291,7 +294,8 @@ def linear_partition(values, num_partitions):
             A[i][j] = minimum
     min_max_sum = A[num_partitions-1][N]
 
-    # 2. Trace-back to compute a partition. TODO this might not be correct.
+    # 2. Trace-back to compute the actual partition.
+    # TODO this is not correct!
     partitions = []
     last_partition = []
     for i in range(N):
@@ -306,53 +310,72 @@ def linear_partition(values, num_partitions):
     # 3. Return results.
     return (min_max_sum, partitions)
 
-
-def optimal_binary_search_tree(access_frequencies):
+def optimal_binary_search_tree(items):
     """ Build up an optimal search tree given a set of items and known
     frequency of access for each of them.
 
     The subproblems are all the contiguous subsets [i, j] of the
-    access_frequencies list, thus creating an array of results, ie. C.
+    items list, thus creating an array of results, ie. C.
 
     Complexity: O(n^3) better then O(2^n) for brute force search.
 
     Args:
-        access_frequencies: dict, format {key: access_frequency}
+        items: list of tuples, format (key, access_frequency)
 
     Returns:
-        object, an optimized binary search tree.
+        tuple, format (search_cost, tree)
+            optimal_search_cost: int, the weighted search cost for an optimized BST
+            tree: object, the optimized binary search tree.
+
+    TODO Make this work!!!
     """
-    # 0. Initialization
-    n = len(access_frequencies)
+    # 0. Initialization.
+    items = sorted(items, key=lambda t: t[1])
+    n = len(items)
 
     # C[i][j] is the weighted search cost of an optimal BST for items i to j.
     C = [[0]*n for __ in xrange(n)]
+    # R[i][j] holds the optimal root for the optimal BST for items i to j.
+    R = [[None]*n for __ in xrange(n)]
 
     # 1. Compute all the subproblems:
     # C[i][j] =  min   (sum(pk) + C[i][r-1] + C[r+1][j])  , given that i>=j
     #           r=i->j  k=i->j
     # C[i][j] = 0  , if i < j
-    for i in range(n): # i is the first index of the contiguous loop.
-        for s in range(n): # s is the size of the problem, ie j-i
-            if i+s >= n:
+    # C is the total weighted access time for a BST with elements [i:j] and root r, i<=r<=j
+    for s in range(1, n): # s is the size of the problem, therefor j=i+s
+        for i in range(n): # i is the first index of the contiguous loop.
+            if s + i >= n:
                 continue
+
             min_cost = float('inf')
+            root = None
+
             for r in range(i, i+s):
                 if r-1 < 0:
                     left_cost = 0
                 else:
                     left_cost = C[i][r-1]
-                if r+1 > n:
+                if r+1 > n-1:
                     right_cost = 0
                 else:
                     right_cost = C[r+1][i+s]
-                tmp_min_cost = sum(access_frequencies[i:i+s]) + left_cost + right_cost
+                tmp_min_cost = sum([j[1] for j in items[i:i+s]]) + left_cost + right_cost
                 if tmp_min_cost < min_cost:
                     min_cost = tmp_min_cost
+                    root = r
+
             C[i][i+s] = min_cost
+            R[i][i+s] = root
 
     # The end result is the value for the entire list of access frequencies.
-    return C[0][n-1]
+    optimal_search_cost = C[0][n-1]
+
+    # 2. Build up the optimal tree structure.
+    bst = BST()
+    # TODO build the BST.
+
+    return (optimal_search_cost, bst)
 
 def binomial_coefficient(m, n):
     """ Given the equation (x+1)^n, return the coefficing of x^m.
