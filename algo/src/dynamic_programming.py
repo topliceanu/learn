@@ -45,67 +45,6 @@ def max_weighted_independent_set_in_path_graph(weights):
 
     return [max_weight, vertices]
 
-def knapsack(items, capacity):
-    """ Solves the knapsack problem given a capacity and a set of items.
-
-    The knapsack problem is defined as follows: given a list of items with
-    values and sizes a knapsack with a given size, optimize the knapsack usage,
-    such that you maximize the value of the items in the knapsack.
-
-    Complexity: O(n*W), n - num of items, W - num of distinct capacity values.
-                NP-complete in the input size.
-
-    Args:
-        items: list of tuples, format [(name: str, value: int, size: int)]
-        capacity: int, total capacity of the knapsack
-
-    Returns:
-        tuple, format (max_value, items)
-            max_value: int, represents the max value that fits in the given size.
-            picked_items: list of tuples, with the items picked to maximize the
-                knapsack usage. format [(name: str, value: int, size: int)]
-    """
-    # Indexes in the tuple.
-    NAME = 0
-    VALUE = 1
-    SIZE = 2
-
-    # 0. Initialization: let V[i][x] be the max weight, such that it
-    # only uses the first i items and has at most x size.
-    n = len(items)
-    V = [[0]*(capacity+1) for __ in xrange(n+1)] # Max value for all solutions w/ 0 items is 0.
-
-    # 1. Compute the max possible value that fits in the knapsack.
-    for i in xrange(1, n+1):
-        for x in xrange(capacity+1):
-            wi = items[i-1][SIZE]
-            vi = items[i-1][VALUE]
-            if wi > x:
-                V[i][x] = V[i-1][x]
-            else:
-                V[i][x] = max(V[i-1][x], V[i-1][x-wi] + vi)
-    max_value = V[n][capacity]
-
-    # 2. Reconstruct the solution.
-    picked_items = []
-    i = n
-    x = capacity
-    while True:
-        [__, vi, wi] = items[i-1]
-        if wi > x:
-            i -= 1
-        else:
-            if V[i-1][x-wi] + vi > V[i-1][x]:
-                picked_items.insert(0, items[i-1])
-                i -= 1
-                x -= wi
-            else:
-                i -= 1
-        if i < 0 or x < 0:
-            break
-
-    return (max_value, picked_items)
-
 def sequence_alignment(X, Y, mismatch_penality, gap_penalty):
     """ Computes the similarity measure between the two strings.
 

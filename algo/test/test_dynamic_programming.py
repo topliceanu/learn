@@ -3,7 +3,7 @@
 import unittest
 
 from src.dynamic_programming import max_weighted_independent_set_in_path_graph, \
-                knapsack, sequence_alignment, optimal_binary_search_tree, \
+                sequence_alignment, optimal_binary_search_tree, \
                 binomial_coefficient, maximum_monotone_sequence, min_coins, \
                 zig_zag, bad_neighbours, linear_partition
 
@@ -25,19 +25,6 @@ class DynamicProgrammingTest(unittest.TestCase):
         expected = [21, [1,5,6,9]]
         self.assertEqual(actual, expected, 'should compute the max weight '
                                            'of the independent set of vertices')
-
-    def test_knapsack(self):
-        items = [('a', 3, 2), ('b', 4, 4), ('c', 2, 4), ('d', 1, 4)]
-        capacity = 6
-        (max_value, picked_items) = knapsack(items, capacity)
-
-        expected_value = 7
-        self.assertEqual(max_value, expected_value,
-            'max value for the given capacity')
-
-        expected_items = [('a', 3, 2), ('b', 4, 4)]
-        self.assertEqual(set(picked_items), set(expected_items),
-            'should have picked the correct items')
 
     def test_sequence_alignment(self):
         def gap_penalty():
