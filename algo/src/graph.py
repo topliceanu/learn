@@ -111,7 +111,8 @@ class Graph:
     def incident(self, vertex):
         """ Returns a list of all vertices from which you can reach vertex.
 
-            This is relevant for directed graphs!
+        This is most relevant for directed graphs but can work on undirected
+        as well.
         """
         out = set()
         for tail, edges in self.table.iteritems():
