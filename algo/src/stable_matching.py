@@ -7,8 +7,16 @@ def stable_matching(u, v):
     """ Solves the stable matching problem using the Gale-Shapley Proposal
     algorithm.
 
+    Given two sets of items u and v, each item in u has preferences to items in
+    v, and every item in v has preferences to items in u. Compute a stable
+    matching between items in u and items in v, such that there is no item left
+    out, and the only reason why an item has no better option is because it's
+    better options all have better options in turn.
+
     We assume that the cardinalities of u and v are equal.
-    Created by Lloyd Shapley and David Gale
+
+    Created by Lloyd Shapley and David Gale.
+
     Complexity: O(n^2)
 
     Params:
