@@ -13,6 +13,9 @@ def knapsack_dynamic_programming(items, capacity):
     values and weights a knapsack with a given weight, optimize the knapsack usage,
     such that you maximize the value of the items in the knapsack.
 
+    We assume item sizes and knapsack capacity are small integers in order to
+    obtain polinomial running time.
+
     Complexity: O(n*W), n - num of items, W - num of distinct capacity values.
                 This is NP-complete in the input weight. Complexity is polinomial
                 only if the capacity W is not too big compared to n (polinomial).
@@ -124,8 +127,8 @@ def knapsack_dynamic_programming_small_values(items, capacity):
         capacity: int, total capacity of the knapsack
 
     Returns:
-        tuple, format (max_value, items)
-            max_value: int, represents the max value that fits in the given weight.
+        tuple, format (fit_value, items)
+            fit_value: int, represents the max value that fits in the given weight.
             picked_items: list of tuples, with the items picked to maximize the
                 knapsack usage. format [(name: str, value: int, weight: int)]
     """
@@ -148,20 +151,32 @@ def knapsack_dynamic_programming_small_values(items, capacity):
             else:
                 A[i][x] = min(A[i-1][x], A[i-1][x-vi] + wi)
 
-    #print '>>>'
-    #print '\n'.join([''.join(['{:4}'.format(i) for i in r]) for r in A])
-
-    # 2. Find the intermediary weight composed of all n items and whichh fits
+    # 2. Find the intermediary problem composed of all n items and which fits
     # in the knapsack.
     x = max_value
-    while x > capacity:
+    while A[n][x] > capacity:
         x -= 1
-    max_value = A[n][x]
+    fit_value = x
 
     # 3. Trace back to compute the optimal solution.
     picked_items = []
+    i = n
+    j = x # value
+    while True:
+        [__, vi, wi] = items[i-1]
+        if j < vi:
+            i -= 1
+        else:
+            if A[i-1][j-vi] + wi < A[i-1][j]:
+                picked_items.insert(0, items[i-1])
+                i -= 1
+                j -= vi
+            else:
+                i -= 1
+        if i < 0 or j < 0:
+            break
 
-    return (max_value, picked_items)
+    return (fit_value, picked_items)
 
 def knapsack_arbitrarely_close_approximation(items, capacity, epsilon=0.1):
     """ Solve the knapsack problem with an accuracy specified in input.
@@ -178,7 +193,8 @@ def knapsack_arbitrarely_close_approximation(items, capacity, epsilon=0.1):
     Params:
         items: list of tuples, format [(name: str, value: int, weight: int)]
         capacity: int, total capacity of the knapsack
-        epsilon: float, accuracy parameter supplied by the client.
+        epsilon: float, accuracy parameter supplied by the client. If epsilon is
+            small, the error will be small but the running time will be higher.
 
     Returns:
         tuple, format (max_value, items)
@@ -187,10 +203,18 @@ def knapsack_arbitrarely_close_approximation(items, capacity, epsilon=0.1):
                 knapsack usage. format [(name: str, value: int, weight: int)]
     """
     # Remove items larger than the knapsack capacity.
-    items = [i for i in items if i[WEIGHT] > capacity]
-    n = len(items)
-    Vmax = max(items, key=lambda i: i[VALUE])[VALUE]
-    m = epsilon * Vmax / n
-    modified = [(i[NAME], i[VALUE]/m, i[WEIGHT]) for i in items]
+    items = [i for i in items if i[WEIGHT] <= capacity]
 
-    return knapsack_dynamic_programming_small_values(modified, capacity)
+    # Modify the item values to make them small integers.
+    Vmax = max(items, key=lambda i: i[VALUE])[VALUE]
+    n = len(items)
+    m = epsilon * Vmax / n
+    modified = [(i[NAME], int(i[VALUE]/m), i[WEIGHT]) for i in items]
+
+    (max_value, picked_items) = knapsack_dynamic_programming_small_values(modified, capacity)
+
+    # Format output.
+    max_value = int(float(max_value) * m)
+    picked_names = [i[NAME] for i in picked_items]
+    picked_items = [i for i in items if i[NAME] in picked_names]
+    return (max_value, picked_items)
