@@ -12,7 +12,8 @@ from src.union_find import UnionFind
 def prims_suboptimal_mst(graph):
     """ Computes minimum spanning tree using the Prim's algorithm.
 
-    Running time O(n*m), where n is the num of vertices and m the num of edges.
+    Running time: O(n*m), where n is the num of vertices and m the num of edges.
+
     A greedy routine wereby we enlarge the set of explored vertices by always
     adding the edge on the frontier with the least cost.
 
@@ -56,7 +57,7 @@ def prims_suboptimal_mst(graph):
     return mst
 
 class VertexHeap(Heap):
-    """ Stores vertexes in a heap.
+    """ A heap to store vertices ordered by their cost.
 
     This heap maintains two invariants:
     1. elements in heap are vertexes with format (vertex, cost) which are part
@@ -94,7 +95,7 @@ def prims_heap_mst(graph):
     implementation. The heap maintains two invariants:
     1. elements in the heap are vertices not yet explored
     2. keys under which each vertex is stored in the heap is the minimum weight
-    of an edge incided to the vertex whose tail is already in the MST.
+    of an edge incident on the vertex whose tail is already in the MST.
 
     Complexity O(m*log n)
 
@@ -144,8 +145,9 @@ def prims_heap_mst(graph):
 def kruskal_suboptimal_mst(graph):
     """ Computes the MST of a given graph using Kruskal's algorithm.
 
-    Complexity is O(m*n) dominated by determining if adding a new edge
-    creates a cycle which is O(n).
+    Complexity: O(m*n) - it's dominated by determining if adding a new edge
+    creates a cycle which is O(n). This implementation does not use union-find.
+
     This algorithm also works for directed graphs.
 
     Discovered in 1956 by Joseph Kruskal.
@@ -161,7 +163,7 @@ def kruskal_suboptimal_mst(graph):
     num_vertices = len(graph.get_vertices())
 
     edges = graph.get_edges()
-    edges.sort(key=lambda e: e[2])
+    edges.sort(key=lambda e: e[2]) # sort edges asc by length.
 
     index = 0
     mst = Graph.build(edges=[], directed=False)
@@ -180,8 +182,14 @@ def kruskal_suboptimal_mst(graph):
 def kruskal_union_find_mst(graph):
     """ Uses Kruskel's greedy algorithm to compute the MST of graph.
 
-    Running time: O(m*logn) where m is the number of edges and n is the number
-    of vertices.
+    Running time: O(m*logn) - where m is the number of edges and n is the
+        number of vertices.
+
+    Params:
+        graph: object, instance of src.graph.Graph
+
+    Returns:
+        object, src.graph.Graph instance reperesenting the MST.
     """
     mst_edges = []
     edges = graph.get_edges()
@@ -206,6 +214,15 @@ def kruskal_union_find_mst(graph):
 
     mst = Graph.build(edges=mst_edges, directed=False)
     return mst
+
+def minimum_spanning_tree_randomized(graph):
+    """ Computes the minimum spanning tree using a randomized approach.
+
+    Complexity: O(m*alpha(n)) - where m - number of edges, n - number of vertices.
+
+    Created by: Karger, Klein and Tarjan in 1995.
+
+    """
 
 def minimum_spanning_bottleneck_tree(graph):
     """ A minimum spanning bottleneck tree is a subgraph of a connected,
