@@ -75,16 +75,24 @@ class Graph:
         """ Return all edges in the stored graph.
 
         If the graph is undirected, reverse edges will not be returned.
+        To speed things up, we use a set in case the graph is not directed.
 
         Returns:
             A list of tuples of format [(tail, head, value)]
         """
-        output = []
-        for tail, edges in self.table.iteritems():
-            for head, value in edges.iteritems():
-                if self.directed == False and (head, tail, value) in output:
-                    continue
-                output.append((tail, head, value))
+        if self.directed == False:
+            output = set()
+            for tail, edges in self.table.iteritems():
+                for head, value in edges.iteritems():
+                    t = sorted([tail, head])
+                    t.append(value)
+                    output.add(tuple(t))
+            output = list(output)
+        else:
+            output = []
+            for tail, edges in self.table.iteritems():
+                for head, value in edges.iteritems():
+                    output.append((tail, head, value))
         return output
 
     def adjacent(self, tail, head):
