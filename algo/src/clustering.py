@@ -15,7 +15,7 @@ def single_link(points, k, distance):
     when the number of clusters needed is reached.
 
     Args:
-        points: list of coordinates for points.
+        points: list of coordinates for points, format (x:int, y:int, name:str)
         k: int, number of clusters to create.
         distance: function, determins the distance between two points.
 
@@ -27,15 +27,24 @@ def single_link(points, k, distance):
     for point in points:
         union_find.make_set(point)
 
+    def modified_distance(p1, p2):
+        """ Hack which modifies the distance between two points to be +inf
+        when these two points are in the same cluster.
+        """
+        if union_find.find(p1) == union_find.find(p2):
+            dist = float('inf')
+        else:
+            dist = distance(p1, p2)
+        return dist
+
     numClusters = len(points)
 
     while numClusters > k:
-        (p, q) = closest_pair(points)
+        (p, q) = closest_pair(points, distance=modified_distance)
         if p == q:
             continue
 
         union_find.union(p, q)
-        points.remove(q)
         numClusters -= 1
 
     out = {}
@@ -46,8 +55,67 @@ def single_link(points, k, distance):
         out[leader].append(point)
     return out
 
+def cluster_graph(g, k):
+    """ Clusters the input graph using the single link method.
+
+    Args:
+        g: object, instance of src.graph.Graph
+        k: int, number of clusters to create
+
+    Returns:
+        tuple, format (clusters, distances)
+            clusters: dict, format {cluster_lead_vertex: [list_of_vertexes_in_cluster]}
+            distance: dict, format {(cluster1, cluster2): distance_between_cluster1_and_cluster2}
+    """
+    union_find = UnionFind()
+    vertices = g.get_vertices()
+    for vertex in vertices:
+        union_find.make_set(vertex)
+
+    edges = sorted(g.get_edges(), key=lambda e: e[2], reverse=True)
+    numClusters = len(vertices)
+
+    # Cluster the nodes in the union_find data structure.
+    while numClusters > k:
+        while True:
+            edge = edges.pop()
+            (head, tail, cost) = edge
+            if union_find.find(head) != union_find.find(tail):
+                break
+
+        union_find.union(head, tail)
+        numClusters -= 1
+
+    # Format the clusters for output.
+    clusters = {}
+    for vertex in vertices:
+        leader = union_find.find(vertex)
+        if leader not in clusters:
+            clusters[leader] = []
+        clusters[leader].append(vertex)
+
+
+    # Computes spacing between clusters, ie. the minimum distance between two
+    # nodes in different clusters.
+    distances = {}
+    for i in clusters.keys():
+        for j in clusters.keys():
+            if i != j:
+                distances[tuple(sorted([i, j]))] = float('inf')
+
+    edges = sorted(g.get_edges(), key=lambda e: e[2], reverse=True)
+    for edge in edges:
+        (tail, head, distance) = edge
+        lead_tail = union_find.find(tail)
+        lead_head = union_find.find(head)
+        if lead_tail != lead_head and \
+           distances[tuple(sorted([lead_tail, lead_head]))] > distance:
+            distances[tuple(sorted([lead_tail, lead_head]))] = distance
+
+    return (clusters, distances)
+
 def cluster_k_means(points, k, distance, num_iterations=10):
-    """ CLusters a group of points into k groups given a distance function
+    """ Clusters a group of points into k groups given a distance function
     between two points.
 
     Algorithm:
@@ -94,5 +162,3 @@ def cluster_k_means(points, k, distance, num_iterations=10):
             clusters[new_mean].append(point)
 
     return clusters
-
-
