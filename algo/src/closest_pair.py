@@ -3,7 +3,12 @@
 import math
 
 
-def closest_pair(points):
+def euclidean_distance(p, q):
+    """ Computes the distance between two points p and q.
+    """
+    return math.sqrt((p[0] - q[0])**2 + (p[1] - q[1])**2)
+
+def closest_pair(points, distance=euclidean_distance):
     """ Computes the closest pair from a given set of points in 2D.
 
     Running time is O(nlogn) time.
@@ -22,6 +27,7 @@ def closest_pair(points):
     Args:
         points: list of tuples [(x, y)] representing coordonates
             of the points analyzed.
+        distance: function, computes the distance between two points.
 
     Returns:
         A tuple of tuples representing the closest pair of points.
@@ -29,15 +35,16 @@ def closest_pair(points):
     Px = sorted(list(points), key=lambda x: x[0])
     Py = sorted(list(points), key=lambda x: x[1])
 
-    return closest_pair_rec(Px, Py)
+    return closest_pair_rec(Px, Py, distance=distance)
 
 
-def closest_pair_rec(Px, Py):
+def closest_pair_rec(Px, Py, distance=euclidean_distance):
     """ Recursively compute the closest pair in both px and py sets of points.
 
     Args:
-        px: list of tuples [(x, y)] sorted by x
-        py: list of tuples [(x, y)] sorted by y
+        Px: list of tuples [(x, y)] sorted by x
+        Py: list of tuples [(x, y)] sorted by y
+        distance: function, computes the distance between two points.
 
     Returns:
         A tuple with the closest pair of points format ((x1, y1), (x2, y2)).
@@ -45,7 +52,7 @@ def closest_pair_rec(Px, Py):
     if len(Px) < 4:
         # This is the base case.
         pairs = []
-        for i in range(len(Px) -1):
+        for i in range(len(Px) - 1):
             for j in range(i+1, len(Px)):
                 pairs.append((Px[i], Px[j]))
         pair = min(pairs, key=lambda p: distance(p[0], p[1]))
@@ -59,20 +66,20 @@ def closest_pair_rec(Px, Py):
     Ry = Py[:len(Py)/2]
 
     # Apply closest pair on both subsets.
-    (p1, q1) = closest_pair_rec(Qx, Qy)
-    (p2, q2) = closest_pair_rec(Rx, Ry)
+    (p1, q1) = closest_pair_rec(Qx, Qy, distance=distance)
+    (p2, q2) = closest_pair_rec(Rx, Ry, distance=distance)
 
     # Compute closest pair of subsets and split.
     tmp_pair = min([(p1, q1), (p2, q2)], key=lambda p: distance(p[0], p[1]))
     delta = distance(tmp_pair[0], tmp_pair[1])
-    split_pair = closest_split_pair(Px, Py, delta)
+    split_pair = closest_split_pair(Px, Py, delta, distance=distance)
 
     if split_pair is None:
         return tmp_pair
     else:
         return split_pair
 
-def closest_split_pair(Px, Py, delta):
+def closest_split_pair(Px, Py, delta, distance=euclidean_distance):
     """ Subroutine which checks if there is a pair of point such that one
     point is in Px, the other is in Py and the distance between them is less
     than delta.
@@ -85,13 +92,15 @@ def closest_split_pair(Px, Py, delta):
     Sy = [x for x in Px if x[0] >= big_x[0] - delta or x[0] <= big_x[0] + delta]
     best = delta
     best_pair = None
-    for i in range(len(Sy) - 7):
-        for j in range(7):
-            if distance(Sy[i], Sy[j]) < best:
+
+    # Compute limits for the brute force search on the neighbouring 7 elements.
+    m = len(Sy) - 7 if len(Sy) > 7 else len(Sy)
+    n = 7 if len(Sy) > 7 else len(Sy)
+
+    for i in range(m):
+        for j in range(n):
+            if Sy[i] != Sy[j] and distance(Sy[i], Sy[j]) < best:
                 best = distance(Sy[i], Sy[j])
                 best_pair = (Sy[i], Sy[j])
-    return best_pair
 
-def distance(p, q):
-    """ Computes the distance between two points p and q."""
-    return math.sqrt((p[0] - q[0])**2 + (p[1] - q[1])**2)
+    return best_pair
