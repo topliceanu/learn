@@ -3,6 +3,7 @@
 import unittest
 
 from src.knapsack import knapsack_dynamic_programming, \
+                         knapsack_dynamic_programming_memory_efficient, \
                          knapsack_three_step_heuristic, \
                          knapsack_arbitrarely_close_approximation, \
                          knapsack_dynamic_programming_small_values
@@ -22,6 +23,15 @@ class KnapsackTest(unittest.TestCase):
         expected_items = [('a', 3, 2), ('b', 4, 4)]
         self.assertEqual(set(picked_items), set(expected_items),
             'should have picked the correct items')
+
+    def test_knapsack_dynamic_programming_memory_efficient(self):
+        items = [('a', 3, 2), ('b', 4, 4), ('c', 2, 4), ('d', 1, 4)]
+        capacity = 6
+        (max_value, picked_items) = knapsack_dynamic_programming_memory_efficient(items, capacity)
+
+        expected_value = 7
+        self.assertEqual(max_value, expected_value,
+            'max value for the given capacity')
 
     def test_knapsack_three_step_heuristic(self):
         items = [('a', 3, 2), ('b', 4, 4), ('c', 2, 4), ('d', 1, 4)]

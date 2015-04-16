@@ -66,6 +66,50 @@ def knapsack_dynamic_programming(items, capacity):
 
     return (max_value, picked_items)
 
+def knapsack_dynamic_programming_for_two_knapsacks(items, capacity1, capacity2):
+    """ What if you had two knapsacks. How do you fill them optimally. """
+    # TODO
+
+def knapsack_dynamic_programming_memory_efficient(items, capacity):
+    """ The same API as the method above but with a focus on better memory
+    utilization.
+
+    Args:
+        items: list of tuples, format [(name: str, value: int, weight: int)]
+        capacity: int, total capacity of the knapsack
+
+    Returns:
+        tuple, format (max_value, items)
+            max_value: int, represents the max value that fits in the given weight.
+            picked_items: list of tuples, with the items picked to maximize the
+                knapsack usage. format [(name: str, value: int, weight: int)]
+    """
+
+    # 0. Initialization: let V[i][x] be the max value, such that it
+    # only uses the first i items and has at most x weight.
+    n = len(items)
+    V = [[0]*(capacity+1) for __ in xrange(2)] # Max value for all solutions w/ 0 items is 0.
+
+    # 1. Compute the max possible value that fits in the knapsack.
+    for i in xrange(1, n+1):
+        for x in xrange(capacity+1):
+            [__, vi, wi] = items[i-1]
+            if wi > x:
+                V[1][x] = V[0][x]
+            else:
+                V[1][x] = max(V[0][x], V[0][x-wi] + vi)
+        # Move the partial results in the first row.
+        V[0] = V[1]
+        V[1] = [0]*(capacity+1)
+
+    max_value = V[0][capacity]
+
+    # 2. TODO Reconstruct the solution by storing values for intermediate solutions.
+    picked_items = []
+
+    return (max_value, picked_items)
+
+
 def knapsack_three_step_heuristic(items, capacity):
     """ Solves the knapsack problem given a capacity and a set of items using
     a three-step heuristic:
