@@ -83,9 +83,7 @@ def shortest_path(graph, s):
     # 4. Compute the paths as well from each vertex to every other vertex,
     # by using the B 2d array.
     def rec_path(i):
-        if B[n-1][i] == None:
-            return []
-        if B[n-1][i] == pos_s:
+        if B[n-1][i] in [None, pos_s]:
             return []
         rest = rec_path(B[n-1][i])
         rest.append(vertices[B[n-1][i]])

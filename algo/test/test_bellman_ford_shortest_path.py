@@ -40,5 +40,5 @@ class BellmanFordTest(unittest.TestCase):
                 ('x', 't', 4)
             ],
             directed=True)
-        noNegativeCycles = shortest_path(g, 's')
-        self.assertFalse(noNegativeCycles, 'should detect no negative cycles')
+        no_negative_cycles = shortest_path(g, 's')
+        self.assertFalse(no_negative_cycles, 'should detect no negative cycles')
