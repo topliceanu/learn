@@ -1,6 +1,6 @@
 # -*- coding:utf-8 -*-
 
-from src.binary_search_tree import BST
+from src.binary_search_tree import BST, PARENT, LEFT, RIGHT, KEY
 
 
 class SplayTree(BST):
@@ -47,27 +47,27 @@ class SplayTree(BST):
         """
         while node[PARENT] != None:
             # ZIG.
-            if node[PARENT][PARENT] != None:
+            if node[PARENT][PARENT] == None:
                 if node[PARENT][LEFT] == node:
-                    self.rotate(LEFT, node[PARENT])
+                    self.rotate(node[PARENT], LEFT)
                 else:
-                    self.rotate(RIGHT, node[PARENT])
+                    self.rotate(node[PARENT], RIGHT)
             # ZIG-ZIG.
             elif node[PARENT][LEFT] == node and node[PARENT][PARENT][LEFT] == node[PARENT]:
-                self.rotate(LEFT, node[PARENT][PARENT])
-                self.rotate(LEFT, node[PARENT])
+                self.rotate(node[PARENT][PARENT], LEFT)
+                self.rotate(node[PARENT], LEFT)
             # ZIG-ZIG.
             elif node[PARENT][RIGHT] == node and node[PARENT][PARENT][RIGHT] == node[PARENT]:
-                self.rotate(RIGHT, node[PARENT][PARENT])
-                self.rotate(RIGHT, node[PARENT])
+                self.rotate(node[PARENT][PARENT], RIGHT)
+                self.rotate(node[PARENT], RIGHT)
             # ZIG-ZAG.
             elif node[PARENT][LEFT] == node and node[PARENT][PARENT][RIGHT] == node[PARENT]:
-                self.rotate(LEFT, node[PARENT])
-                self.rotate(RIGHT, node[PARENT])
+                self.rotate(node[PARENT], LEFT)
+                self.rotate(node[PARENT], RIGHT)
             # ZIG-ZAG.
             else:
-                self.rotate(RIGHT, node[PARENT])
-                self.rotate(LEFT, node[PARENT])
+                self.rotate(node[PARENT], RIGHT)
+                self.rotate(node[PARENT], LEFT)
         return node
 
     def insert(self, key):
@@ -75,14 +75,15 @@ class SplayTree(BST):
         node = BST.insert(self, key)
         return self.splay(node)
 
-    def delete(self, key):
+    def delete_and_splay(self, key):
         """ After regular BST delete, the former node's parent is hoisted to
         the root.
         """
-        node = BST.delete(self, key)
-        return self.splay(node[PARENT])
+        removed = BST.delete(self, key)
+        self.splay(removed[PARENT])
+        return removed
 
-    def search(self, key):
+    def search_and_splay(self, key):
         """ After a successful search operation the returned node is hoisted
         to the root before being returned.
         """
