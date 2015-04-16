@@ -30,4 +30,26 @@ class SplayTreeTest(unittest.TestCase):
         self.assertEqual(st.root[KEY], 12, 'root is now the parent of 12')
 
     def test_join_two_trees(self):
-        pass
+        st1 = SplayTree()
+        for i in range(30):
+            st1.insert(i)
+
+        st2 = SplayTree()
+        for i in range(30, 60):
+            st2.insert(i)
+
+        st1.join(st2)
+        self.assertEqual(st1.root[KEY], 29,
+            'root is now the largest element of st1')
+
+    def test_split_into_two_trees(self):
+        st = SplayTree()
+        for i in range(10):
+            st.insert(i)
+
+        [left_splay, right_splay] = st.split(5)
+
+        self.assertEqual([i[KEY] for i in left_splay.list_sorted()],
+                [0,1,2,3,4], 'correct left subtree')
+        self.assertEqual([i[KEY] for i in right_splay.list_sorted()],
+                [6,7,8,9], 'correct right subtree')

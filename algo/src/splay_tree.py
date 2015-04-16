@@ -1,6 +1,6 @@
 # -*- coding:utf-8 -*-
 
-from src.binary_search_tree import BST, PARENT, LEFT, RIGHT, KEY
+from src.binary_search_tree import BST, PARENT, LEFT, RIGHT, KEY, SIZE
 
 
 class SplayTree(BST):
@@ -114,7 +114,16 @@ class SplayTree(BST):
             key: int
 
         Returns
-            list, with format [left_subtree, right_subtree]
+            list, format [left, right]
+                left: instance of SplayTree
+                right: instance of SplayTree
         """
-        root = self.search(key)
-        return [root[LEFT], root[RIGHT]]
+        root = self.search_and_splay(key)
+
+        left = SplayTree()
+        left.root = [None, root[LEFT][KEY], root[LEFT][LEFT], root[LEFT][RIGHT], root[LEFT][SIZE]]
+
+        right = SplayTree()
+        right.root = [None, root[RIGHT][KEY], root[RIGHT][LEFT], root[RIGHT][RIGHT], root[RIGHT][SIZE]]
+
+        return [left, right]
