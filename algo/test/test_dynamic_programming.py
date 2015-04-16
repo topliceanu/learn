@@ -84,13 +84,30 @@ class DynamicProgrammingTest(unittest.TestCase):
         self.assertEqual(partitions, expected_partitions,
             'should return the correct partitions')
 
-    def x_test_optimal_binary_search_tree(self):
-        # TODO fix this
-        items = [('a', 0.1), ('c', 0.8), ('b', 0.1)]
-        expected_optimal_cost = 1.2
-        (optimal_search_cost, bst) = optimal_binary_search_tree(items)
+    def test_optimal_binary_search_tree(self):
+        items = [('a', 0.1), ('b', 0.1), ('c', 0.8)]
+        (optimal_search_cost, pre_order) = optimal_binary_search_tree(items)
+
+        expected_optimal_cost = 1.3
         self.assertEqual(optimal_search_cost, expected_optimal_cost,
             'should not return the best tree')
+
+        expected_pre_order = [('c', 0.8), ('a', 0.1), ('b', 0.1)]
+        self.assertEqual(pre_order, expected_pre_order,
+            'the vertices are in preorder so to easily to build an optimal BST')
+
+        items = [('1', 0.05), ('2', 0.4), ('3', 0.08), ('4', 0.04),
+                 ('5', 0.1), ('6', 0.1), ('7', 0.223)]
+        (optimal_search_cost, pre_order) = optimal_binary_search_tree(items)
+
+        expected_optimal_cost = 2.166
+        self.assertEqual(optimal_search_cost, expected_optimal_cost,
+            'should not return the best tree')
+
+        expected_pre_order = [('2', 0.4), ('1', 0.05), ('7', 0.223),
+                              ('5', 0.1), ('3', 0.08), ('4', 0.04), ('6', 0.1)]
+        self.assertEqual(pre_order, expected_pre_order,
+            'the vertices are in preorder so to easily to build an optimal BST')
 
     def test_binomial_coefficient(self):
         actual = binomial_coefficient(2, 4)

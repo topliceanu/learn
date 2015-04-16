@@ -357,6 +357,7 @@ class BST(object):
         See: http://www.geeksforgeeks.org/serialize-deserialize-binary-tree/ for
         ways to serialize binary search trees efficiently.
 
+
         Returns:
             A list with all elements in the data structure in sorted order.
         """
@@ -371,6 +372,8 @@ class BST(object):
 
         traversal(self.root)
         return output
+
+    # TODO: implement pre-order, post-order and in-order listings
 
     # UTILITIES
 
@@ -541,7 +544,6 @@ class BST(object):
         """
 
         def traverse(sorted_list, start, end):
-            #import pdb; pdb.set_trace()
             if start > end:
                 return None
 

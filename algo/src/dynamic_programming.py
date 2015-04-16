@@ -1,7 +1,5 @@
 # -*- coding:utf-8 -*-
 
-from src.ballanced_binary_search_tree import BST
-
 
 def max_weighted_independent_set_in_path_graph(weights):
     """ Computes the independent set with maximum total weight for a path graph.
@@ -44,6 +42,16 @@ def max_weighted_independent_set_in_path_graph(weights):
             i -= 1
 
     return [max_weight, vertices]
+
+def max_weighted_independent_set_in_tree(g):
+    """ Computes the max weight independent set of vertices for a tree.
+
+    Args:
+        g: object, instance of src.graph.Graph
+
+    Returns:
+        list, format [max_weight: int, vertices: list]
+    """
 
 def sequence_alignment(X, Y, mismatch_penality, gap_penalty):
     """ Computes the similarity measure between the two strings.
@@ -259,17 +267,17 @@ def optimal_binary_search_tree(items):
     Complexity: O(n^3) better then O(2^n) for brute force search.
 
     Args:
-        items: list of tuples, format (key, access_frequency)
+        items: list, of tuples, format (key, access_frequency)
 
     Returns:
-        tuple, format (search_cost, tree)
+        tuple, format (search_cost, pre_order)
             optimal_search_cost: int, the weighted search cost for an optimized BST
-            tree: object, the optimized binary search tree.
-
-    TODO Make this work!!!
+            pre_order: list, of tuples, format (key, access_frequency)
+                arrangement of tuples in pre-order which makes it easy to
+                reconstruct an optimal BST.
     """
-    # 0. Initialization.
-    items = sorted(items, key=lambda t: t[1])
+    # 0. Initialization: sort items by key, not access frequency.
+    items = sorted(items, key=lambda t: t[0])
     n = len(items)
 
     # C[i][j] is the weighted search cost of an optimal BST for items i to j.
@@ -280,17 +288,17 @@ def optimal_binary_search_tree(items):
     # 1. Compute all the subproblems:
     # C[i][j] =  min   (sum(pk) + C[i][r-1] + C[r+1][j])  , given that i>=j
     #           r=i->j  k=i->j
-    # C[i][j] = 0  , if i < j
-    # C is the total weighted access time for a BST with elements [i:j] and root r, i<=r<=j
-    for s in range(1, n): # s is the size of the problem, therefor j=i+s
+    # C[i][j] = 0  , if j < i
+    # C[i][j] is the total weighted access time for a BST with elements [i:j] and root r, i<=r<=j
+    for s in range(0, n): # s is the size of the problem, therefor j=i+s
         for i in range(n): # i is the first index of the contiguous loop.
-            if s + i >= n:
+            if i + s >= n:
                 continue
 
             min_cost = float('inf')
             root = None
 
-            for r in range(i, i+s):
+            for r in range(i, i+s+1):
                 if r-1 < 0:
                     left_cost = 0
                 else:
@@ -299,7 +307,8 @@ def optimal_binary_search_tree(items):
                     right_cost = 0
                 else:
                     right_cost = C[r+1][i+s]
-                tmp_min_cost = sum([j[1] for j in items[i:i+s]]) + left_cost + right_cost
+                tmp_min_cost = sum([j[1] for j in items[i:i+s+1]]) + \
+                        left_cost + right_cost
                 if tmp_min_cost < min_cost:
                     min_cost = tmp_min_cost
                     root = r
@@ -311,10 +320,35 @@ def optimal_binary_search_tree(items):
     optimal_search_cost = C[0][n-1]
 
     # 2. Build up the optimal tree structure.
-    bst = BST()
-    # TODO build the BST.
+    pre_order = []
 
-    return (optimal_search_cost, bst)
+    def traverse(i, j):
+        """ Traverse the R array to compute the pre-order traversal of the
+        optimal binary search tree.
+
+        The items list is traversed recursively in intervals [i,j]. For each
+        invocation the root position is extracted from R array.
+
+        Args:
+            i: int, the left side of the subtree
+            j: int, the right side of the subtree
+
+        Returns:
+            list, pre-order traversal of the optimal bst.
+        """
+        if i > j:
+            return
+
+        r = R[i][j]
+        if r == None:
+            return
+
+        pre_order.append(items[r])
+        traverse(i, r-1)
+        traverse(r+1, j)
+    traverse(0, n-1)
+
+    return (optimal_search_cost, pre_order)
 
 def binomial_coefficient(m, n):
     """ Given the equation (x+1)^n, return the coefficing of x^m.
