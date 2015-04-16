@@ -1,6 +1,6 @@
 # -*- coding:utf-8 -*-
 
-from src.ballanced_binary_search_tree import BST
+from src.binary_search_tree import BST
 
 
 class SplayTree(BST):
