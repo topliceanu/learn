@@ -141,6 +141,44 @@ class TestGraph(unittest.TestCase):
         self.assertEqual(incident, neighbours,
                 'should be the same for undirected graphs')
 
+    def test_incident_invariant_is_preserved_throughout_graph_operations(self):
+        g = Graph(directed = True)
+
+        g.add_vertex(1)
+        self.assertEqual(g.incident(1), [],
+            'should have instantiated an empty set of ingress vertices')
+
+        g.add_edge((2,1))
+        g.add_edge((2,1))
+        self.assertEqual(g.incident(1), [2],
+            'set of incident vertices is preserved')
+        self.assertEqual(g.incident(2), [], 'no vertices incident in 2')
+
+        g.remove_edge((2,1))
+        self.assertEqual(g.incident(1), [],
+            '2 was removed from the list of incident vertices for 3')
+
+    def test_incident_vertices_are_correctly_maintained_after_remove_vertex(self):
+        g = Graph(directed=True)
+        g.add_edge((1,2))
+        g.add_edge((2,3))
+        g.add_edge((3,1))
+        # table: {1: {2: True}, 2: {3: True}, 3: {1: True}}
+        # incident: {1: set([3]), 2: set([1]), 3: set([2])}
+        g.remove_vertex(1)
+        self.assertEqual(g.table, {2: {3: True}, 3: {}})
+        self.assertEqual(g.incident_vertices, {2: set(), 3: set([2])})
+
+        g = Graph(directed=False)
+        g.add_edge((1,2))
+        g.add_edge((2,3))
+        g.add_edge((3,1))
+        # table: {1: {2: True, 3: True}, 2: {1: True, 3: True}, 3: {1: True, 2: True}}
+        # incident: {1: set([2, 3]), 2: set([1, 3]), 3: set([1, 2])}
+        g.remove_vertex(1)
+        self.assertEqual(g.table, {2: {3: True}, 3: {2: True}})
+        self.assertEqual(g.incident_vertices, {2: set([3]), 3: set([2])})
+
     def test_get_edge_value_in_directed_graph(self):
         g = Graph(True)
         g.add_edge((1,2,3))
@@ -194,6 +232,13 @@ class TestGraph(unittest.TestCase):
         self.assertTrue(g.table[2][1], 'should keep edges not involving 3')
         self.assertNotIn(3, g.table, 'vertex 3 disappeared')
         self.assertNotIn(3, g.table[1], 'edge from 3 to 1 dissappeared')
+
+    def test_remove_vertex_removes_value_as_well(self):
+        g = Graph(False)
+        g.add_vertex(1)
+        g.set_vertex_value(1, 100)
+        g.remove_vertex(1)
+        self.assertIsNone(g.get_vertex_value(1), '1 is no longer in the graph')
 
     def test_rename_vertex(self):
         g = Graph(True)

@@ -6,10 +6,12 @@ class Graph:
     Uses the adjacency list paradigm to save on space.
 
     Attributes:
-        directed: bool marking whether or not the graph is directed.
-        table: dict with all vertices in the graph as keys. The format is
+        directed: bool, marking whether or not the graph is directed.
+        table: dict, with all vertices in the graph as keys. The format is
             {tail: {head: edge_value}
-        values: dict holding the values of vertices. Format: {vertex: value}
+        values: dict, holding the values of vertices. Format: {vertex: value}
+        incident_vertices: dict, holds a set of ingress vertices for each vertex
+            in the graph. Format {head: {tails}}
     """
 
     def __init__(self, directed=False):
@@ -21,6 +23,9 @@ class Graph:
 
         # Dict structure to hold the vertices values.
         self.values = {}
+
+        # Dict to hold ingress vertices. Format {head: {tails}}
+        self.incident_vertices = {}
 
     def split_edge(self, edge):
         """ Disambiguate edges.
@@ -45,6 +50,8 @@ class Graph:
         """ Adds vertex to the graph data structure. """
         if vertex not in self.table:
             self.table[vertex] = {}
+        if vertex not in self.incident_vertices:
+            self.incident_vertices[vertex] = set()
 
     def add_edge(self, edge):
         """ Adds edge to the graph data structure.
@@ -64,8 +71,10 @@ class Graph:
             return
 
         self.table[tail][head] = value
+        self.incident_vertices[head].add(tail)
         if self.directed == False:
             self.table[head][tail] = value
+            self.incident_vertices[tail].add(head)
 
     def get_vertices(self):
         """ Returns all vertices in the stored graph. """
@@ -122,23 +131,25 @@ class Graph:
         This is most relevant for directed graphs but can work on undirected
         as well.
         """
-        out = set()
-        for tail, edges in self.table.iteritems():
-            if vertex in edges:
-                out.add(tail)
-        return list(out)
+        if vertex not in self.incident_vertices:
+            return []
+        return list(self.incident_vertices[vertex])
 
     def ingress(self, vertex):
         """ Return all the edges whose head is vertex. """
+        if vertex not in self.incident_vertices:
+            return []
+
         output = []
-        for tail, edges in self.table.iteritems():
-            for head, value in edges.iteritems():
-                if head is vertex:
-                    output.append((tail, head, value))
+        for tail in self.incident_vertices[vertex]:
+            output.append((tail, vertex, self.table[tail][vertex]))
         return output
 
     def egress(self, vertex):
-        """ Return all the edgeswhose tail is vertex. """
+        """ Return all the edges whose tail is vertex. """
+        if vertex not in self.table:
+            return []
+
         edges = []
         for head, value in self.table[vertex].iteritems():
             edges.append((vertex, head, value))
@@ -183,20 +194,33 @@ class Graph:
         if tail in self.table:
             if head in self.table[tail]:
                 del self.table[tail][head]
+                self.incident_vertices[head].remove(tail)
         if self.directed == False:
             if head in self.table:
                 if tail in self.table[head]:
                     del self.table[head][tail]
+                    self.incident_vertices[tail].remove(head)
 
     def remove_vertex(self, vertex):
-        """ Removes vertex and it's adiacent and incidend edges. """
+        """ Removes vertex and it's adiacent and incident edges.
+
+        Graph data is stored in three structures: table, values and
+        incident_vertices. All these structures have to be cleaned up.
+        """
         if vertex not in self.table:
             return
-        del self.table[vertex]
 
-        for tail, edges in self.table.iteritems():
-            if vertex in edges:
-                del self.table[tail][vertex]
+        if vertex in self.values:
+            del self.values[vertex]
+
+        for head in self.table[vertex]:
+            self.incident_vertices[head].remove(vertex)
+
+        for tail in self.incident_vertices[vertex]:
+            del self.table[tail][vertex]
+
+        del self.table[vertex]
+        del self.incident_vertices[vertex]
 
     def rename_vertex(self, old, new):
         """ Renames old vertex into new vertex.
