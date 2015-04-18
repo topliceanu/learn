@@ -31,29 +31,42 @@ OPTIONAL: If you want a bigger data set to play with, try computing the
 shortest shortest path for this graph [./GraphLarge.txt]
 """
 
-import os
-
-from src.all_pairs_shortest_paths import dijkstra, roy_floyd_warshall, johnson
-from src.graph import Graph
-
-
-def read_graph(file_name):
-    """ Reads graph adjacency matrix from the given file. """
-    g = Graph.build(directed=True)
-    with open('{base}/test/{f}'.format(base=os.getcwd(), f=file_name), 'r') as f:
-        [num_vertices, num_edges] = map(int, f.readline().split())
-        for __ in range(num_edges):
-            [tail, head, value] = map(int, f.readline().split())
-            g.add_edge((tail, head, value))
-    return g
-
-
-g1 = read_graph('Graph1.txt')
+#import os
+#
+#from src.all_pairs_shortest_paths import dijkstra, roy_floyd_warshall, johnson
+#from src.graph import Graph
+#
+#
+#def read_graph(file_name):
+#    """ Reads graph adjacency matrix from the given file. """
+#    g = Graph.build(directed=True)
+#    with open('{base}/test/{f}'.format(base=os.getcwd(), f=file_name), 'r') as f:
+#        [num_vertices, num_edges] = map(int, f.readline().split())
+#        for __ in range(num_edges):
+#            [tail, head, value] = map(int, f.readline().split())
+#            g.add_edge((tail, head, value))
+#    return g
+#
+#g1 = read_graph('Graph1.txt')
 #g2 = read_graph('Graph2.txt')
 #g3 = read_graph('Graph3.txt')
-
-
-#o11 = johnson(g1)
-o12 = roy_floyd_warshall(g1)
-
-
+#
+#o1 = johnson(g1)
+#o2 = johnson(g2)
+#o3 = johnson(g3)
+#o1 = roy_floyd_warshall(g1)
+#o2 = roy_floyd_warshall(g2)
+#o3 = roy_floyd_warshall(g3)
+#
+#if o1 is False:
+#    print "graph1 has a negative cost cycle"
+#else:
+#    print 'min shortest path in graph1 is ' + min([y for __, y in x.iteritems() for __, x in o1.iteritems()])
+#if o2 is False:
+#    print "graph1 has a negative cost cycle"
+#else:
+#    print 'min shortest path in graph1 is ' + min([y for __, y in x.iteritems() for __, x in o2.iteritems()])
+#if o3 is False:
+#    print "graph1 has a negative cost cycle"
+#else:
+#    print 'min shortest path in graph1 is ' + min([y for __, y in x.iteritems() for __, x in o3.iteritems()])
