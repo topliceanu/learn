@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from src.bellman_ford import shortest_path as bellman_ford_shortest_paths
+from src.bellman_ford_shortest_path import shortest_path as bellman_ford_shortest_paths
 from src.dijkstra_shortest_path import shortest_path_heap as dijkstra_shortest_path
 from src.graph import Graph
 
@@ -10,8 +10,18 @@ INF = float('inf')
 
 def dijkstra(graph):
     """ Run dijkstra on all nodes in a graph with no cycles and no negative edges.
+
+    Params:
+        graph: object, instance of src.graph.Graph
+
+    Returns:
+        dict, containg costs for each pair of vertices, format
+            {source: {destination: min_cost}}
     """
-    pass
+    costs = {}
+    for vertex in graph.get_vertices():
+        costs[vertex] = dijkstra_shortest_path(graph, vertex)
+    return costs
 
 def roy_floyd_warshall(graph):
     """ Implements the Roy-Floyd-Warshall algorithm for computing min cost
@@ -22,14 +32,15 @@ def roy_floyd_warshall(graph):
         of the graph.
 
     Params:
-        g: object, object encapsulating a graph.
+        graph: object, object encapsulating a graph.
 
     Returns:
         False, if the graph has a negative cost cyle in it
         dict, containg costs for each pair of vertices, format {tail: {head: min_cost}}
     """
-
     # 0. Initialization
+    # A[i,j,k] - the cost of the shortest path between source i and
+    # destination j when we are only allowed to use the first k vertices.
     vertices = graph.get_vertices()
     n = len(vertices)
     A = [[[0]*n for __ in range(n)] for __ in range(n)]
@@ -45,29 +56,39 @@ def roy_floyd_warshall(graph):
             else: # When they are not adjacent in the graph.
                 A[pos_i][pos_j][0] = INF
 
-    # 1. Recurrence and check for negative cost cycles in the graph.
-    has_negative_cost_cycles = False
-    for k in range(1, n):
-        for i in range(1, n):
-            for j in range(1, n):
+    # 1. Recurrence and check for negative cost cycles in the graph:
+    # The solution for A[i,j,k] is either the path obtained with the first k-1
+    # vertices, or the shortest path from i to k and from k to j using the
+    # first k-1 vertices.
+    for k in range(1, n): # k goes from 1 to n inclusive
+        for i in range(0, n): # i goes from 0 to n-1 inclusive
+            for j in range(0, n): # j goes from 0 to n-1 inclusive
                 A[i][j][k] = min(A[i][j][k-1], A[i][k][k-1]+A[k][j][k-1])
-                if A[i][j][k] < 0:
-                    has_negative_cost_cycles = True
 
-    # 2. Print output.
+    # 2. Detect negative cycles by checking the diagonal (the path with the
+    # minimimum cost from a vertex to itself should be 0, not negative).
+    has_negative_cost_cycles = False
+    for i in range(1, n):
+        if A[i][i][n-1] < 0:
+            has_negative_cost_cycles = True
+            break
+
     if has_negative_cost_cycles:
         return False
-    else:
-        out = []
-        for i in range(n):
-            out.append([])
-            for j in range(n):
-                out[i].append(A[i][j])
-        return out
+
+    # 3. Print output of the algorithm.
+    out = {}
+    for i, x in enumerate(vertices):
+        out[x] = {}
+        for j, y in enumerate(vertices):
+            out[x][y] = A[i][j][n-1]
+    return out
 
 def johnson(g):
     """ Compute the shortest path for every pair of vertices in the given graph
     using the Johnson's algorithm.
+
+    Complexity: O(mnlogn) - for dense graphs m=O(n^2) it's O(n^3logn)
 
     Algorithm:
     1. Add a new vertex 'S' and connect it to every other vertex in the graph
@@ -81,14 +102,13 @@ def johnson(g):
     7. Run Dijkstra from each of the original nodes to compute shortest paths.
     8. Extract the true shortest paths for each pair Ce' by subtracting Cu and Cv.
 
-    Running Time: O(mnlogn) - for dense graphs m=O(n^2) it's O(n^3logn)
-
     Params:
         g: object, object encapsulating a graph.
 
     Returns:
         False, if the graph has a negative cost cyle in it
-        dict, containg costs for each pair of vertices, format {tail: {head: min_cost}}
+        dict, containg costs for each pair of vertices, format:
+            {source: {destination: min_cost}}
     """
     # 1.
     g.add_vertex('s')
@@ -96,14 +116,15 @@ def johnson(g):
         g.add_edge(('s', vertex, 0))
 
     # 2.
-    shortest_paths = bellman_ford_shortest_paths(g, 's')
+    result = bellman_ford_shortest_paths(g, 's', return_paths=False)
 
     # 3.
-    if shortest_paths is False:
+    if result is False:
         return False
+    shortest_paths_costs = result[0]
 
     # 4.
-    for head, cost in shortest_paths.iteritems():
+    for head, cost in shortest_paths_costs.iteritems():
         g.set_vertex_value(head, cost)
 
     # 5.
@@ -122,6 +143,7 @@ def johnson(g):
     # 8.
     for tail, span in out.iteritems():
         for head, cost in span.iteritems():
-            out[tail][head] = cost + g.get_vertex_value(tail) - g.get_vertex_value(head)
+            out[tail][head] = cost + g.get_vertex_value(tail) \
+                                   - g.get_vertex_value(head)
 
     return out
