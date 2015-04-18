@@ -49,40 +49,37 @@ def shortest_path_heap(graph, start_vertex):
         A dict containing all vertices in the graph as keys and minimum cost
             to get there from start_vertex.
     """
+    vertices = graph.get_vertices()
     INF = float('inf')
-    S = [] # List of vertices processed so far.
+    S = set() # Set of vertices processed so far.
     A = {} # Computed shortes paths distances for every node
            # in the graph. Format: {vertex: path_length}
 
     # Initially all vertices have an INF cost.
-    frontier = VertexHeap.heapify([(v, INF) for v in graph.get_vertices()])
-    frontier.remove(start_vertex)
+    frontier = VertexHeap.heapify([(v, INF) for v in vertices if v != start_vertex])
 
-    vertex = (start_vertex, 0)
-    while vertex:
-        S.append(vertex[0])
-        A[vertex[0]] = vertex[1]
+    pair = (start_vertex, 0)
+    while True:
+        (vertex, distance) = pair
+        S.add(vertex) # Mark vertex as processed.
+        A[vertex] = distance # Store distance to vertex from source.
 
-        if len(S) == len(graph.get_vertices()):
+        if len(S) == len(vertices):
             break
 
-        for head in graph.get_vertices():
-            if head not in S:
-                # For each vertex not in S compute greedy
-                # score of all inbound vertices.
-                dijkstra_greedy_score = INF
-                for edge in graph.ingress(head):
-                    [tail, __, cost] = graph.split_edge(edge)
-                    if tail in S:
-                        if dijkstra_greedy_score > cost + A[tail]:
-                            dijkstra_greedy_score = cost + A[tail]
-                # Store that back into the heap.
-                if dijkstra_greedy_score != INF:
-                    frontier.remove(head)
-                    frontier.insert((head, dijkstra_greedy_score))
+        # Compute the new frontier:
+        # 1. All vertices starting from the newly added vertex.
+        for edge in graph.egress(vertex):
+            [__, head, cost] = graph.split_edge(edge)
+            if head in S:
+                continue
+            (__, min_score) = frontier.remove(head)
+            if min_score > cost + distance:
+                min_score = cost + distance
+            frontier.insert((head, min_score))
 
         # Compute the next vertex to add
-        vertex = frontier.extract_min()
+        pair = frontier.extract_min()
 
     return A
 
