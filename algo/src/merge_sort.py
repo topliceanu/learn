@@ -37,9 +37,15 @@ def merge (left, right):
 
 
 def merge_sort (arr):
-    """ Sorts out an array.
+    """ Sort the input array.
 
-    Note! does modify the input array.
+    This implementations does modify the input array.
+    Merge sort is better suited for sorting liked lists than arrays because
+    of the low auxiliary storage required.
+    Merge sort is better when sorting data from disk because it requires less
+    reads.
+
+    Complexity: O(nlogn)
 
     Args:
         arr: list, of items.

@@ -84,6 +84,10 @@ class Heap(object):
             data = []
         self.data = data
 
+    def __len__(self):
+        """ Returns the size of the internal array of data. """
+        return len(self.data)
+
     def insert(self, element):
         """ Adds an element to the heap.
 

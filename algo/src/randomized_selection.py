@@ -10,6 +10,8 @@ def randomized_selection(arr, n, i):
 
     NOTE! We are not sorting arr, we just want the ith element in the array.
 
+    Complexity: O(n)
+
     Params:
         arr: the input array
         n: the length of the input array

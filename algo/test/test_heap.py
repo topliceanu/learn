@@ -50,6 +50,11 @@ class TestHeap(unittest.TestCase):
         self.assertTrue(Heap.is_heap(good), 'should hold the heap property')
         self.assertFalse(Heap.is_heap(bad), 'should not hold the heap property')
 
+    def test_heap_length(self):
+        data = [1,2,3,114,5,6,7,8,9,10]
+        h = Heap.heapify(data)
+        self.assertEqual(len(h), len(data), 'should be the same length')
+
     def test_insert(self):
         """ Test that adding an element preserves the heap property.
         Given the following heap:
