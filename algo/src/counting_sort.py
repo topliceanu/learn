@@ -3,12 +3,12 @@
 def counting_sort(numbers):
     """ Sorts the input array using the counting method.
 
-    It's usefull when the variation between the smallest and the largest of the
-    input values is not large.
+    A type of bucket sort method that is usefull when the variation between
+    the smallest/largest input values is not large and the distribution of
+    values is uniform.
 
     Args:
         numbers: list of integers to sort
-        k: int, such that any number in numbers is between 0 and k inclusive.
 
     Returns:
         list of sorted numbers.

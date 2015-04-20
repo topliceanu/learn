@@ -13,3 +13,7 @@ def maximum_flow(g, s, t):
         s: str, name of the input vertex
         t: str, name of the output vertex
     """
+
+def ford_fulkerson_maximum_flow(g, s, t):
+    """ Solves the maximum flow problem using the ford-fulkerson algorithm.
+    """
