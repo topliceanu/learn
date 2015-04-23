@@ -29,6 +29,12 @@ class BST(object):
     def __init__(self):
         self.root = None
 
+    def __len__(self):
+        """ Returns the number of nodes in the binary search tree. """
+        if self.root == None:
+            return 0
+        return self.root[SIZE]
+
     def insert(self, key):
         """ Insert a node into the data structure.
 
@@ -351,29 +357,85 @@ class BST(object):
             return 1 + left_size + self.recursive_rank(key, node[RIGHT])
 
     def list_sorted(self):
-        """ In-order traversal of a binary search tree.
+        """ Serialized the binary tree.
 
-        For each node, first traverse the left subtree then the right.
-        See: http://www.geeksforgeeks.org/serialize-deserialize-binary-tree/ for
-        ways to serialize binary search trees efficiently.
-
+        See: http://www.geeksforgeeks.org/serialize-deserialize-binary-tree/
+        for usage example.
 
         Returns:
-            A list with all elements in the data structure in sorted order.
+            A list with all keys in the tree in sorted order.
         """
+        return self.in_order_traversal()
+
+    def in_order_traversal(self):
+        """ Return a list of node keys ordered LEFT, ROOT then RIGHT. """
         output = []
 
         def traversal(node):
-            if node[LEFT] is not None:
-                traversal(node[LEFT])
-            output.append(node)
-            if node[RIGHT] is not None:
-                traversal(node[RIGHT])
+            if node == None:
+                return
+            traversal(node[LEFT])
+            output.append(node[KEY])
+            traversal(node[RIGHT])
 
         traversal(self.root)
         return output
 
-    # TODO: implement pre-order, post-order and in-order listings
+    def pre_order_traversal(self):
+        """ Return a list of node keys ordered ROOT, LEFT then RIGHT. """
+        output = []
+
+        def traversal(node):
+            if node == None:
+                return
+            output.append(node[KEY])
+            traversal(node[LEFT])
+            traversal(node[RIGHT])
+
+        traversal(self.root)
+        return output
+
+    def post_order_traversal(self):
+        """ Return a list of node keys ordered LEFT, RIGHT then ROOT """
+        output = []
+
+        def traversal(node):
+            if node == None:
+                return
+            traversal(node[LEFT])
+            traversal(node[RIGHT])
+            output.append(node[KEY])
+
+        traversal(self.root)
+        return output
+
+    def is_subtree(self, bst):
+        """ Checks if input bst is a subtree of the current bst.
+
+        TODO: what if the keys habe duplicates?
+
+        Args:
+            bst: object, instance of src.binary_search_tree.BST
+
+        Returns:
+            bool
+        """
+        found_root = self.search(bst.root[KEY])
+        if found_root == None:
+            return False
+
+        def match_tree(root1, root2):
+            if root1 == None and root2 == None:
+                return True
+            if (root1 == None or root2 == None):
+                return False
+            if root1[KEY] != root2[KEY]:
+                return False
+            if match_tree(root1[LEFT], root2[LEFT]) == False:
+                return False
+            return match_tree(root1[RIGHT], root2[RIGHT])
+
+        return match_tree(found_root, bst.root)
 
     # UTILITIES
 
@@ -531,6 +593,39 @@ class BST(object):
                     max(left_diameter, right_diameter))
 
     @staticmethod
+    def is_ballanced_binary_search_tree(bst):
+        """ Method checks if the tree is maintains the ballanced binary search
+        tree invariants:
+        - left subtree keys are always smaller than the root key, right subtree
+        keys are always larger than root key
+        - all the layers of the tree are completely filled except for the last
+        one which is partially filled.
+
+        To make it easier, compute the largest depth and the smallest depth.
+        They should not be more then 1 apart.
+
+        Args:
+            bst: instance of src.binary_search_tree.BST
+
+        Returns:
+            bool
+        """
+        if BST.is_binary_search_tree(bst.root) == False:
+            return False
+
+        def min_max_depth(node):
+            if node == None:
+                return (0, 0)
+
+            (min_left, max_left) = min_max_depth(node[LEFT])
+            (min_right, max_right) = min_max_depth(node[RIGHT])
+
+            return (1 + min(min_left, min_right), 1 + max(max_left, max_right))
+
+        (min_depth, max_depth) = min_max_depth(bst.root)
+        return 0 <= max_depth - min_depth <= 1
+
+    @staticmethod
     def is_binary_search_tree(root):
         """ Static method verifies the binary search tree requirement for all
         nodes in the tree.
@@ -643,8 +738,8 @@ class BST(object):
         Return:
             object, instance of BST
         """
-        sorted1 = map(lambda node: node[KEY], tree1.list_sorted())
-        sorted2 = map(lambda node: node[KEY], tree2.list_sorted())
+        sorted1 = tree1.list_sorted()
+        sorted2 = tree2.list_sorted()
         joined_sorted = merge(sorted1, sorted2)
 
         return cls.from_sorted(joined_sorted)
