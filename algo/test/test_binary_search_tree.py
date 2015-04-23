@@ -57,7 +57,7 @@ class TestBST(unittest.TestCase):
     def test_output(self):
         b = BST.build([3,1,2,5,4])
 
-        actual = [node[KEY] for node in b.list_sorted()]
+        actual = b.list_sorted()
         expected = [1,2,3,4,5]
         self.assertEqual(actual, expected, 'should list the key in order')
 
@@ -266,6 +266,24 @@ class TestBST(unittest.TestCase):
         self.assertIsNone(n3[LEFT])
         self.assertIsNone(n3[RIGHT])
 
+    def test_is_ballanced_binary_search_tree(self):
+        """ Test three cases:
+              (3)        (3)               (3)
+                        /   \             /   \
+                     (1)     (7)       (1)     (7)
+                       \     / \               /  \
+                      (2)  (5) (10)          (5) (10)
+                          /  \
+                        (4) (6)
+        """
+        bst1 = BST.build([3])
+        bst2 = BST.build([3, 1, 2, 7, 5, 4, 6, 10])
+        bst3 = BST.build([3, 1, 7, 5, 10])
+
+        self.assertTrue(BST.is_ballanced_binary_search_tree(bst1))
+        self.assertFalse(BST.is_ballanced_binary_search_tree(bst2))
+        self.assertTrue(BST.is_ballanced_binary_search_tree(bst3))
+
     def test_is_binary_search_tree(self):
         """ Construct two trees, a plain one and a binary search tree:
         - binary search tree -    - non-search-tree -
@@ -390,3 +408,61 @@ class TestBST(unittest.TestCase):
         expected = 5
         self.assertEqual(actual, expected, 'should return the path with '+
                                            'the max number of vertices')
+
+    def test_in_order_traversal(self):
+        """ Running examples:
+                    (3)
+                   /   \
+                (1)     (5)
+               /  \     / \
+             (0)  (2) (4) (7)
+        """
+        tree = BST.build([3, 1, 0, 2, 5, 4, 7])
+        expected = [0, 1, 2, 3, 4, 5, 7]
+        actual = tree.in_order_traversal()
+        self.assertEqual(actual, expected, 'in-order traversal')
+
+    def test_pre_order_traversal(self):
+        """ Running examples:
+                    (3)
+                   /   \
+                (1)     (5)
+               /  \     / \
+             (0)  (2) (4) (7)
+        """
+        tree = BST.build([3, 1, 0, 2, 5, 4, 7])
+        expected = [3, 1, 0, 2, 5, 4, 7]
+        actual = tree.pre_order_traversal()
+        self.assertEqual(actual, expected, 'pre-order traversal')
+
+    def test_post_order_traversal(self):
+        """ Running examples:
+                    (3)
+                   /   \
+                (1)     (5)
+               /  \     / \
+             (0)  (2) (4) (7)
+        """
+        tree = BST.build([3, 1, 0, 2, 5, 4, 7])
+        expected = [0, 2, 1, 4, 7, 5, 3]
+        actual = tree.post_order_traversal()
+        self.assertEqual(actual, expected, 'post-order traversal')
+
+    def test_is_subtree(self):
+        """ Given the following binary tree:
+                    (3)
+                   /   \
+                (1)     (5)
+               /  \     / \
+             (0)  (2) (4) (7)
+        """
+        tree = BST.build([3, 1, 0, 2, 5, 4, 7])
+        subtree1 = BST.build([1, 0, 2]) # Left subtree
+        subtree2 = BST.build([2]) # A leaf.
+        subtree3 = BST.build([3, 1, 0, 2, 5, 4, 7]) # The same tree.
+        subtree4 = BST.build([5, 4, 8]) # Modified right subtree.
+
+        self.assertTrue(tree.is_subtree(subtree1), 'the left subtree')
+        self.assertTrue(tree.is_subtree(subtree2), 'a tree with only leaf')
+        self.assertTrue(tree.is_subtree(subtree3), 'the same as original tree')
+        self.assertFalse(tree.is_subtree(subtree4), 'modified right subtree')

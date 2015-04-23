@@ -33,6 +33,8 @@ class BTree(BST):
     in the parent of the subtree.
     - the root has at least two children if it's not a leaf.
 
+    Invented By: Rudolf Bayer, Edward McCreigh in 1972
+
     Args:
         m: int, the order of the b-tree (ie. the max number of children a node
             can have)
