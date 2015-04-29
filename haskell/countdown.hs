@@ -20,10 +20,10 @@ valid Div x y   = (mod x y) == 0
 
 -- improved solution validity checker.
 valid'           :: Op -> Int -> Int -> Bool
-valid' Add _ _   = x > y -- invalidates the comutated expressions.
+valid' Add x y   = x > y -- invalidates the comutated expressions.
 valid' Sub x y   = x > y
-valid Mul _ _   = x > y && x ~ 1 && y ~ 1 -- invalidates the comutated expressions and expressions where either memeber is 1.
-valid' Div x y   = (mod x y) == 0 && y ~ 1 -- there is no point in dividing by 1
+valid' Mul x y   = (x > y) && (x /= 1 || y /= 1) -- invalidates the comutated expressions and expressions where either memeber is 1.
+valid' Div x y   = ((mod x y) == 0) && (y /= 1) -- there is no point in dividing by 1
 
 -- evaluates the application of the application to the two numbers.
 eval            :: Expr -> [Int]
