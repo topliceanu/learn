@@ -10,7 +10,7 @@ def traveling_salesman(g):
     shortest path from vertex 1 to vertex j with where the visited vertex are
     in the set S (S includes 1 and j).
 
-    Complexity: O(n^2*2^n) far better than brute force O(n!)
+    Complexity: O((n^2)*(2^n)) far better than brute force O(n!)
 
     Args:
         g: object, instance of src.graph.Graph class.
