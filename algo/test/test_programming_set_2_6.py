@@ -31,3 +31,21 @@ backtracking. In lecture we mentioned this approach only in passing; see
 Chapter9 of the Dasgupta-Papadimitriou-Vazirani book, for example,
 for more details.
 """
+
+import math
+import os
+
+from src.graph import Graph
+from src.sat import two_sat_scc
+
+
+clauses = []
+
+with open('{base}/test/2sat6.txt'.format(base=os.getcwd()), 'r') as f:
+    num_vars = int(f.readline())
+    for i in range(num_vars):
+        clause = map(int, f.readline().split())
+        clauses.append(clause)
+
+is_verified = two_sat_scc(clauses)
+print '>>>>>', is_verified # 101100
