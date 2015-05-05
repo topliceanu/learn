@@ -18,36 +18,50 @@ def vertex_cover(g):
     Returns:
         list, of vertices which compose the vertex cover.
     """
-    min_solution = []
+    min_solution = None
     for k in range(1, len(g.get_vertices())):
         local_solution = vertex_cover_bounded_num_edges(g.clone(), k)
+        if local_solution == []:
+            continue
+        if min_solution == None:
+            min_solution = local_solution
         if len(min_solution) > len(local_solution):
             min_solution = local_solution
     return min_solution
 
 def vertex_cover_bounded_num_edges(g, k):
     """ This is a simplification of the previous problem, whereby we compute a
-    vertex cover by choosing at most k edges.
+    vertex cover by choosing at most k edges. Ie. it is a reduction to a
+    decision problem.
 
     Params:
         g: object, instance of src.graph.Graph
         k: int, the number of edges allowed to build the vertex cover.
 
     Returns:
-        list, of vertices which compose the vertex cover.
+        list, of vertices which compose the vertex cover. If the list is empty,
+            this means there is no vertex set to cover all edges.
     """
     vertices = g.get_vertices()
     edges = g.get_edges()
 
     # Base cases:
     if len(vertices) == 0:
+        return []
+    if len(vertices) == 1:
         return vertices
     if len(edges) == 0:
-        return []
+        return vertices
     if k == 0:
         return [] # No vertex cover with 0 edges.
     if k == 1:
-        return vertices
+        # Brute-force to find a vertex cover containing one vertex.
+        transport = {edges[0][0], edges[0][1]}
+        for edge in edges[1:]:
+            transport = transport.intersection({edge[0], edge[1]})
+            if len(transport) == 0:
+                return []
+        return list(transport)
 
     (tail, head, __) = random.choice(edges)
 
