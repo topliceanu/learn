@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 
+import math
+
+
 class Graph:
     """ Base data structure to hold graph data using adjacency lists.
 
@@ -269,4 +272,28 @@ class Graph:
             g.add_vertex(vertex)
         for edge in edges:
             g.add_edge(edge)
+        return g
+
+    @staticmethod
+    def build_from_coords(coords=[], directed=False, distance=None):
+        """ Method builds a Graph instance from a list of point coordinates.
+
+        Args:
+            coords: list of tuples, format [(name, x, y)]
+
+        Returns:
+            object, instance of src.graph.Graph
+        """
+        if distance == None:
+            def distance(p1, p2):
+                """ Default is euclidian distance. """
+                return float(math.sqrt((p1[1] - p2[1])**2 + (p1[2] - p2[2])**2))
+
+        g = Graph.build(directed=directed)
+        for p1 in coords:
+            for p2 in coords:
+                if p1 == p2:
+                    continue
+                g.add_edge((p1[0], p2[0], distance(p1, p2)))
+
         return g
