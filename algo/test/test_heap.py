@@ -168,9 +168,18 @@ class TestHeap(unittest.TestCase):
     def test_bubble_up(self):
         h = Heap([])
         h.data = [3, 4, 2]
-        h.bubble_up(2)
+        new_index = h.bubble_up(2)
         self.assertTrue(Heap.is_heap(h.data), 'should maintain the heap prop')
         self.assertEqual(h.data, [2,4,3], 'should have reorganized the heap')
+        self.assertEqual(new_index, 0, 'should return the correct new index')
+
+    def test_bubble_down(self):
+        h = Heap([])
+        h.data = [3, 2, 4]
+        new_index = h.bubble_down(0)
+        self.assertTrue(Heap.is_heap(h.data), 'should maintain the heap prop')
+        self.assertEqual(h.data, [2,3,4], 'should have reorganized the heap')
+        self.assertEqual(new_index, 1, 'should return the correct new index')
 
     def test_get_min(self):
         h = Heap(range(10))

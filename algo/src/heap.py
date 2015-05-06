@@ -202,6 +202,7 @@ class Heap(object):
                 (self.data[parent], self.data[index]) = \
                     (self.data[index], self.data[parent])
                 index = parent
+        return index
 
     def bubble_down(self, parent):
         """ Bubbles down the element at position <parent> (if it has any children).
@@ -213,7 +214,7 @@ class Heap(object):
         A.K.A. percolate down
 
         Args:
-            parent: int, the key in the heap to bubble down.
+            parent: int, the index in the heap to bubble down.
         """
         while True:
             left = parent * 2 + 1
@@ -225,6 +226,7 @@ class Heap(object):
             (self.data[parent], self.data[min_index]) = \
                 (self.data[min_index], self.data[parent])
             parent = min_index
+        return parent
 
     def get_min(self, parent, left, right):
         """ Returns the index corresponging to the minimum values in a list.
