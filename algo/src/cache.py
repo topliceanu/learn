@@ -2,6 +2,8 @@
 
 import time
 
+from src.heap import Heap
+
 
 class Cache(object):
     """ Base abstract class for all cache eviction strategies."""
@@ -55,9 +57,16 @@ class LRUCache(Cache):
         Args:
             key: str
             value: anything
+
+        Returns:
+            tuple, in case a value had to be evicted. Format (key, value).
+                key: str
+                value: anything
+            None, in case no eviction takes place
         """
+        evicted = None
         if len(self.data) == self.max_size and key not in self.data:
-            self.evict()
+            evicted = self.evict()
 
         if self.first == None: # First element in the cache.
             node = {'key': key, 'value': value, 'next': None, 'previous': None}
@@ -80,6 +89,7 @@ class LRUCache(Cache):
                 self.first['previous'] = node
                 self.first = node
             node['value'] = value
+        return evicted
 
     def read(self, key):
         """ Reads a piece of data from the cache.
@@ -107,7 +117,14 @@ class LRUCache(Cache):
         return value
 
     def evict(self):
-        """ Removes the last recently used key from the cache. """
+        """ Removes the last recently used key from the cache.
+
+        Returns:
+            dict, in case a value had to be evicted. Format {key, value}.
+                key: str
+                value: anything
+            None, in case no eviction takes place
+        """
         node = self.last
         if node == None: # The cache has no elements.
             return
@@ -118,4 +135,206 @@ class LRUCache(Cache):
         else: # The cache has only one element.
             self.first = None
             self.last = None
+
         del self.data[node['key']]
+        return {'key': node['key'], 'value': node['value']}
+
+    def remove(self, key):
+        # TODO Implement this!!
+        pass
+
+
+class MRUCache(Cache):
+    """ Most Recently Used cache implementation.
+
+    This cache evicts the most recent item requested when the storage is full.
+
+    Args:
+        data: dict, format {key: {key, value, next, previous}}
+        deque: object, format {key, value, next, previous}
+    """
+
+    def __init__(self, max_size):
+        Cache.__init__(self, max_size)
+        self.data = {}
+        self.deque = None
+
+    def write(self, key, value):
+        """ Writes the given (key, value) pair to the cache storage. """
+        evicted = None
+        if key not in self.data and len(self.data) == self.max_size:
+            evicted = self.evict()
+
+        if self.deque == None:
+            node = {'previous': None, 'next': None, 'key': key, 'value': value}
+            self.deque = node
+            self.data[key] = node
+        elif key in self.data:
+            self.promote(key)
+            self.deque['value'] = value
+        else:
+            node = {'previous': None, 'next': self.deque, 'key': key, 'value': value}
+            self.deque['previous'] = node
+            self.deque = node
+            self.data[key] = node
+        return evicted
+
+    def read(self, key):
+        """ Reads from the cache the value with the specified key. """
+        if key not in self.data:
+            raise Exception('Cache miss for key {key}'.format(key=key))
+
+        self.promote(key)
+        return self.deque['value']
+
+    def promote(self, key):
+        """ Brings the specified key into the head pointer of the deque. """
+        node = self.data[key]
+        if node['previous'] == None:
+            return
+        node['previous']['next'] = node['next']
+        node['previous'] = None
+        node['next'] = self.deque
+        self.deque['previous'] = node
+        self.deque = node
+
+    def evict(self):
+        """ Removes the head pointer when cache is full.
+
+        Returns:
+            dict, in case a value had to be evicted. Format {key, value}.
+                key: str
+                value: anything
+            None, in case no eviction takes place
+        """
+        node = self.deque
+        if node['next'] != None:
+            node['next']['previous'] = None
+        self.deque = node['next']
+
+        del self.data[node['key']]
+        return {'key': node['key'], 'value': node['value']}
+
+
+class LFUHeap(Heap):
+    """ Extends the base Heap class to allow the heap to hold references to
+    the stored hash table int the queue and maintain the object with min
+    frequency as the root.
+
+    TODO This heap should also maintains a list of all the indexes of the nodes.
+
+    Attrs:
+        data: list, with format [{key, value, freq}]
+            key: str, the key for the index.
+            value: any, value to be stored in the cache.
+            freq: int, increments whenever the value is read/written.
+    """
+    def compare(self, left, right):
+        """ Compares two elements in the heap by their frequency property. """
+        return cmp(left['freq'], right['freq'])
+
+
+class LFUCache(Cache):
+    """ Least Frequently Used cache implementation.
+
+    To implement fast least frequently used key retrieval this class uses a heap.
+    """
+
+    def __init__(self, max_size):
+        Cache.__init__(self, max_size)
+        self.data = {}
+        self.heap = LFUHeap()
+
+    def write(self, key, value):
+        """ Writes the data to the cache.
+
+        Note: when writing the counter for the key is also incremented.
+        """
+        evicted = None
+        if len(self.data) == self.max_size and key not in self.data:
+            evicted = self.evict()
+
+        if key not in self.data:
+            node = {'key': key, 'value': value, 'freq': 0}
+            self.data[key] = node
+            self.heap.insert(node)
+        else:
+            self.data[key]['value'] = value
+        self.increment_frequency(key)
+        return evicted
+
+    def read(self, key):
+        """ Reads the value for the given key from the cache.
+
+        The key gets its frequency increased whenever it is read.
+        """
+        if key not in self.data:
+            raise Exception('Cache miss for key={key}'.format(key=key))
+
+        self.increment_frequency(key)
+        return self.data[key]
+
+    def increment_frequency(self, key):
+        """ Increments the frequency of the given key. """
+        node = self.data[key]
+        index = self.heap.data.index(node)
+        node['freq'] += 1
+        self.heap.remove(index)
+        self.heap.insert(node)
+
+    def evict(self):
+        """ Evicts the element with the least usage frequency.
+
+        Returns:
+            dict, in case a value had to be evicted. Format {key, value}.
+                key: str
+                value: anything
+            None, in case no eviction takes place
+        """
+        node = self.heap.extract_min()
+        del self.data[node['key']]
+        return {'key': node['key'], 'value': node['value']}
+
+
+class SLRUCache(Cache):
+    """ Segmented LRU cache implementation.
+
+    The cache data is split into two segments: probation and protected.
+    Both the probation and protected segments are LRU caches.
+    When writing, the data is stored in the probation section of the cache.
+    When reading a key, it is moved in the most recently used section of the
+    protected segment, even if the key was located in the probation segment.
+    When overflow occurs on the probation segment, the least recently used key
+    is removed completely the cache. When overflow occurs on the protected
+    segment, the least recently used key is moved to the probation segment.
+
+    Attrs:
+        max_size
+        max_size_probation
+        probation
+        protected
+    """
+
+    def __init__(self, max_size, max_size_probation=None):
+        Cache.__init__(self, max_size)
+        if max_size_probation == None:
+            self.max_size_probation = self.max_size * 4
+
+        self.probation = LRUCache(self.max_size_probation)
+        self.protected = LRUCache(self.max_size)
+
+    def write(self, key, value):
+        """ Returns the evicted value. """
+        return self.probation.write(key, value)
+
+    def read(self, key):
+        try:
+            protected_value = self.protected.read(key)
+            return protected_value
+        except Exception, e:
+            probation_value = self.probation.read(key)
+            self.probation.remove(key)
+            evicted = self.protected.write(key, probation_value)
+            self.probation.write(evicted['key'], evicted['value'])
+
+            return probation_value

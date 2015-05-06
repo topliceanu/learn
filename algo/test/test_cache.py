@@ -3,20 +3,23 @@
 import time
 import unittest
 
-from src.cache import LRUCache
+from src.cache import LRUCache, MRUCache, LFUCache
 
 
-class TestCache(unittest.TestCase):
+class TestLRUCache(unittest.TestCase):
 
     def test_write_evicts_the_oldest_elem_when_cache_is_full(self):
         lru = LRUCache(2)
         lru.write('a', 10)
         lru.write('b', 20)
-        lru.write('c', 30)
+        evicted = lru.write('c', 30)
 
         self.assertEqual(len(lru.data), 2, 'should have only one element')
         self.assertEqual(lru.first['key'], 'c', 'c is the most recent')
         self.assertEqual(lru.last['key'], 'b', 'b is the latest addition')
+
+        self.assertEqual(evicted['key'], 'a', 'should have evicted key a')
+        self.assertEqual(evicted['value'], 10, 'should have evicted value for a')
 
     def test_write_adds_only_element_to_cache(self):
         lru = LRUCache(2)
@@ -110,9 +113,137 @@ class TestCache(unittest.TestCase):
         lru = LRUCache(2)
         lru.write('a', 10)
         lru.write('b', 20)
-        lru.write('c', 30)
+        evicted = lru.write('c', 30)
 
         self.assertEqual(lru.read('b'), 20, 'should read the correct data')
         with self.assertRaises(Exception) as notFound:
             lru.read('a')
         self.assertIsNotNone(notFound, 'Cache miss')
+
+        self.assertEqual(evicted['key'], 'a', 'should have evicted key a')
+        self.assertEqual(evicted['value'], 10, 'should have evicted value for a')
+
+
+class TestMRUCache(unittest.TestCase):
+    # TODO: better tests are needed!
+
+    def test_mru_writes_key_to_empty_cache(self):
+        mru = MRUCache(2)
+        mru.write('a', 1)
+
+        self.assertEqual(mru.deque['key'], 'a', 'head pointer is correct')
+        self.assertIn('a', mru.data, 'key a should be stored')
+
+    def test_mru_writes_key_to_a_cache_with_one_value(self):
+        mru = MRUCache(2)
+        mru.write('a', 1)
+        mru.write('b', 2)
+
+        self.assertEqual(mru.deque['key'], 'b', 'b is the new head pointer')
+        self.assertEqual(mru.deque['next']['key'], 'a', 'a is after b')
+        self.assertEqual(mru.deque['next']['previous']['key'], 'b', 'before a is b')
+        self.assertIn('a', mru.data, 'key a should be stored')
+        self.assertIn('b', mru.data, 'key b should be stored')
+
+    def test_mru_writes_key_to_a_cache_with_more_than_2_keys(self):
+        mru = MRUCache(3)
+        mru.write('a', 1)
+        mru.write('b', 2)
+        mru.write('c', 3)
+
+        self.assertEqual(mru.deque['key'], 'c', 'c is the head pointer')
+        self.assertIsNone(mru.deque['previous'], 'c is head so no previous')
+        self.assertEqual(mru.deque['next']['key'], 'b', 'b is after c')
+        self.assertEqual(mru.deque['next']['previous']['key'], 'c', 'before b is c')
+        self.assertEqual(mru.deque['next']['next']['key'], 'a', 'a is after b')
+        self.assertEqual(mru.deque['next']['next']['previous']['key'], 'b', 'before a is b')
+        self.assertIsNone(mru.deque['next']['next']['next'], 'b is the last one')
+
+        self.assertIn('a', mru.data, 'key a should be stored')
+        self.assertIn('b', mru.data, 'key b should be stored')
+        self.assertIn('c', mru.data, 'key c should be stored')
+
+    def test_mru_evicts_most_recently_used_key(self):
+        mru = MRUCache(2)
+        mru.write('a', 1)
+        mru.write('b', 2)
+        evicted = mru.write('c', 3)
+
+        self.assertEqual(mru.deque['key'], 'c', 'c is the new head')
+        self.assertIsNone(mru.deque['previous'], 'c is the front of the head')
+        self.assertEqual(mru.deque['next']['key'], 'a', 'a follows c')
+        self.assertIsNone(mru.deque['next']['next'], 'a ends the queue')
+
+        self.assertIn('a', mru.data, 'key a should be stored')
+        self.assertNotIn('b', mru.data, 'key b should be stored')
+        self.assertIn('c', mru.data, 'key c should be stored')
+
+        self.assertEqual(evicted['key'], 'b', 'should have evicted key b')
+        self.assertEqual(evicted['value'], 2, 'should have evicted value for b')
+
+    def test_mru_read_promotes_the_read_key_in_front_of_deque(self):
+        mru = MRUCache(2)
+        mru.write('a', 1)
+        mru.write('b', 2)
+        mru.read('a')
+
+        self.assertEqual(mru.deque['key'], 'a', 'a is the new head as it was promoted')
+        self.assertIsNone(mru.deque['previous'], 'a is the head so no previous')
+        self.assertEqual(mru.deque['next']['key'], 'b', 'b is after a, it got demoted')
+        self.assertIsNone(mru.deque['next']['next'], 'b ends the queue')
+
+        self.assertIn('a', mru.data, 'key a should be stored')
+        self.assertIn('b', mru.data, 'key b should be stored')
+
+
+class TestLFUCache(unittest.TestCase):
+
+    def test_lfu_write_should_insert_a_new_key(self):
+        lfu = LFUCache(2)
+        lfu.write('a', 1)
+
+        self.assertIn('a', lfu.data, 'should contain the key a')
+        self.assertEqual(lfu.heap.data[0]['key'], 'a', 'a should be in the heap')
+        self.assertEqual(lfu.data['a']['freq'], 1, 'after insert the frequency is 1')
+
+    def test_lfu_write_should_update_an_existing(self):
+        lfu = LFUCache(2)
+        lfu.write('a', 1)
+        lfu.write('a', 2)
+
+        self.assertIn('a', lfu.data, 'should contain the key a')
+        self.assertEqual(lfu.heap.data[0]['key'], 'a', 'a should be in the heap')
+        self.assertEqual(lfu.data['a']['freq'], 2, 'after each write the frequency is bumped by 1')
+        self.assertEqual(lfu.data['a']['value'], 2, 'updates are persisted')
+
+    def test_lfu_write_should_evict_a_key_to_make_room(self):
+        lfu = LFUCache(2)
+        lfu.write('a', 1)
+        lfu.read('a')
+        lfu.write('b', 2)
+        evicted = lfu.write('c', 3)
+
+        self.assertIn('a', lfu.data, 'should contain the key a')
+        self.assertNotIn('b', lfu.data, 'should not contain the key b')
+        self.assertIn('c', lfu.data, 'should contain the key c')
+
+        self.assertEqual(lfu.data['a']['freq'], 2, 'after insert and a read is 2')
+        self.assertEqual(lfu.data['c']['freq'], 1, 'after insert it is 1')
+        self.assertEqual(lfu.heap.data[0]['key'], 'c', 'c is the least frequently used key')
+
+        self.assertEqual(evicted['key'], 'b', 'should have evicted key b')
+        self.assertEqual(evicted['value'], 2, 'should have evicted value for b')
+
+    def test_lfu_read_increments_key_frequency(self):
+        lfu = LFUCache(3)
+        lfu.write('a', 1)
+        lfu.write('b', 2)
+        lfu.write('c', 3)
+
+        lfu.read('a')
+        lfu.read('a')
+        lfu.read('b')
+
+        self.assertEqual(lfu.data['a']['freq'], 3, 'after insert and 2 reads')
+        self.assertEqual(lfu.data['b']['freq'], 2, 'after insert and 1 read')
+        self.assertEqual(lfu.data['c']['freq'], 1, 'after insert')
