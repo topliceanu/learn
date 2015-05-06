@@ -10,8 +10,8 @@ def vertex_cover(g):
     has at least one endpoint in S, S has the minimal cardinality amongst all
     possible solutions.
 
-    Complexity: NP-complete (exponential time) O(m2^k)
-
+    Complexity: NP-complete (exponential time) O(m*2^k), m - number of edges
+                                                         k - size of the smallest subset S
     Params:
         g: object, instance of src.graph.Graph
 
