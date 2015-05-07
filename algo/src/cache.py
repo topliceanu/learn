@@ -140,8 +140,23 @@ class LRUCache(Cache):
         return {'key': node['key'], 'value': node['value']}
 
     def remove(self, key):
-        # TODO Implement this!!
-        pass
+        """ Removes an item from the cache by key. """
+        if key not in self.data:
+            return
+
+        node = self.data[key]
+        del self.data[key]
+
+        if node == self.first:
+            self.first = node['next']
+            if node['next'] != None:
+                node['next']['previous'] = None
+        elif node == self.last:
+            self.last = node['previous']
+            if node['previous'] != None:
+                node['previous']['next'] = None
+        else:
+            node['previous']['next'] = node['next']
 
 
 class MRUCache(Cache):
@@ -180,7 +195,11 @@ class MRUCache(Cache):
         return evicted
 
     def read(self, key):
-        """ Reads from the cache the value with the specified key. """
+        """ Reads from the cache the value with the specified key.
+
+        Raises:
+            Exception, when a cache miss occurs.
+        """
         if key not in self.data:
             raise Exception('Cache miss for key {key}'.format(key=key))
 
@@ -239,6 +258,8 @@ class LFUCache(Cache):
 
     To implement fast least frequently used key retrieval this class uses a heap.
     """
+    # TODO What happens when the frequency numbers overflow. One solution is to
+    # half all frequencies whenever an overflow happens.
 
     def __init__(self, max_size):
         Cache.__init__(self, max_size)
@@ -248,7 +269,7 @@ class LFUCache(Cache):
     def write(self, key, value):
         """ Writes the data to the cache.
 
-        Note: when writing the counter for the key is also incremented.
+        Note: when writing, the counter for the key is also incremented.
         """
         evicted = None
         if len(self.data) == self.max_size and key not in self.data:
@@ -267,6 +288,9 @@ class LFUCache(Cache):
         """ Reads the value for the given key from the cache.
 
         The key gets its frequency increased whenever it is read.
+
+        Raises:
+            Exception, when a cache miss occurs.
         """
         if key not in self.data:
             raise Exception('Cache miss for key={key}'.format(key=key))
@@ -318,7 +342,8 @@ class SLRUCache(Cache):
     def __init__(self, max_size, max_size_probation=None):
         Cache.__init__(self, max_size)
         if max_size_probation == None:
-            self.max_size_probation = self.max_size * 4
+            max_size_probation = self.max_size * 4
+        self.max_size_probation = max_size_probation
 
         self.probation = LRUCache(self.max_size_probation)
         self.protected = LRUCache(self.max_size)
@@ -328,13 +353,29 @@ class SLRUCache(Cache):
         return self.probation.write(key, value)
 
     def read(self, key):
+        """ Read a key first from the protected then the probation segments.
+
+        Raises:
+            Exception, when a cache miss occurs.
+        """
         try:
             protected_value = self.protected.read(key)
-            return protected_value
         except Exception, e:
+            protected_value = None
+
+        try:
             probation_value = self.probation.read(key)
+        except Exception, e:
+            probation_value = None
+
+        if protected_value == None and probation_value == None:
+            raise Exception('Cache miss for key {key}'.format(key=key))
+        elif protected_value != None and probation_value == None:
+            return protected_value
+        else:
+            # Move key from probation to protected.
             self.probation.remove(key)
             evicted = self.protected.write(key, probation_value)
-            self.probation.write(evicted['key'], evicted['value'])
-
+            if evicted != None:
+                self.probation.write(evicted['key'], evicted['value'])
             return probation_value

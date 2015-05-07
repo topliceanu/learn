@@ -3,7 +3,7 @@
 import time
 import unittest
 
-from src.cache import LRUCache, MRUCache, LFUCache
+from src.cache import LRUCache, MRUCache, LFUCache, SLRUCache
 
 
 class TestLRUCache(unittest.TestCase):
@@ -123,6 +123,25 @@ class TestLRUCache(unittest.TestCase):
         self.assertEqual(evicted['key'], 'a', 'should have evicted key a')
         self.assertEqual(evicted['value'], 10, 'should have evicted value for a')
 
+    def test_lru_remove_correctly_deletes_first_key_from_cache(self):
+        lru = LRUCache(3)
+        lru.write('a', 10)
+        lru.write('b', 20)
+        lru.write('c', 20)
+        # c -> b -> a
+        lru.remove('c')
+
+        self.assertIn('a', lru.data, 'a is in the cache')
+        self.assertIn('b', lru.data, 'b is in the cache')
+        self.assertNotIn('c', lru.data, 'c was removed')
+
+        self.assertEqual(lru.first['key'], 'b', 'b is first pointer')
+        self.assertIsNone(lru.first['previous'], 'b is head pointer')
+        self.assertEqual(lru.first['next']['key'], 'a', 'a comes after b')
+
+        self.assertEqual(lru.last['key'], 'a', 'a is last pointer')
+        self.assertIsNone(lru.last['next'], 'a is the end pointer')
+        self.assertEqual(lru.last['previous']['key'], 'b', 'b comes before a')
 
 class TestMRUCache(unittest.TestCase):
     # TODO: better tests are needed!
@@ -247,3 +266,51 @@ class TestLFUCache(unittest.TestCase):
         self.assertEqual(lfu.data['a']['freq'], 3, 'after insert and 2 reads')
         self.assertEqual(lfu.data['b']['freq'], 2, 'after insert and 1 read')
         self.assertEqual(lfu.data['c']['freq'], 1, 'after insert')
+
+
+class TestSLRUCache(unittest.TestCase):
+
+    def test_slru_read_causes_a_cache_miss_when_key_is_not_present(self):
+        slru = SLRUCache(2)
+        slru.write('a', 1)
+
+        with self.assertRaises(Exception) as notFound:
+            slru.read('b')
+        self.assertIsNotNone(notFound, 'Cache miss exception raised')
+
+    def test_slru_read_from_probation_moves_key_to_protected(self):
+        slru = SLRUCache(2)
+        slru.write('a', 1)
+        slru.read('a')
+
+        self.assertEqual(len(slru.probation.data), 0, 'probation is empty')
+        self.assertEqual(len(slru.protected.data), 1, 'probation now has one element')
+
+        self.assertIn('a', slru.protected.data, 'a should be in protected')
+
+    def test_slru_read_from_protected(self):
+        slru = SLRUCache(2)
+        slru.write('a', 1)
+        slru.read('a')
+        value = slru.read('a')
+        self.assertEqual(value, 1, 'should return value from protected cache')
+
+    def test_slru_read_from_probation_might_cause_an_evict_in_protected(self):
+        slru = SLRUCache(2, 2)
+        slru.write('a', 1)
+        slru.read('a')
+        slru.write('b', 2)
+        slru.read('b')
+        slru.write('c', 3)
+        slru.write('d', 3)
+        slru.read('c')
+
+        self.assertIn('d', slru.probation.data, 'd in probation')
+        self.assertIn('a', slru.probation.data, 'a in probation')
+        self.assertIn('c', slru.protected.data, 'c in probation')
+        self.assertIn('b', slru.protected.data, 'b in probation')
+
+        self.assertEqual(slru.probation.first['key'], 'a', 'a is first in probation')
+        self.assertEqual(slru.probation.last['key'], 'd', 'd is last in probation')
+        self.assertEqual(slru.protected.first['key'], 'c', 'c is first in protected')
+        self.assertEqual(slru.protected.last['key'], 'b', 'b is last in protected')
