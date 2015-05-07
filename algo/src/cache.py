@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import time
+import math
 
 from src.heap import Heap
 
@@ -379,3 +379,41 @@ class SLRUCache(Cache):
             if evicted != None:
                 self.probation.write(evicted['key'], evicted['value'])
             return probation_value
+
+
+class ARCache(Cache):
+    """ Adaptive Replacement cache implementation.
+
+    See: http://en.wikipedia.org/wiki/Adaptive_replacement_cache
+
+    Data is split in tow lists: t1 (a LRU cache) and t2 (a LFU cache).
+    Originally t1 and t2 have equal size.
+    Evicted keys from t1 move into b1 (a LRU cache) with the same size.
+    Evicted keys from t2 move to b2 (a LFU cache) with the same size.
+    b1 and b2 are called ghosts of t1 and, respectively, t2 and only contain
+    keys, not the actual data.
+
+    All new entries enter t1
+
+    Schema:
+        . . . [   b1  <-[     t1    <-!->      t2   ]->  b2   ] . .
+              [ . . . . [ . . . . . . ! . .^. . . . ] . . . . ]
+                        [   fixed cache size (c)    ]
+    """
+    # TODO finish the implementation.
+
+    def __init__(self, max_size):
+        Cache.__init__(self, max_size)
+
+        self.t1 = LRUCache(max_size)
+        self.t2 = LFUCache(max_size)
+        self.b1 = LRUCache(max_size)
+        self.b2 = LFUCache(max_size)
+
+    def read(self, key):
+        pass
+
+    def write(self, key, value):
+        evicted_from_t1 = self.t1.write(key, value)
+        if evicted_from_t1 != None:
+            self.b1.write(evicted_from_t1['key'], evicted_from_t1['value'])
