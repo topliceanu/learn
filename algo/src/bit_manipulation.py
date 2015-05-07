@@ -45,9 +45,13 @@ def max_value(a, b):
     """ Compute max of a pair of two ints. """
     return a ^ ((a ^ b) & -(a < b))
 
-def is_bit_set(a, order):
-    """ Checks whether the order bit in a is set or not. """
-    return a & (a << order)
+def is_bit_set(a, offset):
+    """ Checks whether the offset bit in a is set or not.
+
+    Returns
+        bool, True if bit in position offset in a is 1
+    """
+    return a & (1 << offset) != 0
 
 def set_bit(a, order):
     return a | (1 << order)

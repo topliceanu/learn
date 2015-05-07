@@ -57,8 +57,9 @@ class BitManipulation(unittest.TestCase):
         self.assertEqual(actual, b, 'should find max')
 
     def test_is_bit_set(self):
-        a = 122
+        a = 122 # 0b1111010
         self.assertTrue(is_bit_set(a, 3), 'third bit is 1')
+        self.assertFalse(is_bit_set(a, 2), 'second bit is 0')
 
     def test_subsets(self):
         a = range(5)
