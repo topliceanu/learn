@@ -19,8 +19,7 @@ def bfs(graph, start_vertex):
 
     queue = deque()
     queue.appendleft(start_vertex)
-    explored_vertices = []
-    explored_vertices.append(start_vertex)
+    explored_vertices = [start_vertex]
 
     while len(queue) != 0:
         vertex = queue.pop()

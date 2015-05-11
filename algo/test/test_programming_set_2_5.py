@@ -30,7 +30,7 @@ import math
 import os
 
 from src.graph import Graph
-from src.traveling_salesman import traveling_salesman
+from src.traveling_salesman import fast_traveling_salesman
 
 
 nodes = []
@@ -42,6 +42,5 @@ with open('{base}/test/Tsp.txt'.format(base=os.getcwd()), 'r') as f:
         coords = map(float, f.readline().split())
         nodes.append((str(i), coords[0], coords[1]))
 
-g = Graph.build_from_coords(nodes)
-(min_cost, min_path) = traveling_salesman(g)
+min_cost = fast_traveling_salesman(nodes)
 print '>>>>', min_cost

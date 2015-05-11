@@ -31,9 +31,11 @@ def two_sat(num_vars, clauses):
             solution: list of booleans which satify all clauses.
     """
     num_clauses = len(clauses)
+    # Outer loop only does repeated tries of the same algorithms to pick the best solution.
     for i in range(int(math.floor(math.log(num_vars, 2)))):
         # Assign a random value of True/False to each variable.
         solution = [random.choice([True, False]) for __ in range(num_vars)]
+        # We need to make 2*n^2 tries of the local search method to keep the running time polinomial.
         for j in range(2*(num_vars**2)):
             # Check if solution passes
             (is_satisfied, failed_clauses) = check_2sat_solution(solution, clauses)
@@ -123,7 +125,10 @@ def two_sat_scc(clauses):
     return True
 
 def three_sat():
-    """
+    """ Solves the 3sat problem with a running time better than brute-force search.
+
+    Algorithm discovered by Uwe Schoning in 2002
+
     Complexity: O((3/4)^n)
-    Algorithm discovered by Schoning in 2002
     """
+    # TODO

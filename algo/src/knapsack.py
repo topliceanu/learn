@@ -74,6 +74,9 @@ def knapsack_dynamic_programming_memory_efficient(items, capacity):
     """ The same API as the method above but with a focus on better memory
     utilization.
 
+    Memory improvements are achived exploiting the observation that we only
+    require the partial results from the last iteration to advance.
+
     Args:
         items: list of tuples, format [(name: str, value: int, weight: int)]
         capacity: int, total capacity of the knapsack
@@ -112,15 +115,16 @@ def knapsack_dynamic_programming_memory_efficient(items, capacity):
 
 def knapsack_three_step_heuristic(items, capacity):
     """ Solves the knapsack problem given a capacity and a set of items using
-    a three-step heuristic:
+    a three-step greedy heuristic:
 
-    1. compute values/weight  ratio for each item, then sort the items by ratio.
+    1. compute values/weight ratio for each item, then sort the items by ratio.
     2. pack as many items as they fit in the knapsack in the order sorted in 1.
-    3. compare the valueo of the solution picked in 2 with the item with the
+    3. compare the values of the solutions picked in 2. with the item with the
     maximum value which fits in the knapsack. Pick the better one.
 
     Complexity: O(n), n - num of items
-    Correctness: this algo is correct above 50% of the cases.
+    Correctness: this algo is correct above 50% of the cases but, in 50% of
+        the cases, it can be arbitrarly bad!!!
 
     Params:
         items: list of tuples, format [(name: str, value: int, weight: int)]
