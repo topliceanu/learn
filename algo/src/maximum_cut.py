@@ -140,23 +140,23 @@ def weighted_maximum_cut(g):
     while True:
         possible_switches = []
         for v in vertices:
-            # number of edges incident on v that _don't_ cross the cut (A,B)
-            dv = 0
-            # number of edges incident on v that _do_ cross the cut (A, B)
-            cv = 0
+            # Cost of edges incident on v that _don't_ cross the cut (A,B)
+            cost_dv = 0
+            # Cost of edges incident on v that _do_ cross the cut (A, B)
+            cost_cv = 0
 
             v_in_left = v in left
             for i in g.incident(v):
                 i_in_left = i in left
                 if i_in_left and v_in_left:
-                    dv += 1
+                    cost_dv += g.get_edge_value((v, i))
                 elif i_in_left and not v_in_left:
-                    cv += 1
+                    cost_cv += g.get_edge_value((v, i))
                 elif not i_in_left and v_in_left:
-                    cv += 1
+                    cost_cv += g.get_edge_value((v, i))
                 elif not i_in_left and not v_in_left:
-                    dv += 1
-            if dv > cv:
+                    cost_dv += g.get_edge_value((v, i))
+            if cost_dv > cost_cv:
                 possible_switches.append(v)
         if len(possible_switches) == 0:
             break
