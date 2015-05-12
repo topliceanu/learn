@@ -156,5 +156,11 @@ class QueenPuzzle(Backtracking):
 class TwoSatSatisfaction(Backtracking):
     """ Solves the "two entites per clause" constraint satisfaction problem. """
 
-    def first(self):
-        pass
+class TravelingSalesman(Backtracking):
+    """ Solves the traveling salesman using backtracking ie. in exponential time. """
+
+class ConvexHull(Backtracking):
+    """ Solves the convex hull problem (ie. Graham's Scan) """
+
+class GeneratePermutations(Backtracking):
+    """ Generates permutations using the backtracking problems. """
