@@ -196,6 +196,23 @@ class TestGraph(unittest.TestCase):
         self.assertEqual(g.table[1][2], 20,
                 'should have updated the edge value')
 
+    def test_set_edge_value_if_graph_is_directed_and_inverse_edge_exists(self):
+        g = Graph(True)
+        g.add_edge((1,2,10))
+        g.add_edge((2,1,20))
+        g.set_edge_value((1,2), 30)
+
+        self.assertEqual(g.table[1][2], 30, 'has updated the edge')
+        self.assertEqual(g.table[2][1], 20, 'reverse edge remained the same')
+
+    def test_set_edge_value_works_for_undirected_graphs(self):
+        g = Graph(False)
+        g.add_edge((1,2,10))
+        g.set_edge_value((1,2), 30)
+
+        self.assertEqual(g.table[1][2], 30, 'has updated the edge')
+        self.assertEqual(g.table[2][1], 30, 'reverse edge was updated too')
+
     def test_remove_edge_in_directed_graph(self):
         g = Graph(True)
         g.add_edge((1,2,10))

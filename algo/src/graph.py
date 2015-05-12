@@ -168,12 +168,13 @@ class Graph:
 
     def set_edge_value(self, edge, newValue):
         """ Set value of edge to be newValue. """
-        (tail, head, value) = self.split_edge(edge)
+        (tail, head, _) = self.split_edge(edge)
 
         if self.adjacent(tail, head):
             self.table[tail][head] = newValue
-        if self.adjacent(head, tail):
-            self.table[head][tail] = newValue
+        if self.directed == False:
+            if self.adjacent(head, tail):
+                self.table[head][tail] = newValue
 
     def get_vertex_value(self, vertex):
         """ Return the value corresponding to the vertex name. """
@@ -205,7 +206,7 @@ class Graph:
                     self.incident_vertices[tail].remove(head)
 
     def remove_vertex(self, vertex):
-        """ Removes vertex and it's adiacent and incident edges.
+        """ Removes vertex and it's adjacent and incident edges.
 
         Graph data is stored in three structures: table, values and
         incident_vertices. All these structures have to be cleaned up.
