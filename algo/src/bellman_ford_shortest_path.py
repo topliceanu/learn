@@ -14,6 +14,8 @@ def shortest_path(graph, s, return_paths=True):
     from the last iteration, so everything else can be thrown out.
     TODO: implement solution reconstruction using the memory optimizations.
 
+    Invented by Richard Bellman (1958) and Lester Ford (1856)
+
     Complexity: O(m*n), where m is the number of edges, n the number of nodes.
 
     Params:

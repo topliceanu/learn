@@ -34,6 +34,8 @@ def vertex_cover_bounded_num_edges(g, k):
     vertex cover by choosing at most k edges. Ie. it is a reduction to a
     decision problem.
 
+    Complexity: O(2^k)
+
     Params:
         g: object, instance of src.graph.Graph
         k: int, the number of edges allowed to build the vertex cover.

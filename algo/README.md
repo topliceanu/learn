@@ -9,8 +9,98 @@ Stanford's Algorithms I Class on Coursera
 Tests
 -----
 
-````bash
+```bash
 cd learn/algo
 python -m unittest discover test # to run all tests.
 python -m unittest discover test -p test_graph.py # to run a specific test case.
-````
+```
+
+Primitives
+----------
+
+1. caching
+2. job scheduling
+2. greedy methodology
+3. minimum spanning tree - prim, kruskal
+4. heap
+5. union-find data structure
+6. clustering - single-link, k-means, graph clustering
+7. prefix-codes
+8. dynamic programming - max-weight independent set, sequence alignment, knapsack, optimal binary search tree.
+9. single source shortest path (in graphs with negative cost edges and non-negative cycles) - bellman-ford algorithm.
+10. all pairs shortest path - algoritms by floyd warshall (dynamic programming), johnson (combo of bellman-ford and dijkstra).
+11. vertex-cover
+12. traveling salesman
+13. local search
+14. maximum cut
+15. 2sat
+16. random walk
+17. stable matching
+18. maximum flow
+19. minimum cut
+20. linear programming
+
+Todo
+----
+
+1. [caching] finish implementation of ARCache.
+2. [min spanning tree] randomized algorithm for min spanning tree by Tarjan.
+3. [min spanning tree] minimum spanning bottleneck tree!
+3. [min spanning tree] optimal branching problem for directed graphs (prim&kruskal work for undirected graphs)
+3. [min spanning tree] implement )(m) algorithm by Karger-Klein-Tarjan
+4. [huffman code] something is not correctly implemented!
+5. [dynamic programming][max-weight independent set] compute for trees. See Problem Set #3, problem 3.
+6. [dynamic programming] find best approximate match of substring in string.
+7. [dynamic programming] longest common subsequence of two strings.
+8. [dynamic programming][linear partition] solution reconstruction does not work.
+9. [dynamic programming] flower garden problem!
+10. [knapsack] use dynamic programming to solve the two knapsack problem. (generalize to m different knapsacks!)
+    - Add another dimension to the array to keep track of the residual capacity of the second knapsack, this increases the running time by a factor of at most W.
+11. [bellman-ford] optimize memory consumption on the algorithm.
+12. [bellman-ford] implement solution reconstrunction.
+13. [3sat] implement the algorithm for 3sat by Uwe Schoening.
+14. [bipartite-matching] use maximum flow to solve bipartite matching.
+15. [maximum flow] solve minimum cost for maximum flow problem.
+16. [maximum flow] solve minimum cut using maximum flow algorithm.
+17. [data structures] implement the d-ary heap
+18. [traveling salesman] make the fast version work for very large instances (ie. programming assignment 5)
+
+List of Computer Scientists
+---------------------------
+
+1. Robert Prim - 1957 - Prim's minimum spanning tree (also by Dijkstra in 1959 and Vojtech Jarnik in 1930!).
+2. Joseph Kruskal - 1956 - Kruskal's minimum spanning tree.
+3. Robert Trajan - Union Find O(m\*log_star n) amortized running time; minimum spanning tree in O(m) time.
+3. David Karger - minimum spaning tree in O(m) time.
+3. Rolf Dieter Klein - minimum spaning tree in O(m) time.
+4. Albert Huffman - 1952 - developed huffman prefix-free variable-length lossless compression codes.
+5. Saul Needleman, Christian Wunsch - sequence alignment algorithm.
+6. Richard Bellman - 1940s - invented dynamic programming; 1956 - single source shorted path algo (known as bellman-ford algo).
+7. Lester Ford - 1958 - single source shortest path algo (known as bellman-ford algo).
+8. Robert Floyd - 1962 - all pairs shortest path (known as Roy-Floyd-Warshall algorithm)
+9. Bernard Roy - 1959 - all pairs shortest path (known as Roy-Floyd-Warshall algorithm)
+10. Stephen Warshall - 1962 - all pairs shortest path (known as Roy-Floyd-Warshall algorithm)
+10. Donald Johnson - 1977 - algorithm to compute all pairs shortest path (Johnson's algorithm); 1975 - d-ary heap data structure.
+11. Christos Papadimitriou - randomized algorithm for 2sat problem.
+12. Lloyd Shapley - 1962 - stable matching algorithm
+13. David Gale - 1962 - stable matching algorithm
+14. George Bernard Dantzig - inventor of linear programming
+
+Wikipedia Links
+---------------
+
+http://en.wikipedia.org/wiki/Robert_C._Prim
+http://en.wikipedia.org/wiki/Vojt%C4%9Bch_Jarn%C3%ADk
+http://en.wikipedia.org/wiki/Joseph_Kruskal
+http://en.wikipedia.org/wiki/Huffman_coding#Applications
+http://en.wikipedia.org/wiki/Bellman%E2%80%93Ford_algorithm
+http://en.wikipedia.org/wiki/Richard_E._Bellman
+http://en.wikipedia.org/wiki/L._R._Ford,_Jr.
+http://en.wikipedia.org/wiki/Robert_W._Floyd
+http://en.wikipedia.org/wiki/Bernard_Roy
+http://en.wikipedia.org/wiki/Stephen_Warshall
+http://en.wikipedia.org/wiki/Christos_Papadimitriou
+http://en.wikipedia.org/wiki/Lloyd_Shapley
+http://en.wikipedia.org/wiki/David_Gale
+http://en.wikipedia.org/wiki/Donald_B._Johnson
+http://en.wikipedia.org/wiki/George_Dantzig

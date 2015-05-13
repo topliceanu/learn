@@ -2,6 +2,8 @@
 
 import random
 
+from src.maximum_flow import ford_fulkerson_maximum_flow
+
 
 def pick_random_edge(graph):
     """ Returns a random edge from the given graph. """
@@ -80,3 +82,7 @@ def minimum_cut(graph, tries):
             min_cuts = cuts
 
     return min_cuts
+
+def minimum_cut_using_maximum_flow(graph, start, end):
+    """ Solve the minimum cut problem by reducing it to maximum flow. """
+    # TODO

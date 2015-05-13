@@ -10,9 +10,9 @@ def single_link(points, k, distance):
     """ Clusters a group of elements into subgroups using an optimization
     approach, ie. define a objective function and optimize.
 
-    The method of clustering is called `single-link clustering`, and is similar
-    to Kruskel's MST algorithm, with the exception that the iteration stops
-    when the number of clusters needed is reached.
+    This greedy method of clustering is called `single-link clustering`, and is
+    similar to Kruskel's MST algorithm, with the exception that the iteration
+    stops when the number of clusters needed is reached.
 
     Args:
         points: list of coordinates for points, format (x:int, y:int, name:str)
@@ -56,7 +56,7 @@ def single_link(points, k, distance):
     return out
 
 def cluster_graph(g, k):
-    """ Clusters the input graph using the single link method.
+    """ Clusters the input graph using the greedy single link method.
 
     Args:
         g: object, instance of src.graph.Graph
@@ -72,7 +72,7 @@ def cluster_graph(g, k):
     for vertex in vertices:
         union_find.make_set(vertex)
 
-    edges = sorted(g.get_edges(), key=lambda e: e[2], reverse=True)
+    edges = sorted(g.get_edges(), key=lambda e: e[2], reverse=True) # sort by length
     numClusters = len(vertices)
 
     # Cluster the nodes in the union_find data structure.

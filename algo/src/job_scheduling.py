@@ -12,7 +12,7 @@ COMPLETION_TIME = 4
 def schedule(jobs, score='ratio'):
     """ Schedules a given batch of jobs.
 
-    Two variants of computing scores are possible: weight/length or
+    Two variants for computing scores are possible: weight/length or
     weight-length. On the second variant, if two jobs have the same score, the
     one with higher weight gets in front.
 

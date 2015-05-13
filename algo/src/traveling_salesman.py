@@ -43,7 +43,7 @@ def traveling_salesman(g):
     """ Solve the traveling salesman problem faster than brute force search.
 
     This gets solved by dynamic programming. The subproblems L[S][j] is the
-    shortest path from vertex 1 to vertex j with where the visited vertex are
+    shortest path from vertex 1 to vertex j where the visited vertex are
     in the set S (S includes 1 and j).
 
     Complexity: O((n^2)*(2^n)) far better than brute force O(n!)
@@ -118,6 +118,7 @@ def fast_traveling_salesman(points):
         float, min cost of a tour passing through all points in the graph
 
     """
+    # TODO make this work for homework 5!
 
     INF = float('inf')
     n = len(points)

@@ -7,7 +7,7 @@ from src.graph import Graph
 
 
 def maximum_cut_for_bipartite_graph(g):
-    """ Solved the maximum cut problem in a bipartite graph.
+    """ Solves the maximum cut problem in a bipartite graph.
 
     A bipartite graph is a graph where there exists a cut which crosses all
     edges in the graph.
@@ -23,12 +23,11 @@ def maximum_cut_for_bipartite_graph(g):
             right_vertex_set: list, of vertices composing the right side of the cut.
     """
     # Use BFS to traverse all edges, even if graph is not connected.
-
-    #import pdb; pdb.set_trace()
     odds = set()
     evens = set()
     left_to_visit = set(g.get_vertices())
 
+    # The graph may not be connected so maintain a list of nodes not visited.
     while len(left_to_visit) != 0:
         start_vertex = random.choice(list(left_to_visit))
         odds.add(start_vertex)
@@ -51,7 +50,6 @@ def maximum_cut_for_bipartite_graph(g):
                 bucket.add(neighbour)
                 g.set_vertex_value(neighbour, not parent_is_even)
                 queue.appendleft(neighbour)
-
 
     return (odds, evens)
 

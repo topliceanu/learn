@@ -13,7 +13,7 @@ class UnionFind(object):
     1. lazy union - only update the leader of a group to point to
             the leader of the other group. `Find` has to now traverse multiple
             layers to reach the root.
-    2. union by rank - maintain for each node, the depth of the subgraph it
+    2. union by rank - for each node, maintain the depth of the subgraph it
             is rooting for. On union, merge the smaller rank leader under the
             larger rank leader. Only if the two groups have the same rank
             leader than the new leader has to increase it's rank by one.
@@ -21,8 +21,9 @@ class UnionFind(object):
             to reach a leader with the actual leader. This assumes that finds
             occur less times than unions, which is ofter the case.
 
-    Even though the find/union operations both take O(log n), after m operations,
-    one can prove that the running time is O(m*log_star n)
+    Even though the find/union operations both take O(log n) in worst case,
+    after m operations, Tarjan et. all have proven that the amortized running
+    time is O(m*log_star n).
 
     Attributes:
         leader: dict, a hash of format {item: leader}, maintaining the leader

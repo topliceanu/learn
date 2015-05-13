@@ -97,7 +97,7 @@ def prims_heap_mst(graph):
     2. keys under which each vertex is stored in the heap is the minimum weight
     of an edge incident on the vertex whose tail is already in the MST.
 
-    Complexity O(m*log n)
+    Complexity: O(m*log n), m - number of edges, n - number of vertices
 
     Args:
         graph: object, data structure to hold the graph data.
@@ -182,7 +182,7 @@ def kruskal_suboptimal_mst(graph):
 def kruskal_union_find_mst(graph):
     """ Uses Kruskel's greedy algorithm to compute the MST of graph.
 
-    Running time: O(m*logn) - where m is the number of edges and n is the
+    Running time: O(m*log n) - where m is the number of edges and n is the
         number of vertices.
 
     Params:
@@ -221,11 +221,12 @@ def minimum_spanning_tree_randomized(graph):
     Complexity: O(m*alpha(n)) - where m - number of edges, n - number of vertices.
 
     Created by: Karger, Klein and Tarjan in 1995.
-
     """
+    # TODO
 
 def minimum_spanning_bottleneck_tree(graph):
     """ A minimum spanning bottleneck tree is a subgraph of a connected,
     undirected graph which connects all vertices in the graph but minimizes
     the maximum picked edge costs.
     """
+    # TODO

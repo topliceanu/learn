@@ -96,6 +96,7 @@ class DynamicProgrammingTest(unittest.TestCase):
         self.assertEqual(pre_order, expected_pre_order,
             'the vertices are in preorder so to easily to build an optimal BST')
 
+    def test_optimal_binary_search_tree_2(self):
         items = [('1', 0.05), ('2', 0.4), ('3', 0.08), ('4', 0.04),
                  ('5', 0.1), ('6', 0.1), ('7', 0.223)]
         (optimal_search_cost, pre_order) = optimal_binary_search_tree(items)
@@ -108,6 +109,15 @@ class DynamicProgrammingTest(unittest.TestCase):
                               ('5', 0.1), ('3', 0.08), ('4', 0.04), ('6', 0.1)]
         self.assertEqual(pre_order, expected_pre_order,
             'the vertices are in preorder so to easily to build an optimal BST')
+
+    def test_optimal_binary_search_tree_from_final_exam(self):
+        items = [('1', 0.2), ('2', 0.05), ('3', 0.17), ('4', 0.1),
+                 ('5', 0.2), ('6', 0.03), ('7', 0.25)]
+        (optimal_search_cost, _) = optimal_binary_search_tree(items)
+
+        expected_optimal_cost = 2.23
+        self.assertEqual(optimal_search_cost, expected_optimal_cost,
+            'should not return the best tree')
 
     def test_binomial_coefficient(self):
         actual = binomial_coefficient(2, 4)

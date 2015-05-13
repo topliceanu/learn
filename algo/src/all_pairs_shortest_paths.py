@@ -9,7 +9,8 @@ INF = float('inf')
 
 
 def dijkstra(graph):
-    """ Run dijkstra on all nodes in a graph with no cycles and no negative edges.
+    """ Run dijkstra on all nodes in a graph. The graph must not have any
+    cycles or negative edges.
 
     Params:
         graph: object, instance of src.graph.Graph
@@ -25,8 +26,10 @@ def dijkstra(graph):
 
 def roy_floyd_warshall(graph):
     """ Implements the Roy-Floyd-Warshall algorithm for computing min cost
-    shortest paths between any two vertices in the input graph which does not
-    have negative cycles.
+    shortest paths between any two vertices in the input graph (which should not
+    have negative cycles).
+
+    Invented by Rober Floyd (1962), Bernard Roy (1959) and Stephen Warshall (1962)
 
     Complexity: O(n^3) - NOTE it's independent of the sparsity (num of edges)
         of the graph.

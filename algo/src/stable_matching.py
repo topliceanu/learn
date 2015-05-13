@@ -30,20 +30,31 @@ def stable_matching(u, v):
             perfect matching of items from u to items in v.
     """
     u_left_unassigned = u.keys()
+    # Stores final matchings, format {u: v}
     matchings = dict(zip(v.keys(), [None]*len(v.keys())))
+
+    # Maintains the invariant that the current set of pairs is a matching! at
+    # every given time each u is matched to at most one v, and vice-versa.
     while len(u_left_unassigned) != 0:
         picked_u = random.choice(u_left_unassigned)
+
+        # u proposes to it's first preference.
         picked_v = u[picked_u][0]
+
         if (matchings[picked_v] == None):
+            # v doesn't have a match yet.
             matchings[picked_v] = picked_u
             u_left_unassigned.remove(picked_u)
         elif (v[picked_v].index(picked_u) < v[picked_v].index(matchings[picked_v])):
+            # v prefers u to it's current match
             old_match_for_v = matchings[picked_v]
+            # old_match_for_v can no longer request to be paired with v again!
             u[old_match_for_v].remove(picked_v)
             u_left_unassigned.append(old_match_for_v)
             matchings[picked_v] = picked_u
             u_left_unassigned.remove(picked_u)
         else:
+            # v prefers it's existing match to u
             u[picked_u].remove(picked_v)
 
     return map(set, matchings.iteritems())

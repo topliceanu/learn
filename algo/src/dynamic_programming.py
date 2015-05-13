@@ -64,6 +64,8 @@ def sequence_alignment(X, Y, mismatch_penality, gap_penalty):
 
     Creators: Saul B. Needleman and Christian D. Wunsch
 
+    Complexity: O(m*n) where m - length of X, n - lenght of Y
+
     Args:
         X: str, first string
         Y: str, second string
@@ -281,7 +283,7 @@ def optimal_binary_search_tree(items):
     items = sorted(items, key=lambda t: t[0])
     n = len(items)
 
-    # C[i][j] is the weighted search cost of an optimal BST for items i to j.
+    # C[i][j] is the weighted search cost of an optimal BST for items with indexes i to j.
     C = [[0]*n for __ in xrange(n)]
     # R[i][j] holds the optimal root for the optimal BST for items i to j.
     R = [[None]*n for __ in xrange(n)]

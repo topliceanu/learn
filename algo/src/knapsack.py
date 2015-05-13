@@ -18,7 +18,7 @@ def knapsack_dynamic_programming(items, capacity):
 
     Complexity: O(n*W), n - num of items, W - num of distinct capacity values.
                 This is NP-complete in the input weight. Complexity is polinomial
-                only if the capacity W is not too big compared to n (polinomial).
+                only if the capacity W is not too big compared to n number of items.
 
     Args:
         items: list of tuples, format [(name: str, value: int, weight: int)]
@@ -74,8 +74,8 @@ def knapsack_dynamic_programming_memory_efficient(items, capacity):
     """ The same API as the method above but with a focus on better memory
     utilization.
 
-    Memory improvements are achived exploiting the observation that we only
-    require the partial results from the last iteration to advance.
+    Memory improvements are achived by exploiting the observation that we for
+    each step of the computation we require partial results of the previous step.
 
     Args:
         items: list of tuples, format [(name: str, value: int, weight: int)]
@@ -233,10 +233,10 @@ def knapsack_arbitrarely_close_approximation(items, capacity, epsilon=0.1):
     (1-epsilon) times the optimal solution.
 
     Algorithm:
-    1. divide each vi by m and round down to the nearest int. (m is a function of epsilon):
-    2. run knapsack_dynamic_programming_small_values routin on the transformed items.
+    1. divide each item i's value by m and round down to the nearest int. (m is a function of epsilon):
+    2. run knapsack_dynamic_programming_small_values routine on the transformed items.
 
-    Complexity: O(n^2*Vmax) where Vmax is the largest value in items.
+    Complexity: O(n^2*Vmax) where Vmax is the largest item value in input set.
 
     Params:
         items: list of tuples, format [(name: str, value: int, weight: int)]
