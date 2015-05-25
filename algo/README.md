@@ -43,27 +43,29 @@ Primitives
 Todo
 ----
 
+0. [part 1] implement btree, avl tree, lsm tree.
 1. [caching] finish implementation of ARCache.
 2. [min spanning tree] randomized algorithm for min spanning tree by Tarjan.
-3. [min spanning tree] minimum spanning bottleneck tree!
-3. [min spanning tree] optimal branching problem for directed graphs (prim&kruskal work for undirected graphs)
-3. [min spanning tree] implement )(m) algorithm by Karger-Klein-Tarjan
-4. [huffman code] something is not correctly implemented!
-5. [dynamic programming][max-weight independent set] compute for trees. See Problem Set #3, problem 3.
-6. [dynamic programming] find best approximate match of substring in string.
-7. [dynamic programming] longest common subsequence of two strings.
-8. [dynamic programming][linear partition] solution reconstruction does not work.
-9. [dynamic programming] flower garden problem!
-10. [knapsack] use dynamic programming to solve the two knapsack problem. (generalize to m different knapsacks!)
+4. [min spanning tree] minimum spanning bottleneck tree!
+5. [min spanning tree] optimal branching problem for directed graphs (prim&kruskal work for undirected graphs)
+6. [min spanning tree] implement )(m) algorithm by Karger-Klein-Tarjan
+7. [huffman code] something is not correctly implemented!
+8. [dynamic programming][max-weight independent set] compute for trees. See Problem Set #3, problem 3.
+9. [dynamic programming] find best approximate match of substring in string.
+10. [dynamic programming] longest common subsequence of two strings.
+11. [dynamic programming][linear partition] solution reconstruction does not work.
+12. [dynamic programming] flower garden problem!
+13. [substring matching] implement knut-morris-pratt, boyer-moore, rabin-karp algorithms. See single_pattern_string_matching.py
+14. [knapsack] use dynamic programming to solve the two knapsack problem. (generalize to m different knapsacks!)
     - Add another dimension to the array to keep track of the residual capacity of the second knapsack, this increases the running time by a factor of at most W.
-11. [bellman-ford] optimize memory consumption on the algorithm.
-12. [bellman-ford] implement solution reconstrunction.
-13. [3sat] implement the algorithm for 3sat by Uwe Schoening.
-14. [bipartite-matching] use maximum flow to solve bipartite matching.
-15. [maximum flow] solve minimum cost for maximum flow problem.
-16. [maximum flow] solve minimum cut using maximum flow algorithm.
-17. [data structures] implement the d-ary heap
-18. [traveling salesman] make the fast version work for very large instances (ie. programming assignment 5)
+15. [bellman-ford] optimize memory consumption on the algorithm.
+16. [bellman-ford] implement solution reconstrunction.
+17. [3sat] implement the algorithm for 3sat by Uwe Schoening.
+18. [bipartite-matching] use maximum flow to solve bipartite matching.
+19. [maximum flow] solve minimum cost for maximum flow problem.
+20. [maximum flow] solve minimum cut using maximum flow algorithm.
+21. [data structures] implement the d-ary heap
+22. [traveling salesman] make the fast version work for very large instances (ie. programming assignment 5)
 
 List of Computer Scientists
 ---------------------------
