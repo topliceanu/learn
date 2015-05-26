@@ -84,3 +84,42 @@ class VectorClock(object):
                 self.revision[key] = max(self.revision[key], new_revision[key])
             elif key not in self.revision and key in new_revision:
                 self.revision[key] = new_revision[key]
+
+    def __cmp__(self, other):
+        """ Used to compare two vector clocks.
+
+        Args:
+            other: object, instance of src.logical_clock.VectorClock
+
+        Returns:
+            -1, if self < other, ie. at least one of the common processes has a
+                clock strictly smaller in self, the rest are all smaller or equal.
+            0, if self == other, ie. values of all common processes are equal.
+            1, if self > other, ie. at least one of the common processes has a
+                clock strictly larger in self, the rest are all larger or equal.
+
+        Raises:
+            Exception, when the two vector clocks are not comparable, ie. no common processes.
+        """
+        local = self.read()
+        remote = other.read()
+        common_keys = set(local.keys()).intersection(set(remote.keys()))
+
+        if len(common_keys) == 0:
+            raise Exception('VectorClock instances are not comparable')
+
+        (local_larger, remote_larger) = (0, 0)
+        for key in common_keys:
+            if local[key] > remote[key]:
+                local_larger += 1
+            elif local[key] < remote[key]:
+                remote_larger += 1
+
+        if local_larger > 0 and other_larger == 0:
+            return 1
+        if local_larger == 0 and other_larger > 0:
+            return -1
+        if local_larger == 0 and other_larger == 0:
+            return 0
+
+        raise Exception('Incorrect vector clocks')
