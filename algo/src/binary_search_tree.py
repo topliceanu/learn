@@ -20,6 +20,7 @@ class BST(object):
     http://www.laurentluce.com/posts/binary-search-tree-library-in-python/
 
     All operations have a complexity of O(log n)
+    Each node is encapsulated as a list (not a dict) for performance reasons.
 
     Attributes:
         root: list, represents the root node, format:
@@ -171,6 +172,10 @@ class BST(object):
     def successor(self, key):
         """ Finds the node with the smallest key larger the the given one.
 
+        If the node has a right subtree, return the node with min key.
+        Otherwise, moves ups the parrent hierarchy until it reaches a node
+        with a key larger that the queried key.
+
         Complexity: O(log n)
 
         Args:
@@ -200,6 +205,9 @@ class BST(object):
 
         Complexity: O(k*log n) where k is the number of keys between
         start_key and end_key.
+
+        Note: a better solution in complexity might be to just traverse the
+        graph in sorted order then return the requested interval.
 
         Args:
             start_key: int, value in the tree to start traversing.
@@ -245,7 +253,7 @@ class BST(object):
             The node just deleted is returned. Note! that is still contains
             old pointers.
         """
-        if type(key) == int:
+        if type(key) != list:
             node = self.search(key)
         else:
             node = key
@@ -284,6 +292,11 @@ class BST(object):
 
     def select(self, index, node = None):
         """ Finds the i'th order statistic in the containing data structure.
+
+        Uses an extra invariant stored for each node: the size, ie. the number
+        of nodes in the subgraph whose parent it is. A node's size is equivalent
+        to the key's position in sorted keys list. This method looks up the key
+        with the size equal to index.
 
         Complexity: O(log n)
 
@@ -328,13 +341,14 @@ class BST(object):
         """
         if self.search(key) is None:
             return None
-        node = self.root
-        return self.recursive_rank(key, node)
+        # start looking for key from the root node.
+        return self.recursive_rank(key, self.root)
 
     def recursive_rank(self, key, node):
         """ Recursive pair of .rank() method.
 
-        The idea is to traverse the tree starting from the root.
+        This method combines recursive lookup for a node with given key from
+        left to right and then aggregate the number of nodes smaller than key.
 
         Args:
             key: int, the key we are looking for.
@@ -412,18 +426,12 @@ class BST(object):
     def is_subtree(self, bst):
         """ Checks if input bst is a subtree of the current bst.
 
-        TODO: what if the keys habe duplicates?
-
         Args:
             bst: object, instance of src.binary_search_tree.BST
 
         Returns:
             bool
         """
-        found_root = self.search(bst.root[KEY])
-        if found_root == None:
-            return False
-
         def match_tree(root1, root2):
             if root1 == None and root2 == None:
                 return True
@@ -435,7 +443,20 @@ class BST(object):
                 return False
             return match_tree(root1[RIGHT], root2[RIGHT])
 
-        return match_tree(found_root, bst.root)
+        root_key = bst.root[KEY]
+        found_root = self.search(root_key)
+        while found_root != None:
+            match = match_tree(found_root, bst.root)
+            if match is True:
+                return True
+            if found_root[LEFT] != None and found_root[LEFT][KEY] == root_key:
+                found_root = found_root[LEFT]
+            elif found_root[RIGHT] != None and found_root[RIGHT][KEY] == root_key:
+                found_root = found_root[RIGHT]
+            else:
+                found_root = None
+
+        return False
 
     # UTILITIES
 
@@ -661,7 +682,7 @@ class BST(object):
 
     @classmethod
     def build(cls, keys):
-        """ Static method which builds a binary search tree.
+        """ Static method which builds a binary search tree of an indicated type.
 
         Args:
             keys: list, of integers to add to the tree.
@@ -678,6 +699,12 @@ class BST(object):
     def from_sorted(cls, sorted_list):
         """ Static method which transforms a sorted list of keys into a
         ballanced binary search tree.
+
+        To make the tree ballanced given a sorted array, the root is the middle
+        element, while the left child is the middle element of the left subarray,
+        and the right child is the middle element of the right subarray.
+
+        Complexity: O(n) - n is the length of input list.
 
         Args:
             sorted_list: list, of values in _ascending_ sorted order.

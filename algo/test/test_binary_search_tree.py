@@ -266,59 +266,6 @@ class TestBST(unittest.TestCase):
         self.assertIsNone(n3[LEFT])
         self.assertIsNone(n3[RIGHT])
 
-    def test_is_ballanced_binary_search_tree(self):
-        """ Test three cases:
-              (3)        (3)               (3)
-                        /   \             /   \
-                     (1)     (7)       (1)     (7)
-                       \     / \               /  \
-                      (2)  (5) (10)          (5) (10)
-                          /  \
-                        (4) (6)
-        """
-        bst1 = BST.build([3])
-        bst2 = BST.build([3, 1, 2, 7, 5, 4, 6, 10])
-        bst3 = BST.build([3, 1, 7, 5, 10])
-
-        self.assertTrue(BST.is_ballanced_binary_search_tree(bst1))
-        self.assertFalse(BST.is_ballanced_binary_search_tree(bst2))
-        self.assertTrue(BST.is_ballanced_binary_search_tree(bst3))
-
-    def test_is_binary_search_tree(self):
-        """ Construct two trees, a plain one and a binary search tree:
-        - binary search tree -    - non-search-tree -
-                (3)                      (3)
-               /   \                    /   \
-            (1)     (5)              (9)     (7)
-              \     / \                \     / \
-             (2)  (4) (7)             (2)  (5) (4)
-                      /  \                /  \
-                    (6)  (8)            (10)  (6)
-        """
-        n10 = [None, 10, None, None]
-        n6 = [None, 6, None, None]
-        n4 = [None, 4, None, None]
-        n2 = [None, 2, None, None]
-        n5 = [None, 5, n10, n6]
-        n10[PARENT] = n5
-        n6[PARENT] = n5
-        n7 = [None, 7, n5, n4]
-        n5[PARENT] = n7
-        n4[PARENT] = n7
-        n9 = [None, 9, None, n2]
-        n2[PARENT] = n9
-        n3 = [None, 3, n9, n7]
-        n9[PARENT] = n3
-        n7[PARENT] = n3
-        notSearchTree = n3
-
-        trueSearchTree = BST.build([3,1,2,5,4,7,8,9]).root
-
-        self.assertTrue(BST.is_binary_search_tree(trueSearchTree),
-            'should detect a correct search tree')
-        self.assertFalse(BST.is_binary_search_tree(notSearchTree),
-            'should detect a when a tree is not search tree')
-
     def test_join(self):
         """ Tests the method to join the current tree with another one. """
 
@@ -341,73 +288,6 @@ class TestBST(unittest.TestCase):
         self.assertEqual(joined.root[RIGHT][LEFT][SIZE], 1)
         self.assertEqual(joined.root[RIGHT][RIGHT][KEY], 6)
         self.assertEqual(joined.root[RIGHT][RIGHT][SIZE], 1)
-
-    def test_from_sorted(self):
-        """ Tests construction of a BST from a sorted array. """
-
-        a = [1,2,3,4,5,5,6]
-        tree = BST.from_sorted(a)
-        self.assertTrue(BST.is_binary_search_tree(tree.root),
-            'should have built a binary search tree')
-
-        self.assertEqual(tree.root[KEY], 4)
-        self.assertEqual(tree.root[SIZE], 3)
-        self.assertEqual(tree.root[LEFT][KEY], 2)
-        self.assertEqual(tree.root[LEFT][SIZE], 2)
-        self.assertEqual(tree.root[LEFT][LEFT][KEY], 1)
-        self.assertEqual(tree.root[LEFT][LEFT][SIZE], 1)
-        self.assertEqual(tree.root[LEFT][RIGHT][KEY], 3)
-        self.assertEqual(tree.root[LEFT][RIGHT][SIZE], 1)
-        self.assertEqual(tree.root[RIGHT][KEY], 5)
-        self.assertEqual(tree.root[RIGHT][SIZE], 2)
-        self.assertEqual(tree.root[RIGHT][LEFT][KEY], 5)
-        self.assertEqual(tree.root[RIGHT][LEFT][SIZE], 1)
-        self.assertEqual(tree.root[RIGHT][RIGHT][KEY], 6)
-        self.assertEqual(tree.root[RIGHT][RIGHT][SIZE], 1)
-
-    def test_from_sorted_with_an_inballanced_tree(self):
-        """ Tests construction of a BST from a sorted array. """
-
-        a = [1,2]
-        tree = BST.from_sorted(a)
-        self.assertTrue(BST.is_binary_search_tree(tree.root),
-            'should have built a binary search tree')
-        self.assertEqual(tree.root[KEY], 1)
-        self.assertEqual(tree.root[SIZE], 2)
-        self.assertEqual(tree.root[RIGHT][KEY], 2)
-        self.assertEqual(tree.root[RIGHT][SIZE], 1)
-
-    def test_diameter(self):
-        """ Given the following binary search tree:
-                (3)
-               /  \
-             (2)  (4)
-            /        \
-          (1)        (5)
-        """
-        tree = BST.build([3,2,1,4,5])
-        actual = tree.diameter()
-        expected = 5
-        self.assertEqual(actual, expected, 'should return the path with '+
-                                           'the max number of vertices')
-
-    def test_unballanced_graph_diameter(self):
-        """ Given the following binary search tree:
-                (1)
-                  \
-                  (2)
-                     \
-                     (3)
-                       \
-                       (4)
-                          \
-                          (5)
-        """
-        tree = BST.build([1,2,3,4,5])
-        actual = tree.diameter()
-        expected = 5
-        self.assertEqual(actual, expected, 'should return the path with '+
-                                           'the max number of vertices')
 
     def test_in_order_traversal(self):
         """ Running examples:
@@ -466,3 +346,140 @@ class TestBST(unittest.TestCase):
         self.assertTrue(tree.is_subtree(subtree2), 'a tree with only leaf')
         self.assertTrue(tree.is_subtree(subtree3), 'the same as original tree')
         self.assertFalse(tree.is_subtree(subtree4), 'modified right subtree')
+
+    def test_is_subtree_in_case_of_duplicate_root_keys(self):
+        """ Given the following binary tree:
+                    (4)
+                   /   \
+                (2)     (5)
+               /
+             (2)
+            /
+          (1)
+
+
+        """
+        tree = BST.build([4, 2, 2, 1, 5])
+        subtree = BST.build([2, 1])
+        actual = tree.is_subtree(subtree)
+        self.assertTrue(actual, 'should discover the correct subtree')
+
+    def test_diameter(self):
+        """ Given the following binary search tree:
+                (3)
+               /  \
+             (2)  (4)
+            /        \
+          (1)        (5)
+        """
+        tree = BST.build([3,2,1,4,5])
+        actual = tree.diameter()
+        expected = 5
+        self.assertEqual(actual, expected, 'should return the path with '+
+                                           'the max number of vertices')
+
+    def test_unballanced_graph_diameter(self):
+        """ Given the following binary search tree:
+                (1)
+                  \
+                  (2)
+                     \
+                     (3)
+                       \
+                       (4)
+                          \
+                          (5)
+        """
+        tree = BST.build([1,2,3,4,5])
+        actual = tree.diameter()
+        expected = 5
+        self.assertEqual(actual, expected, 'should return the path with '+
+                                           'the max number of vertices')
+
+    def test_is_ballanced_binary_search_tree(self):
+        """ Test three cases:
+              (3)        (3)               (3)
+                        /   \             /   \
+                     (1)     (7)       (1)     (7)
+                       \     / \               /  \
+                      (2)  (5) (10)          (5) (10)
+                          /  \
+                        (4) (6)
+        """
+        bst1 = BST.build([3])
+        bst2 = BST.build([3, 1, 2, 7, 5, 4, 6, 10])
+        bst3 = BST.build([3, 1, 7, 5, 10])
+
+        self.assertTrue(BST.is_ballanced_binary_search_tree(bst1))
+        self.assertFalse(BST.is_ballanced_binary_search_tree(bst2))
+        self.assertTrue(BST.is_ballanced_binary_search_tree(bst3))
+
+    def test_is_binary_search_tree(self):
+        """ Construct two trees, a plain one and a binary search tree:
+        - binary search tree -    - non-search-tree -
+                (3)                      (3)
+               /   \                    /   \
+            (1)     (5)              (9)     (7)
+              \     / \                \     / \
+             (2)  (4) (7)             (2)  (5) (4)
+                      /  \                /  \
+                    (6)  (8)            (10)  (6)
+        """
+        n10 = [None, 10, None, None]
+        n6 = [None, 6, None, None]
+        n4 = [None, 4, None, None]
+        n2 = [None, 2, None, None]
+        n5 = [None, 5, n10, n6]
+        n10[PARENT] = n5
+        n6[PARENT] = n5
+        n7 = [None, 7, n5, n4]
+        n5[PARENT] = n7
+        n4[PARENT] = n7
+        n9 = [None, 9, None, n2]
+        n2[PARENT] = n9
+        n3 = [None, 3, n9, n7]
+        n9[PARENT] = n3
+        n7[PARENT] = n3
+        notSearchTree = n3
+
+        trueSearchTree = BST.build([3,1,2,5,4,7,8,9]).root
+
+        self.assertTrue(BST.is_binary_search_tree(trueSearchTree),
+            'should detect a correct search tree')
+        self.assertFalse(BST.is_binary_search_tree(notSearchTree),
+            'should detect a when a tree is not search tree')
+
+    def test_from_sorted(self):
+        """ Tests construction of a BST from a sorted array. """
+
+        a = [1,2,3,4,5,5,6]
+        tree = BST.from_sorted(a)
+        self.assertTrue(BST.is_binary_search_tree(tree.root),
+            'should have built a binary search tree')
+
+        self.assertEqual(tree.root[KEY], 4)
+        self.assertEqual(tree.root[SIZE], 3)
+        self.assertEqual(tree.root[LEFT][KEY], 2)
+        self.assertEqual(tree.root[LEFT][SIZE], 2)
+        self.assertEqual(tree.root[LEFT][LEFT][KEY], 1)
+        self.assertEqual(tree.root[LEFT][LEFT][SIZE], 1)
+        self.assertEqual(tree.root[LEFT][RIGHT][KEY], 3)
+        self.assertEqual(tree.root[LEFT][RIGHT][SIZE], 1)
+        self.assertEqual(tree.root[RIGHT][KEY], 5)
+        self.assertEqual(tree.root[RIGHT][SIZE], 2)
+        self.assertEqual(tree.root[RIGHT][LEFT][KEY], 5)
+        self.assertEqual(tree.root[RIGHT][LEFT][SIZE], 1)
+        self.assertEqual(tree.root[RIGHT][RIGHT][KEY], 6)
+        self.assertEqual(tree.root[RIGHT][RIGHT][SIZE], 1)
+
+    def test_from_sorted_with_an_inballanced_tree(self):
+        """ Tests construction of a BST from a sorted array. """
+
+        a = [1,2]
+        tree = BST.from_sorted(a)
+        self.assertTrue(BST.is_binary_search_tree(tree.root),
+            'should have built a binary search tree')
+        self.assertEqual(tree.root[KEY], 1)
+        self.assertEqual(tree.root[SIZE], 2)
+        self.assertEqual(tree.root[RIGHT][KEY], 2)
+        self.assertEqual(tree.root[RIGHT][SIZE], 1)
