@@ -72,18 +72,22 @@ class BST(object):
                 node = node[path]
         return node[path]
 
-    def search(self, key):
+    def search(self, key, node=None):
         """ Looks up a key in the data structure.
 
         Complexity: O(log n)
 
         Args:
             key: immutable value to look for.
+            node: node to start the search from. By default it is the root.
+                Format: [parent, key, left, right, size]
 
         Returns:
-            The node found in format [parent, key, left, right] or None.
+            The node found in format [parent, key, left, right, size] or None.
         """
-        node = self.root
+        if node == None:
+            node = self.root
+
         while True:
             if key == node[KEY]:
                 return node
@@ -426,6 +430,12 @@ class BST(object):
     def is_subtree(self, bst):
         """ Checks if input bst is a subtree of the current bst.
 
+        A tree can have multiple keys with the same value. The convention
+        adopted in this implementation is that all identical keys are sent to
+        the self subtree upon insertion. This method exploits this behaviour by
+        only searching the left subtree after a failed match against a found
+        node with the similar key as the root of bst.
+
         Args:
             bst: object, instance of src.binary_search_tree.BST
 
@@ -445,14 +455,14 @@ class BST(object):
 
         root_key = bst.root[KEY]
         found_root = self.search(root_key)
+
         while found_root != None:
             match = match_tree(found_root, bst.root)
             if match is True:
                 return True
-            if found_root[LEFT] != None and found_root[LEFT][KEY] == root_key:
-                found_root = found_root[LEFT]
-            elif found_root[RIGHT] != None and found_root[RIGHT][KEY] == root_key:
-                found_root = found_root[RIGHT]
+
+            if found_root[LEFT] != None:
+                found_root = self.search(root_key, found_root[LEFT])
             else:
                 found_root = None
 
@@ -501,7 +511,8 @@ class BST(object):
         Note! P, A, B and/or C can be None, this method accomodates that case.
 
         Args:
-            node: list, format [parent, key, left, right, size]
+            node: list, corresponds to X in the schemas. Format:
+                [parent, key, left, right, size]
             DIRECTION: number, either LEFT or RIGHT constants indicates the
                 direction of the "soon to be rotated" node.
         """
@@ -565,20 +576,20 @@ class BST(object):
                                                     right=node[RIGHT][KEY])
         return out
 
-    def depth(self, vertex):
+    def depth(self, node):
         """ Computes the depth of a node in a binary search tree, ie. the
-        number levels the subtree whose root the given vertex is.
+        number levels the subtree whose root the given node is.
 
         Args:
-            vertex: name of the vertex to compute depth for.
+            node: name of the node to compute depth for.
 
         Return:
             int: depth of input node.
         """
-        if vertex is None:
+        if node is None:
             return 0
-        left = 1 + self.depth(vertex[LEFT])
-        right = 1 + self.depth(vertex[RIGHT])
+        left = 1 + self.depth(node[LEFT])
+        right = 1 + self.depth(node[RIGHT])
         return max(left, right)
 
     def diameter(self):

@@ -328,39 +328,54 @@ class TestBST(unittest.TestCase):
         actual = tree.post_order_traversal()
         self.assertEqual(actual, expected, 'post-order traversal')
 
-    def test_is_subtree(self):
-        """ Given the following binary tree:
-                    (3)
-                   /   \
-                (1)     (5)
-               /  \     / \
-             (0)  (2) (4) (7)
+    #def test_is_subtree(self):
+    #    """ Given the following binary tree:
+    #                (3)
+    #               /   \
+    #            (1)     (5)
+    #           /  \     / \
+    #         (0)  (2) (4) (7)
+    #    """
+    #    tree = BST.build([3, 1, 0, 2, 5, 4, 7])
+    #    subtree1 = BST.build([1, 0, 2]) # Left subtree
+    #    subtree2 = BST.build([2]) # A leaf.
+    #    subtree3 = BST.build([3, 1, 0, 2, 5, 4, 7]) # The same tree.
+    #    subtree4 = BST.build([5, 4, 8]) # Modified right subtree.
+
+    #    self.assertTrue(tree.is_subtree(subtree1), 'the left subtree')
+    #    self.assertTrue(tree.is_subtree(subtree2), 'a tree with only leaf')
+    #    self.assertTrue(tree.is_subtree(subtree3), 'the same as original tree')
+    #    self.assertFalse(tree.is_subtree(subtree4), 'modified right subtree')
+
+    #def test_is_subtree_in_case_of_duplicate_root_keys(self):
+    #    """ Given the following binary tree:
+    #                (4)
+    #               /   \
+    #            (2)     (5)
+    #           /
+    #         (2)
+    #        /
+    #      (1)
+
+
+    #    """
+    #    tree = BST.build([4, 2, 2, 1, 5])
+    #    subtree = BST.build([2, 1])
+    #    actual = tree.is_subtree(subtree)
+    #    self.assertTrue(actual, 'should discover the correct subtree')
+
+    def test_is_subtree_when_duplicate_key_is_not_immediate_descendant(self):
+        """  Given the following tree and the lookup subtree:
+            (3)
+           /  \
+         (2)  (6)           (3)
+             /   \            \
+           (3)   (7)          (5)
+              \
+              (5)
         """
-        tree = BST.build([3, 1, 0, 2, 5, 4, 7])
-        subtree1 = BST.build([1, 0, 2]) # Left subtree
-        subtree2 = BST.build([2]) # A leaf.
-        subtree3 = BST.build([3, 1, 0, 2, 5, 4, 7]) # The same tree.
-        subtree4 = BST.build([5, 4, 8]) # Modified right subtree.
-
-        self.assertTrue(tree.is_subtree(subtree1), 'the left subtree')
-        self.assertTrue(tree.is_subtree(subtree2), 'a tree with only leaf')
-        self.assertTrue(tree.is_subtree(subtree3), 'the same as original tree')
-        self.assertFalse(tree.is_subtree(subtree4), 'modified right subtree')
-
-    def test_is_subtree_in_case_of_duplicate_root_keys(self):
-        """ Given the following binary tree:
-                    (4)
-                   /   \
-                (2)     (5)
-               /
-             (2)
-            /
-          (1)
-
-
-        """
-        tree = BST.build([4, 2, 2, 1, 5])
-        subtree = BST.build([2, 1])
+        tree = BST.build([3, 2, 6, 3, 7, 5, 3])
+        subtree = BST.build([3, 3])
         actual = tree.is_subtree(subtree)
         self.assertTrue(actual, 'should discover the correct subtree')
 
