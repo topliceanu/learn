@@ -1,13 +1,11 @@
-Stanford's Algorithms I Class on Coursera
-=========================================
+# Stanford's Algorithms I Class on Coursera
 
 `src` contains all the source code.
 
 `test` contains fixtures and test cases.
 
 
-Tests
------
+## Tests
 
 ```bash
 cd learn/algo
@@ -15,9 +13,30 @@ python -m unittest discover test # to run all tests.
 python -m unittest discover test -p test_graph.py # to run a specific test case.
 ```
 
-Primitives
-----------
+## Primitives
 
+### Part 1
+1. karatsuba multiplication
+2. recursion
+3. master method - big O analysis of recursive algorithms.
+4. counting inversions
+5. sub-cubic matrix multiplication by Strassen
+6. closest pair of points in 2D
+7. quicksort
+8. selection of an element on position k in an unsorted array - randomized and deterministic
+9. minimum cut - Karger's randomized algorithm.
+10. breadth-first search - single source shortest path distance, undirected conectivity
+11. depth-first search - topological sort, strong components
+12. DAG - directed acyclic graph
+13. heap data structure
+14. single source shortest path - dijkstra algorithm
+15. binary search tree
+16. ballanced binary search tree - red/black tree.
+17. hash tables
+18. universal hashing
+19. bloom filters
+
+### Part 2
 1. caching
 2. job scheduling
 2. greedy methodology
@@ -40,10 +59,16 @@ Primitives
 19. minimum cut
 20. linear programming
 
-Todo
-----
+## Todo
 
-0. [part 1] implement btree, avl tree, lsm tree.
+### Part 1
+0. [ ] implement btree
+1. [X] implement avl tree
+1. [ ] implement lsm tree.
+3. [ ] dijkstra single source shortest path - return the actual shortest paths.
+4. [ ] red-black tree delete should work correctly.
+
+### Part 2
 1. [caching] finish implementation of ARCache.
 2. [min spanning tree] randomized algorithm for min spanning tree by Tarjan.
 4. [min spanning tree] minimum spanning bottleneck tree!
@@ -67,8 +92,7 @@ Todo
 21. [data structures] implement the d-ary heap
 22. [traveling salesman] make the fast version work for very large instances (ie. programming assignment 5)
 
-List of Computer Scientists
----------------------------
+## List of Computer Scientists
 
 1. Robert Prim - 1957 - Prim's minimum spanning tree (also by Dijkstra in 1959 and Vojtech Jarnik in 1930!).
 2. Joseph Kruskal - 1956 - Kruskal's minimum spanning tree.
@@ -88,8 +112,7 @@ List of Computer Scientists
 13. David Gale - 1962 - stable matching algorithm
 14. George Bernard Dantzig - inventor of linear programming
 
-Wikipedia Links
----------------
+## Wikipedia Links
 
 http://en.wikipedia.org/wiki/Robert_C._Prim
 http://en.wikipedia.org/wiki/Vojt%C4%9Bch_Jarn%C3%ADk

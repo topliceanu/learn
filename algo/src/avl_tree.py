@@ -16,6 +16,10 @@ class AVLTree(BST):
     at lookups.
 
     Inventors: Georgy Adelson-Velsky and E.M. Landis in 1962.
+
+    Reference implementations:
+    http://www.geeksforgeeks.org/avl-tree-set-2-deletion/
+    http://en.wikipedia.org/wiki/AVL_tree
     """
 
     def get_ballance_factor(self, node):
