@@ -240,7 +240,7 @@ class LFUHeap(Heap):
     the stored hash table int the queue and maintain the object with min
     frequency as the root.
 
-    TODO This heap should also maintains a list of all the indexes of the nodes.
+    TODO This heap should also maintain a list of all the indexes of the nodes.
 
     Attrs:
         data: list, with format [{key, value, freq}]

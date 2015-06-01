@@ -10,7 +10,7 @@ from src.union_find import UnionFind
 
 
 def prims_suboptimal_mst(graph):
-    """ Computes minimum spanning tree using the Prim's algorithm.
+    """ Computes minimum spanning tree using Prim's algorithm.
 
     Running time: O(n*m), where n is the num of vertices and m the num of edges.
 

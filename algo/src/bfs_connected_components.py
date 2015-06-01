@@ -4,7 +4,7 @@ from breadth_first_search import bfs
 
 
 def bfs_connected_components(graph):
-    """ Finds all the connected subgraphs in a given graph.
+    """ Finds all the connected subgraphs in a given undirected graph.
 
     It does so by iterating over all non-visited elements in a graph
     and running bfs over it.
@@ -16,7 +16,7 @@ def bfs_connected_components(graph):
             edges, vertices as well as values for edges and vertices.
 
     Returns:
-        A list of lists of vertexes which are connected.
+        list, of lists of vertexes which are connected. Format [[vertex,..]]
     """
     subgraphs = []
     explored_vertices = []

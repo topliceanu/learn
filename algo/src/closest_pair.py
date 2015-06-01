@@ -11,7 +11,6 @@ def euclidean_distance(p, q):
 def closest_pair(points, distance=euclidean_distance):
     """ Computes the closest pair from a given set of points in 2D.
 
-    Running time is O(nlogn) time.
     Uses divide and conquer with the following steps:
     - sort the points on x and y axes
     - split the plain in two by the x axis
@@ -23,6 +22,8 @@ def closest_pair(points, distance=euclidean_distance):
 
     The trick is in the joining of the results and computing split pairs.
     This is done in O(logn) time
+
+    Running time: O(nlogn)
 
     Args:
         points: list of tuples [(x, y)] representing coordonates
@@ -85,8 +86,9 @@ def closest_split_pair(Px, Py, delta, distance=euclidean_distance):
     than delta.
 
     Returns:
-        None if no split pair is discovered which w/ dist smaller than delta.
-        A tuple of points (tuples) representing point w/ smallest distance.
+        None, if no split pair is discovered which w/ dist smaller than delta.
+        tuple, of points (tuples) representing point w/ smallest distance.
+            Format: ((x1, y1), (x2, y2))
     """
     big_x = Px[-1] # biggest element in the left of Px.
     Sy = [x for x in Px if x[0] >= big_x[0] - delta or x[0] <= big_x[0] + delta]

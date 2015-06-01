@@ -49,11 +49,15 @@ def sort_and_count_inversions (arr):
         the input array in two halves counting the inversions them summing
         them up.
 
+        Complexity: O(nlogn)
+
         Params:
             arr: list of items to count inversions in.
 
         Return:
             A tuple with (sorted_arr, num_inversions)
+                sorted_arr: list, of items from arr but in sorted order.
+                num_inversions: int, the number of inverted pairs found.
     """
     n = len(arr)
 

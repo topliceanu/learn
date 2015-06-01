@@ -261,18 +261,3 @@ class RedBlackTree(BST):
             node1[direction][PARENT], node2[direction][PARENT] = \
                 node2[direction][PARENT], node1[direction][PARENT]
             node1[direction], node2[direction] = node2[direction], node1[direction]
-
-
-#class SplayTree(BST):
-#    """ Adds to the base default Ballanced Search Tree a splaying method which
-#    promotes frequently accessed nodes closer to the root.
-#    """
-#
-#class AVLTree(BST):
-#    """ Implements a ballanced binary tree using the AVL method.
-#
-#    AVL Trees maintain a measurement called the 'ballance factor' for each
-#    node in the tree. This is computed as such:
-#        height(left_subtree) - height(right_subtree)
-#    If this value is not in {-1, 0, 1} then rotations are required.
-#    """

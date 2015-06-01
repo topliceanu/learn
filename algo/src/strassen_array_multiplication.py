@@ -2,12 +2,12 @@
 
 
 def op (x, y, op = '+'):
-    """ Liniar operation over two square, same-size matrices.
+    """ Liniar operation over two square matrices.
 
     Args:
-        x: array of size nxn
-        y: array of size nxn
-        op: str with operations to apply on two arrays
+        x: array of size n*n
+        y: array of size n*n
+        op: str with operations to apply on two arrays, can be either + or -
 
     Returns:
         A 2D list resulting from applying op to each element of x and y.
@@ -47,13 +47,12 @@ def arr_section (x, m, n, o, p):
             line.append(x[i][j])
         out.append(line)
     return out
-
+    #return [x[i][o:p] for i in range(m, n)]
 
 def arr_join (a, b, c, d):
     """ Recomposes an array from for four equal-sized section arrays as follows:
-
-    x = (a b)
-        (c d)
+            x = (a b)
+                (c d)
     """
     out = []
     n = len(a)
@@ -98,6 +97,8 @@ def strassen_array_multiplication (x, y):
 
     NOTE: to make it work for mxn * nxm or for the cases where n is not a
     multiple of 2 a padding of 1s can be added.
+
+    Complexity: O(n^2)
 
     Args:
         x: list, square array of nxn, where n is a multiple of 2

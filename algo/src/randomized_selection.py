@@ -8,7 +8,8 @@ import src.quick_sort as quick_sort
 def randomized_selection(arr, n, i):
     """ Select the ith element from arr if arr would be sorted.
 
-    NOTE! We are not sorting arr, we just want the ith element in the array.
+    Note! We are not sorting arr, we just want the ith element in the array.
+    Note! This method modifies the original array.
 
     Complexity: O(n)
 

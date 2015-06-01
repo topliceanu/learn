@@ -4,7 +4,8 @@ from collections import deque
 
 
 def bfs(graph, start_vertex):
-    """ Parses all the graph using the breadth first search.
+    """ Parses all vertices in the graph, using the breadth first search,
+    which are reachable from start_vertex.
 
     Done in O(|V|+|E|) where |V| - cardinality of vertices set.
                              |E| - cardinality of edges set.

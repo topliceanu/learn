@@ -10,6 +10,8 @@ def multiply (x, y):
     NOTE! The difference between the two numbers should be of at most one order
     of magnitude! Otherwise this algorithm will not work.
 
+    Complexity: O(n^(log2 3)) - see master method.
+
     Params:
         x: int, positive non-zero integer
         y: int, positive non-zero integer

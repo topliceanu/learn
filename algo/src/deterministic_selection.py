@@ -39,7 +39,8 @@ def deterministic_pick_pivot(arr):
 
     Use the median of medians method.
 
-    Complexity: O(n) - has slightly higher constants than randomized selection.
+    Complexity: O(n) - has slightly higher constants than randomized selection,
+        but worst time is O(n), which is not the case for the randomized version.
 
     Params:
         arr: list of elements

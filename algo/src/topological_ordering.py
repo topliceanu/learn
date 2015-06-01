@@ -3,14 +3,13 @@
 import random
 
 
-# Topological ordering is used in sequencing tasks while respecting precendence constraints.
-# Note! The input graphs must NOT have cycles and must be connected.
-
+# Topological ordering is used in scheduling tasks with respect to their dependent tasks.
+# Topological ordering is only possible if the graph has no directed cycles ie. it's a DAG (directed acyclic graph).
 
 VISITED = 0x100
 
 def dfs_loop(g):
-    """ Orders the vertices in a directed graph in an efficient way
+    """ Orders the vertices in a directed graph in a topological ordering
     using depth_first_search.
 
     Args:
@@ -48,8 +47,8 @@ def dfs_loop(g):
     return ordering
 
 
-# Less efficient implementation based on the fact that there
-# exist at least one sync vertex and no cycles.
+# Less efficient implementation based on the fact that there always exists at
+# least one sync vertex (ie. no outgoing arcs) and no cycles in the graph.
 
 def get_sync_vertices(g):
     """ Returns a list of sync vertices.
@@ -65,6 +64,10 @@ def get_sync_vertices(g):
     return [v for v in g.get_vertices() if len(g.neighbours(v)) == 0]
 
 def recurse_pick_then_remove_sync(g, pos):
+    """ Recursive function which repeatedly removes one of the sync vertices
+    from the given graph and assigns it the given position in the topological
+    ordering.
+    """
     sync_vertices = get_sync_vertices(g)
     if len(sync_vertices) == 0:
         return

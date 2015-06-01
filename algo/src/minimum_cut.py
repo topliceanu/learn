@@ -32,8 +32,8 @@ def contract(graph, edge):
     return graph
 
 def randomized_cut(graph):
-    """ Finds a cut in a given graph using
-    the random contraction algorithm defined by David Karger in '93.
+    """ Finds a cut in a given graph using the random contraction algorithm
+    defined by David Karger in '93.
 
     NOTE! This algorithm modifies the graph in place, so make sure you clone
     it before compacting if you don't want your original graph modified.

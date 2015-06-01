@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+
 class ChainingHash(object):
     """ Hash table implementation which resolves collisions by using chaining.
 
@@ -213,7 +214,7 @@ class SequentialProbingHash(object):
     The hash function is used to compute the array index. If that bucket is
     occupied then the array is traversed until an open position is found.
 
-    TODO: how to fix the this
+    TODO: how to implement the this?!
 
     Args:
         num_buckets: int, the size of the array containing the data.

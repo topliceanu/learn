@@ -130,7 +130,7 @@ def shortest_path_naive(graph, start_vertex):
     return A
 
 def get_frontier(graph, explored_vertices):
-    """ Computes the edges on the frontier of graph given
+    """ Computes the edges on the frontier of a graph, given
     the already explored vertices, ie. the edges where the tail was explored
     and the head was not yet explored.
 
