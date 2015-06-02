@@ -32,7 +32,10 @@ class Backtracking(object):
         """
 
     def should_continue(self):
-        """ Hook to allow implementation to stop the algorithm early. """
+        """ Hook to allow implementation to stop the algorithm early. Defaults
+        to True, meaning explore the entire solutions space.
+        """
+        return True
 
     def accept(self, candidate):
         """ Returns true if the candidate is a valid final solution.
@@ -161,14 +164,78 @@ class QueenPuzzle(Backtracking):
         return candidates
 
 
-class TwoSatSatisfaction(Backtracking):
-    """ Solves the "two entites per clause" constraint satisfaction problem. """
-
 class TravelingSalesman(Backtracking):
-    """ Solves the traveling salesman using backtracking ie. in exponential time. """
+    """ Solves the traveling salesman using backtracking ie. in exponential time.
 
-class ConvexHull(Backtracking):
-    """ Solves the convex hull problem (ie. Graham's Scan) """
+    Attrs:
+        solution: list, each item represents a city id. This field keep the best solution
+        min_cost: float, stores the cost of the solution
+        graph: instance of src.graph.Graph
+    """
 
-class GeneratePermutations(Backtracking):
-    """ Generates permutations using the backtracking problems. """
+    def __init__(self, graph):
+        self.solution = []
+        self.min_cost = float('inf')
+        self.graph = graph
+
+    def root(self):
+        return []
+
+    def reject(self, candidate):
+        """ Reject a candidate which goes through the same city multiple times. """
+        return len(set(candidate)) != len(candidate)
+
+    def accept(self, candidate):
+        """ Accepting only the candidate who traverse all vertices of the graph only once. """
+        return len(candidate) == len(set(candidate)) == len(self.graph.get_vertices())
+
+    def output(self, candidate):
+        """ The received candidate traverses all vertices in the graph only
+        once. To produce a cycle, this method tests if first city is reachable
+        from the last city in the candidate. If it is, it adds it to the
+        solution, otherwise it ignores the solution alltoghether.
+        """
+        if not self.graph.adjacent(candidate[-1], candidate[0]):
+            return
+        candidate.append(candidate[0])
+
+        cost = 0
+        for i in range(len(candidate)-1):
+            cost += self.graph.get_edge_value((candidate[i], candidate[i+1]))
+        if cost < self.min_cost:
+            self.solution = candidate
+            self.min_cost = cost
+
+    def extend(self, candidate):
+        """ Expand the given candidate by adding all cities which can be
+        connected.
+
+        Two case: initially, when the candidate is empty, populate with all
+        vertices in the graph. Otherwise, produce a candidate solution for
+        each city which connects to the last city in the current partial
+        solution and which hasn't been visited so far.
+
+        Returns:
+            list, of lists, format [[cities...]]
+        """
+        if len(candidate) == 0:
+            return [[i] for i in self.graph.get_vertices()]
+
+        solutions = []
+        last_city = candidate[-1]
+        for city in self.graph.neighbours(last_city):
+            if city not in candidate:
+                tmp = candidate[:]
+                tmp.append(city)
+                solutions.append(tmp)
+        return solutions
+
+# TODO
+#class TwoSatSatisfaction(Backtracking):
+#    """ Solves the "two entites per clause" constraint satisfaction problem. """
+#
+#class ConvexHull(Backtracking):
+#    """ Solves the convex hull problem (ie. Graham's Scan) """
+#
+#class GeneratePermutations(Backtracking):
+#    """ Generates permutations using the backtracking problems. """

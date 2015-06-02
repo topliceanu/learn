@@ -2,7 +2,8 @@
 
 import unittest
 
-from src.backtracking import QueenPuzzle
+from src.backtracking import QueenPuzzle, TravelingSalesman
+from src.graph import Graph
 
 
 class TestBacktracking(unittest.TestCase):
@@ -27,3 +28,28 @@ class TestBacktracking(unittest.TestCase):
         puzzle.run()
         self.assertEqual(len(puzzle.solutions), 92,
             'should not find any solutions for the three problem')
+
+    def test_traveling_salesman(self):
+        """ Given the following graph:
+                     2
+                (a)----(b)
+                 | \4 / |
+                 |  \/  |5
+                1|  /\  |
+                 | /3 \ |
+                 |/    \|
+                (c)----(d)
+                    6
+        """
+        g = Graph.build(edges=[
+                ('a', 'b', 2), ('a', 'd', 4), ('a', 'c', 1),
+                ('b', 'd', 5), ('b', 'c', 3), ('d', 'c', 6)
+            ], directed=False)
+        ts = TravelingSalesman(g)
+        ts.run()
+        expected_min_path = ['a', 'c', 'b', 'd', 'a']
+        expected_min_cost = 13
+        self.assertEqual(ts.solution, expected_min_path,
+            'should have computed the min path')
+        self.assertEqual(ts.min_cost, expected_min_cost,
+            'should have computed the min cost')
