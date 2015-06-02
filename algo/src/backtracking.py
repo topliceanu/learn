@@ -2,7 +2,12 @@
 
 
 class Backtracking(object):
-    """ Strategy class encapsulating the backtracking metaheuristic. """
+    """ Strategy class encapsulating the backtracking metaheuristic.
+
+    See generic descriptions of the method:
+    http://en.wikipedia.org/wiki/Backtracking
+    http://web.cse.ohio-state.edu/~gurari/course/cis680/cis680Ch19.html#QQ1-51-128
+    """
 
     def run(self):
         """ Executes the backtracking algorithm and returns the results. """
@@ -10,41 +15,45 @@ class Backtracking(object):
         self.recurrence(seed)
 
     def recurrence(self, candidate):
-        if not self.should_continue():
+        """ Main recurrence of the algorithm. Do NOT extend this! """
+        if self.should_continue() is False:
             return
         if self.reject(candidate):
             return
         if self.accept(candidate):
-            return self.output(candidate)
-        solution = self.first(candidate)
-        while solution != None:
+            self.output(candidate)
+        solutions = self.extend(candidate)
+        for solution in solutions:
             self.recurrence(solution)
-            solution = self.next(solution)
 
     def root(self):
-        """ Return the partial candidate at the root of the search tree. """
-
-    def reject(self, candidate):
-        """ Returns true only if the candidate cannot form a correct solution. """
-
-    def accept(self, candidate):
-        """ Returns true if the candidate is a valid final solution. """
-
-    def first(self, candidate):
-        """ Generate the first extension of the given candidate partial
-        solution.
-        """
-
-    def next(self, candidate):
-        """ Generate the next alternative extension of a candidate, starting
-        from the given extension.
+        """ Return the partial candidate at the root of the search tree,
+        ie. the seed!
         """
 
     def should_continue(self):
-        """ Extend this method to stop the algorithm early. """
+        """ Hook to allow implementation to stop the algorithm early. """
+
+    def accept(self, candidate):
+        """ Returns true if the candidate is a valid final solution.
+
+        Returns:
+            bool, True if candidate is valid
+        """
 
     def output(self, solution):
-        """ Given the implementation a chance to work on a solution. """
+        """ Gives the implementation a chance to process a solution. """
+
+    def reject(self, candidate):
+        """ Returns true only if the candidate cannot possibly form a correct
+        solution.
+
+        Returns:
+            bool
+        """
+
+    def extend(self, candidate):
+        """ Extends the of the given candidate partial solution. """
 
 
 class QueenPuzzle(Backtracking):
@@ -60,17 +69,12 @@ class QueenPuzzle(Backtracking):
         degree: int, the size of square board (for instance 8 for a chess board)
     """
     def __init__(self, degree):
-        self.solutions = list()
+        self.solutions = []
         self.degree = degree
-        self.stack = list()
 
     def output(self, solution):
         """ When a solutions is found, it is recorded. """
         self.solutions.append(solution)
-
-    def get_solutions(self):
-        """ Returns the list of found solutions. """
-        return self.solutions
 
     def reject(self, candidate):
         """ Rejects the candidate subproblem is at least two queens are on the
@@ -109,8 +113,11 @@ class QueenPuzzle(Backtracking):
         return False
 
     def accept(self, candidate):
-        """ Checks if the candidate is a finished solution. """
-        return len(candidate) == self.degree and not self.reject(candidate)
+        """ Checks if the candidate is a finished solution. Accept is always
+        called after reject() so if it reached this far then this solution is
+        valid.
+        """
+        return len(candidate) == self.degree
 
     def should_continue(self):
         """ In this particular problem we are interested in all the solutions."""
@@ -123,35 +130,36 @@ class QueenPuzzle(Backtracking):
         Returns:
             list, format [(x, y)]
         """
-        positions = [(0, i) for i in range(self.degree)]
-        for i in range(self.degree):
-            self.stack.append([(0, i)])
-        return self.next(None)
+        return []
 
-    def first(self, candidate):
+    def extend(self, candidate):
         """ Generates all possible solution for this particular candidate and
         return only the first one.
+        This method is interested in variations in the position of the last queen.
 
         Params:
-            candidate: list, format [(x, y)], only interested in variations in
-                the position of the last queen.
+            candidate: list, format [(x, y)]
 
         Returns:
-            list, format [(x, y)]
+            list, of lists of candidates extended from current one.
+                Format [[(x, y),..],..]
         """
-        if len(candidate) == self.degree:
-            return None
-        for i in range(self.degree):
-            other = candidate[:]
-            other.append((len(candidate), i))
-            self.stack.append(other)
-        return self.next(None)
+        if len(candidate) == 0:
+            return [[(0, i)] for i in range(self.degree)]
 
-    def next(self, candidate):
-        """ """
-        if len(self.stack) == 0:
-            return None
-        return self.stack.pop()
+        (last_queen_row, _) = candidate[-1]
+
+        if last_queen_row == self.degree - 1:
+            return []
+
+        candidates = []
+        for i in range(self.degree):
+            tmp = candidate[:]
+            tmp.append((last_queen_row + 1, i))
+            if not self.reject(tmp):
+                candidates.append(tmp)
+        return candidates
+
 
 class TwoSatSatisfaction(Backtracking):
     """ Solves the "two entites per clause" constraint satisfaction problem. """
