@@ -2,7 +2,7 @@
 
 import unittest
 
-from src.backtracking import QueenPuzzle, TravelingSalesman
+from src.backtracking import QueenPuzzle, TravelingSalesman, SubsetsOfGivenSum
 from src.graph import Graph
 
 
@@ -53,3 +53,12 @@ class TestBacktracking(unittest.TestCase):
             'should have computed the min path')
         self.assertEqual(ts.min_cost, expected_min_cost,
             'should have computed the min cost')
+
+    def test_subset_of_given_sum(self):
+        S = [1,2,2,3,4,5]
+        N = 5
+        sogs = SubsetsOfGivenSum(S, N)
+        sogs.run()
+        expected_solutions = [[1,2,2], [1,4], [2,3], [5]]
+        self.assertItemsEqual(expected_solutions, sogs.solutions,
+            'should produce the correct solution')

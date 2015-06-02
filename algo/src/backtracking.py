@@ -230,6 +230,47 @@ class TravelingSalesman(Backtracking):
                 solutions.append(tmp)
         return solutions
 
+class SubsetsOfGivenSum(Backtracking):
+    """ Given a set S of integers and an int N, generate all subsets of S
+    which sum up to N.
+    See: http://www.careercup.com/question?id=6040572397617152
+    """
+    def __init__(self, S, N):
+        self.solutions = []
+        self.S = S
+        self.N = N
+
+    def reject(self, candidate):
+        return sum(candidate) > self.N
+
+    def accept(self, candidate):
+        return sum(candidate) == self.N
+
+    def output(self, candidate):
+        if candidate not in self.solutions:
+            self.solutions.append(candidate)
+
+    def root(self):
+        return []
+
+    def extend(self, candidate):
+        if len(candidate) == 0:
+            return [[i] for i in self.S]
+
+        left = self.S[:]
+        for i in candidate:
+            left.remove(i)
+
+        last = candidate[-1]
+        solutions = []
+        for c in left:
+            if c >= last:
+                tmp = candidate[:]
+                tmp.append(c)
+                if sum(tmp) <= self.N:
+                    solutions.append(tmp)
+        return solutions
+
 # TODO
 #class TwoSatSatisfaction(Backtracking):
 #    """ Solves the "two entites per clause" constraint satisfaction problem. """
