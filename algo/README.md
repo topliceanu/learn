@@ -67,6 +67,7 @@ python -m unittest discover test -p test_graph.py # to run a specific test case.
 1. [ ] implement lsm tree.
 3. [ ] dijkstra single source shortest path - return the actual shortest paths.
 4. [ ] red-black tree delete should work correctly.
+5. [ ] backtracking algorithms
 
 ### Part 2
 1. [caching] finish implementation of ARCache.
