@@ -41,7 +41,6 @@ python -m unittest discover test -p test_graph.py # to run a specific test case.
 2. job scheduling
 2. greedy methodology
 3. minimum spanning tree - prim, kruskal
-4. heap
 5. union-find data structure
 6. clustering - single-link, k-means, graph clustering
 7. prefix-codes
@@ -49,8 +48,8 @@ python -m unittest discover test -p test_graph.py # to run a specific test case.
 9. single source shortest path (in graphs with negative cost edges and non-negative cycles) - bellman-ford algorithm.
 10. all pairs shortest path - algoritms by floyd warshall (dynamic programming), johnson (combo of bellman-ford and dijkstra).
 11. vertex-cover
-12. traveling salesman
-13. local search
+12. traveling salesman (dynamic programming)
+13. local search optimization approach
 14. maximum cut
 15. 2sat
 16. random walk
