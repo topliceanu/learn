@@ -118,9 +118,11 @@ class TestHeap(unittest.TestCase):
         """
         data = [4, 5, 8, 9, 6, 12, 9, 11, 13]
         h = Heap(data)
-        h.extract_min_and_insert(7)
-        expected = [4, 7, 5, 8, 9, 6, 12, 9, 11]
-        self.assertEqual(h.data, expected, 'should remove min and '+
+
+        min_value = h.extract_min_and_insert(2)
+        self.assertEqual(min_value, 4, 'should return the min value')
+        expected = [2, 5, 8, 9, 6, 12, 9, 11, 13]
+        self.assertEqual(h.data, expected, 'should remove the old min and '+
                                            'add new value correctly')
 
     def test_remove(self):

@@ -130,7 +130,7 @@ class Heap(object):
         return self.data[0]
 
     def extract_min_and_insert(self, new_value):
-        """ Returns the min value of the heap, removes it and add new_value.
+        """ Returns the min value of the heap, removes it and adds new_value.
 
         The reason to combine an extract_min and an insert is for performance.
         Both operations take O(log n) separately, combined they ammount also to
@@ -141,8 +141,9 @@ class Heap(object):
 
         Returns:
             The min of all the values in the heap.
+        import pdb; pdb.set_trace()
         """
-        min_value = self.data.pop(-1)
+        min_value = self.data.pop(0)
         self.data.insert(0, new_value)
         self.bubble_down(0)
         return min_value
