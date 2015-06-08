@@ -1,10 +1,12 @@
 import React from 'react'
 import {serialize, render} from 'react-component-tree'
+import * as Immutable from 'immutable'
 
-import Cart from './components/Cart'
+import Cart from './components/Cart.js'
+import Truth from './lib/Truth.js'
 
 
-let items = [
+let rawItems = [
     {
         id: 1,
         count: 1,
@@ -18,19 +20,8 @@ let items = [
         desc: 'suit'
     },
 ]
-
-let container = document.getElementById('container')
-let cart = React.render(<Cart items={items}/>, container);
+let container = document.getElementById('container');
 
 
-// Export/Import state.
-window._exportState = () => {
-    return serialize(cart);
-};
-window._importState = (snapshot) => {
-    render({
-        component: Cart,
-        snapshot: snapshot,
-        container: container
-    });
-};
+let app = new Truth(rawItems, Cart, container);
+app.render()

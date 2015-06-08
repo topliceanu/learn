@@ -12,9 +12,7 @@ let CartItem = React.createClass({
             count: React.PropTypes.number,
             value: React.PropTypes.number,
             desc: React.PropTypes.string
-        }),
-        inc: React.PropTypes.func.isRequired,
-        dec: React.PropTypes.func.isRequired
+        })
     },
     getDefaultProps () {
         return {
