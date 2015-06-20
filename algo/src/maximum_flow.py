@@ -42,9 +42,14 @@ def ford_fulkerson_maximum_flow(g, s, t):
     f = h.clone()
     [f.set_edge_value(e, 0) for e in f.get_edges()]
 
-    # Finds a path from source to sink, making sure no vertex is visited twice
-    # and no edge has negative weight.
     def find_path(source, end, path):
+        """ Finds a path from source to sink, making sure no vertex is visited
+        twice and no edge has negative weight.
+
+        Returns:
+            None, if no path is every found.
+            list, of vertices to go through.
+        """
         if source == end:
             return path + [end]
         neighbours = h.neighbours(source)
@@ -55,7 +60,7 @@ def ford_fulkerson_maximum_flow(g, s, t):
                 if result != None:
                     return result
 
-    # Extract paths untill no path with non-negative edges can be found.
+    # Extract paths until no path with non-negative edges can be found.
     while True:
         path = find_path(s, t, [])
         if path == None:
