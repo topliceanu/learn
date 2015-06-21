@@ -6,8 +6,11 @@ sys.path.insert(0, '/vagrant/algo')
 from src.union_find import UnionFind
 
 
+# Source of the problems:
+# http://www.careercup.com/page?pid=palantir-technology-interview-questions
+
 class Container(object):
-    """ Container class needed for the following method.
+    """ Container class needed for the find_pairs_in_list() method.
     """
 
     def __init__(self):
@@ -35,7 +38,7 @@ class Container(object):
 def find_pairs_in_list(arr, k, l):
     """ Given an array of values, design and code an algorithm that returns
     whether there are two duplicates within k indices of each other?
-    k indices and within plus or minus l (value) of each other?
+    and within plus or minus l (value) of each other?
     Do all, even the latter, in O(n) running time and O(k) space.
 
     Reference: www.careercup.com/question?id=18517665
@@ -132,6 +135,8 @@ def farm_rainfall(plots):
     to submit clean, readable code. In particular, do not write code as if you
     were solving a problem for a competition.
 
+    Complexity: O(n^2) , where n - size of the input array.
+
     Args:
         plots: list, of lists of elevations
 
@@ -141,6 +146,7 @@ def farm_rainfall(plots):
     union_find = UnionFind()
     n = len(plots)
 
+    # Compute sink lots for each lot in the field.
     for i in range(n):
         for j in range(n):
             smaller = get_smaller_neighbour(plots, i, j)
@@ -148,6 +154,7 @@ def farm_rainfall(plots):
                 union_find.union((smaller[0], smaller[1]), (i, j))
 
 
+    # Compose the output array.
     k = 0
     names = {}
     out = [[None]*n for i in range(n)]
@@ -161,3 +168,56 @@ def farm_rainfall(plots):
             out[i][j] = name
 
     return out
+
+# TODO
+#def farm_rainfall2(plots):
+#    """ Second implementation fo the same problem but using recursion. """
+#
+#    def recurse(plots, left, right, top, bottom):
+#        if left == right and top == bottom:
+#            union_find.make_set((left, top))
+#            return
+#
+#        top_left = recurse(plots, left, (right+left)/2, top, (top+bottom)/2)
+#        top_right = recurse(plots, (right+left)/2, top, (top+bottom)/2)
+#        bottom_left = recurse(plots, left, (right+left)/2, (top+bottom)/2, bottom)
+#        bottom_right = recurse(plots, (right+left)/2, (top+bottom)/2, bottom)
+
+def sort_letters(word, template):
+    """ Sort the letters in one word by the order they occur in another in
+    linear time.
+
+    Complexity: O(n)
+
+    Params:
+        word: string, word whose letters should be reordered.
+        template: string, the order of the letters should be performed.
+    """
+    # Build a dict with all letters from the word to be reordered.
+    letters = dict()
+    for c in word:
+        if c not in letters:
+            letters[c] = 1
+        else:
+            letters[c] += 1
+
+    # Pass through all letters in template and if they are present in word add
+    # them to the output.
+    output = []
+    for letter in template:
+        if letter in letters:
+            output.append(letter)
+            letters[letter] -= 1
+            if letters[letter] == 0:
+                del letters[letter]
+
+    # Append the rest of the letters left in the word, if any.
+    if len(letters) != 0:
+        for letter in word:
+            if letter in letters:
+                output.append(letter)
+                letters[letter] -= 1
+                if letters[letter] == 0:
+                    del letters[letter]
+
+    return ''.join(output)

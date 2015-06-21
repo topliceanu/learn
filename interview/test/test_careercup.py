@@ -68,3 +68,40 @@ class TestCareerCup(unittest.TestCase):
         ]
         actual = farm_rainfall(plots)
         self.assertEqual(actual, expected, 'should produce the correct syncs')
+
+    def test_sort_letters(self):
+        # Five test cases:
+        # 1. more letters in template than in word.
+        word = 'cb'
+        template = 'abc'
+        expected = 'bc'
+        actual = sort_letters(word, template)
+        self.assertEqual(actual, expected, 'should sort the letters correctly')
+
+        # 2. more letters in word than in template.
+        word = 'abc'
+        template = 'ba'
+        expected = 'bac'
+        actual = sort_letters(word, template)
+        self.assertEqual(actual, expected, 'should sort the letters correctly')
+
+        # 3. duplicate letters in the template.
+        word = 'cba'
+        template = 'aabc'
+        expected = 'abc'
+        actual = sort_letters(word, template)
+        self.assertEqual(actual, expected, 'should sort the letters correctly')
+
+        # 4. duplicate letters in the word.
+        word = 'aabc'
+        template = 'cba'
+        expected = 'cbaa'
+        actual = sort_letters(word, template)
+        self.assertEqual(actual, expected, 'should sort the letters correctly')
+
+        # 5. same letters in both template and example.
+        word = 'abc'
+        template = 'bac'
+        expected = 'bac'
+        actual = sort_letters(word, template)
+        self.assertEqual(actual, expected, 'should sort the letters correctly')

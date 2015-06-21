@@ -29,3 +29,46 @@ class BitManipulation(unittest.TestCase):
         actual = problem_5_2(n)
         expected = False
         self.assertEqual(actual, expected, 'should return the correct value')
+
+    def test_problem_10_6(self):
+        points = [(2,3), (4,5), (6,7), (8,9), (1,1), (2,2), (3,3)]
+        expected = {(2,3), (4,5), (6,7), (8,9)}
+        actual = problem_10_6(points)
+        self.assertEqual(actual, expected, 'should find largest set of points')
+
+    def test_problem_10_7(self):
+        # NOTE: THIS IS INCORRECT!
+        self.assertEqual(problem_10_7(0), 3*5*7, 'should have worked')
+        self.assertEqual(problem_10_7(1), 3*3*5*7, 'should have worked')
+        self.assertEqual(problem_10_7(2), 3*5*5*7, 'should have worked')
+        self.assertEqual(problem_10_7(3), 3*5*7*7, 'should have worked')
+        self.assertEqual(problem_10_7(4), 3*3*3*5*7, 'should have worked')
+        self.assertEqual(problem_10_7(5), 3*3*5*5*7, 'should have worked')
+        self.assertEqual(problem_10_7(6), 3*3*5*7*7, 'should have worked')
+        self.assertEqual(problem_10_7(7), 3*5*5*5*7, 'should have worked')
+        self.assertEqual(problem_10_7(8), 3*3*3*3*5*7, 'should have worked')
+        self.assertEqual(problem_10_7(9), 3*5*5*7*7, 'should have worked')
+        self.assertEqual(problem_10_7(10), 3*3*3*5*5*7, 'should have worked')
+        self.assertEqual(problem_10_7(11), 3*5*7*7*7, 'should have worked')
+        self.assertEqual(problem_10_7(12), 3*3*3*5*7*7, 'should have worked')
+        self.assertEqual(problem_10_7(13), 3*3*5*5*7*7, 'should have worked')
+        self.assertEqual(problem_10_7(14), 3*3*3*5*5*7*7, 'should have worked')
+        self.assertEqual(problem_10_7(15), 3*3*5*5*5*7*7, 'should have worked')
+
+    def test_problem_10_7_bis(self):
+        self.assertEqual(problem_10_7_bis(0), 3*5*7, 'should have worked')
+        self.assertEqual(problem_10_7_bis(1), 3*3*5*7, 'should have worked')
+        self.assertEqual(problem_10_7_bis(2), 3*5*5*7, 'should have worked')
+        self.assertEqual(problem_10_7_bis(3), 3*5*7*7, 'should have worked')
+        self.assertEqual(problem_10_7_bis(4), 3*3*3*5*7, 'should have worked')
+        self.assertEqual(problem_10_7_bis(5), 3*3*5*5*7, 'should have worked')
+        self.assertEqual(problem_10_7_bis(6), 3*3*5*7*7, 'should have worked')
+        self.assertEqual(problem_10_7_bis(7), 3*5*5*5*7, 'should have worked')
+        self.assertEqual(problem_10_7_bis(8), 3*3*3*3*5*7, 'should have worked')
+        self.assertEqual(problem_10_7_bis(9), 3*5*5*7*7, 'should have worked')
+        self.assertEqual(problem_10_7_bis(10), 3*3*3*5*5*7, 'should have worked')
+        self.assertEqual(problem_10_7_bis(11), 3*5*7*7*7, 'should have worked')
+        self.assertEqual(problem_10_7_bis(12), 3*3*3*5*7*7, 'should have worked')
+        self.assertEqual(problem_10_7_bis(13), 3*3*5*5*5*7, 'should have worked')
+        self.assertEqual(problem_10_7_bis(14), 3*3*3*3*3*5*7, 'should have worked')
+        self.assertEqual(problem_10_7_bis(15), 3*3*5*5*7*7, 'should have worked')
