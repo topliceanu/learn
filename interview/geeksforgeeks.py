@@ -60,66 +60,97 @@ def towers_holding_water(heights):
 
     return fill
 
-    #def local_minima(arr):
-    #    """ Returns the indices of local minima in arr.
+# 3. Largest Group of Intersecting Intervals.
 
-    #    A local minima is a tower whose value is smaller than that of it's
-    #    neighbours. Array edges cannot be minima!
+def largest_group_of_intersecting_intervals(intervals):
+    """ We have a huge log file for meeting times in an office. Each entry has
+    only start and end time. Given this we have to find the time which has the
+    most number of meetings.
 
-    #    Returns:
-    #        list
-    #    """
-    #    out = []
-    #    for i in range(1, len(arr) - 1):
-    #        if (arr[i] < arr[i-1] and arr[i] < arr[i+1]) or \
-    #           (arr[i] <= arr[i-1] and arr[i] < arr[i+1]):
-    #            out.append(i)
-    #    return out
+    Complexity: O(nlogn) - dominated by the initial sorting.
 
-    #def local_maxima(arr):
-    #    """ Returns the indices of local maxima in arr.
+    Args:
+        intervals: list of tuples representing intervals, format [(start, end)]
 
-    #    A local minima is an tower whose value is smaller than that of it's
-    #    neighbours. Array edges can be maxims
+    Returns:
+        tuple, representing the intersection of intervals, format (start, end)
+    """
+    data = []
+    names = {}
+    for (index, i) in enumerate(intervals):
+        ds = {'start': i[0], 'end': i[1], 'name': index}
+        data.append((i[0], ds))
+        data.append((i[1], ds))
+        names[index] = ds
 
-    #    Returns:
-    #        list
-    #    """
-    #    out = []
-    #    for i in range(len(arr)):
-    #        if i == 0 or i == len(arr) - 1:
-    #            if (i == 0 and arr[i] > arr[i+1]) or \
-    #               (i == len(arr)-1 and arr[i] > arr[i-1]):
-    #                out.append(i)
-    #        else:
-    #           if (arr[i] > arr[i-1] and arr[i] >= arr[i+1]) or \
-    #              (arr[i] >= arr[i-1] and arr[i] > arr[i+1]):
-    #                out.append(i)
-    #    return out
+    sorted_data = sorted(data, key=lambda i: i[0]) # sort by start and end.
 
-    #fill = 0
-    #clone = heights[:]
+    max_count_intervals = float('-inf')
+    max_intervals = None
 
-    #while True:
-    #    # Find local minima and maxima.
-    #    minima = local_minima(clone)
-    #    maxima = local_maxima(clone)
+    current_intervals = []
+    count_intervals = 0
 
-    #    # If no minima then there are no gaps.
-    #    if len(minima) == 0:
-    #        break
+    for i in range(len(sorted_data)):
+        item = sorted_data[i]
+        is_opening = item[0] == item[1]['start']
+        is_closing = item[0] == item[1]['end']
 
-    #    # Between each two consecutive local maxima there has to be a local
-    #    # minima.
-    #    for i in range(len(maxima)-1):
-    #        start_gap = maxima[i]
-    #        end_gap = maxima[i+1]
-    #        fill_level = min(clone[start_gap], clone[end_gap])
+        if is_opening:
+            count_intervals += 1
+            current_intervals.append(item[1]['name'])
+        if is_closing:
+            count_intervals -= 1
+            current_intervals.remove(item[1]['name'])
 
-    #        # Fill up all the gaps between the local maxima.
-    #        for j in range(start_gap+1, end_gap):
-    #            local_fill = fill_level - clone[j]
-    #            fill += local_fill
-    #            clone[j] += local_fill
+        if max_count_intervals < count_intervals:
+            max_count_intervals = count_intervals
+            max_intervals = current_intervals[:]
 
-    #return fill
+    # Process largest group of overlaping intervals to determine intersection.
+    start = max([names[name]['start'] for name in max_intervals])
+    end = min([names[name]['end'] for name in max_intervals])
+    return (start, end)
+
+
+# 4. Find the nearest smaller numbers on left side in an array
+# http://www.geeksforgeeks.org/find-the-nearest-smaller-numbers-on-left-side-in-an-array/
+
+def nearest_smallest_left_element(arr):
+    """ Find the nearest smaller numbers on left side in an array
+
+    Given an array of integers, find the nearest smaller number for every
+    element such that the smaller element is on left side.
+
+    Example:
+        Input:  arr[] = {1, 6, 4, 10, 2, 5}
+        Output:         {_, 1, 1,  4, 1, 2}
+        First element ('1') has no element on left side. For 6,
+        there is only one smaller element on left side '1'.
+        For 10, there are three smaller elements on left side (1,
+        6 and 4), nearest among the three elements is 4.
+
+    Example:
+        Input: arr[] = {1, 3, 0, 2, 5}
+        Output:        {_, 1, _, 0, 2}
+
+    Complexity: O(n)
+    """
+    stack = []
+    out = []
+
+    for item in arr:
+        if len(stack) == 0:
+            out.append(None)
+            stack.append(item)
+            continue
+
+        while len(stack) > 0 and stack[-1] >= item:
+            stack.pop()
+        if len(stack) == 0:
+            out.append(None)
+        else:
+            out.append(stack[-1])
+        stack.append(item)
+
+    return out

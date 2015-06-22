@@ -52,3 +52,60 @@ class TestGeeksForGeeks(unittest.TestCase):
         expected = 19
         actual = towers_holding_water(heights)
         self.assertEqual(expected, actual, 'multiple small gaps')
+
+    def test_largest_group_of_intersecting_intervals(self):
+        intervals = [(1,2), (3,4), (5,6), (7,8)]
+        expected = (1,2)
+        actual = largest_group_of_intersecting_intervals(intervals)
+        self.assertEqual(actual, expected, 'should produce the correct intersection')
+
+        intervals = [(1,3), (2,4), (5,7), (7,8)]
+        expected = (2,3)
+        actual = largest_group_of_intersecting_intervals(intervals)
+        self.assertEqual(actual, expected, 'should produce the correct intersection')
+
+        intervals = [(1,4), (3,6), (5,8)]
+        expected = (3,4)
+        actual = largest_group_of_intersecting_intervals(intervals)
+        self.assertEqual(actual, expected, 'should produce the correct intersection')
+
+        intervals = [(1,5), (2,6), (3,7), (6,8)]
+        expected = (3,5)
+        actual = largest_group_of_intersecting_intervals(intervals)
+        self.assertEqual(actual, expected, 'should produce the correct intersection')
+
+    def test_nearest_smallest_left_element(self):
+        arr = [1, 6, 4, 10, 2, 5]
+        expected = [None, 1, 1,  4, 1, 2]
+        actual = nearest_smallest_left_element(arr)
+        self.assertEqual(expected, actual)
+
+        arr = [1, 3, 0, 2, 5]
+        expected = [None, 1, None, 0, 2]
+        actual = nearest_smallest_left_element(arr)
+        self.assertEqual(expected, actual)
+
+        arr = [5, 4, 3, 2, 1]
+        expected = [None, None, None, None, None]
+        actual = nearest_smallest_left_element(arr)
+        self.assertEqual(expected, actual)
+
+        arr = [0, 4, 3, 2, 1]
+        expected = [None, 0, 0, 0, 0]
+        actual = nearest_smallest_left_element(arr)
+        self.assertEqual(expected, actual)
+
+        arr = [1, 2, 3, 4, 5]
+        expected = [None, 1, 2, 3, 4]
+        actual = nearest_smallest_left_element(arr)
+        self.assertEqual(expected, actual)
+
+        arr = [1, 5, 5, 5, 5]
+        expected = [None, 1, 1, 1, 1]
+        actual = nearest_smallest_left_element(arr)
+        self.assertEqual(expected, actual)
+
+        arr = [3, 2, 1, 0, 0]
+        expected = [None, None, None, None, None]
+        actual = nearest_smallest_left_element(arr)
+        self.assertEqual(expected, actual)
