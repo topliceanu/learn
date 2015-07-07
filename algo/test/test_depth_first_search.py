@@ -3,7 +3,7 @@
 import unittest
 
 from src.graph import Graph
-from src.depth_first_search import dfs, dfs_paths
+from src.depth_first_search import dfs, dfs_explicit_stack, dfs_paths, VISITED
 
 
 
@@ -19,6 +19,25 @@ class DepthFirstSearch(unittest.TestCase):
                                ('b', 'c'), ('d', 'c'), ('d', 'e'), ('c', 'e')],
                         directed=False)
         path = dfs(g, 's')
+
+        for vertex in g.get_vertices():
+            self.assertEqual(g.get_vertex_value(vertex), VISITED,
+                'should have been visited by the algo')
+
+    def test_depth_first_search_explicit_stack(self):
+        """ Given this graph to explore:
+            /-(a)---(d)---(e)
+          /    |     |    /
+        (s)---(b)---(c)-/
+        """
+        g = Graph.build(edges=[('s', 'a'), ('s', 'b'), ('a', 'b'), ('a', 'd'),
+                               ('b', 'c'), ('d', 'c'), ('d', 'e'), ('c', 'e')],
+                        directed=False)
+        path = dfs_explicit_stack(g, 's')
+
+        for vertex in g.get_vertices():
+            self.assertEqual(g.get_vertex_value(vertex), VISITED,
+                'should have been visited by the algo')
 
     def test_depth_first_search_returning_paths(self):
         """ Given this graph to explore:

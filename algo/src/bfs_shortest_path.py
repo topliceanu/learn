@@ -25,7 +25,7 @@ def bfs_shortest_path_distance(graph, start):
     graph.set_vertex_value(start, 0)
 
     while len(queue) != 0:
-        vertex = queue.pop()
+        vertex = queue.popleft()
         vertex_level = graph.get_vertex_value(vertex)
         for neighbour in graph.neighbours(vertex):
             if neighbour not in explored_vertices:

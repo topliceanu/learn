@@ -30,133 +30,140 @@ class Cache(object):
         raise Exception('Cache#read method must be implemented')
 
 
-class LRUCache(Cache):
-    """ Implements the Last-Recently-Used cache eviction strategy.
-
-    The implementation uses a doubly linked list to keep the last recently used
-    keys last. Whenever a new key is read/written the corresponding node is
-    moved to the from of the list. This implementation also uses a hash table
-    whereby for each key there corresponds the nodes in the list.
-
-    Attrs:
-        data: dict, format {key: {key, value, previous, next}}
-        first: dict, first element in a doubly linked list representing priority.
-            Format {key, value, previous, next}
-        last: dict, last element in a doubly linked list representing priority.
-            Format {key, value, previous, next}
-    """
-    def __init__(self, max_size):
-        Cache.__init__(self, max_size)
-        self.data = {}
+class LRUCache(object):
+    """ Cleaner implementation of a LRU cache as a data structure. """
+    def __init__(self, size):
+        self.size = size
+        self.count = 0
         self.first = None
         self.last = None
-
-    def write(self, key, value):
-        """ Writes a piece of data in the cache.
-
-        Args:
-            key: str
-            value: anything
-
-        Returns:
-            tuple, in case a value had to be evicted. Format (key, value).
-                key: str
-                value: anything
-            None, in case no eviction takes place
-        """
-        evicted = None
-        if len(self.data) == self.max_size and key not in self.data:
-            evicted = self.evict()
-
-        if self.first == None: # First element in the cache.
-            node = {'key': key, 'value': value, 'next': None, 'previous': None}
-            self.data[key] = node
-            self.first = node
-            self.last = node
-        elif key not in self.data: # Key not already present.
-            node = {'key': key, 'value': value, 'next': self.first, 'previous': None}
-            self.first['previous'] = node
-            self.first = node
-            self.data[key] = node
-        else: # Key already present in the cache.
-            node = self.data[key]
-            if node['previous'] != None: # First node in the list already.
-                node['previous']['next'] = node['next']
-                if node['next'] == None: # When we have only two elements.
-                    self.last = self.first
-                node['previous'] = None
-                node['next'] = self.first
-                self.first['previous'] = node
-                self.first = node
-            node['value'] = value
-        return evicted
+        self.data = {}
 
     def read(self, key):
-        """ Reads a piece of data from the cache.
-
-        Args:
-            key: str
-
-        Raises:
-            Exception, when a cache miss occurs.
-        """
+        """ Read the last key from the data structure. """
         if key not in self.data:
             raise Exception('Cache miss for key {key}'.format(key=key))
-        node = self.data[key]
 
-        if node['previous'] != None: # It's not already the first element.
-            node['previous']['next'] = node['next']
-            if node['next'] == None: # Node was the last one.
-                self.last = self.first
-            node['previous'] = None
-            node['next'] = self.first
-            self.first['previous'] = node
-            self.first = node
+        item = self.data[key] # {value, previous, next}
+        self.promote(item)
+        return item['value']
 
-        value = node['value']
-        return value
+    def write(self, key, value):
+        """ Write a key to the data structure.
 
-    def evict(self):
-        """ Removes the last recently used key from the cache.
-
-        Returns:
-            dict, in case a value had to be evicted. Format {key, value}.
-                key: str
-                value: anything
-            None, in case no eviction takes place
+        In case of overflow, this method will evict the last recently used item.
         """
-        node = self.last
-        if node == None: # The cache has no elements.
-            return
+        if key in self.data:
+            item = self.data[key]
+            item['value'] = value
+            self.promote(item)
+        else:
+            item = self.prepend(key, value)
+            self.data[key] = item
 
-        if node['previous'] != None: # The cache has more than one element.
-            node['previous']['next'] = None
-            self.last = node['previous']
-        else: # The cache has only one element.
-            self.first = None
-            self.last = None
-
-        del self.data[node['key']]
-        return {'key': node['key'], 'value': node['value']}
+        if self.overflow():
+            return self.evict()
 
     def remove(self, key):
-        """ Removes an item from the cache by key. """
+        """ Removes a value from the cache by it's key.
+
+        The implementation promotes the found object to the first value then
+        removes it.
+        """
         if key not in self.data:
             return
 
-        node = self.data[key]
-        del self.data[key]
+        to_remove = self.data[key]
+        self.promote(to_remove)
 
-        if node == self.first:
-            self.first = node['next']
-            if node['next'] != None:
-                node['next']['previous'] = None
-        elif node == self.last:
-            self.last = node['previous']
-            if node['previous'] != None:
-                node['previous']['next'] = None
+        if self.count == 1:
+            self.first = self.last = None
+            self.data = {}
+        else: # > 1
+            self.first = self.first['next']
+            self.link(None, self.first)
+            del self.data[key]
+
+        self.count -= 1
+
+    def promote(self, item):
+        """ Moves the given item to the from of the list.
+
+        This method cannot be called on an empty data structure, so we have at
+        least one element.
+        """
+        if self.count == 1:
+            return
+        if self.first == item:
+            return
+
+        if self.last == item:
+            self.link(item['previous'], None)
+            self.last = item['previous']
         else:
-            node['previous']['next'] = node['next']
+            self.link(item['previous'], item['next'])
+
+        self.link(None, item)
+        self.link(item, self.first)
+        self.first = item
+
+    def link(self, node1, node2):
+        """ Links references of two nodes so they are consecutive in the list.
+
+        Any of these two nodes can be None.
+        """
+        if node1 == None and node2 == None:
+            return
+
+        if node1 != None and node2 == None:
+            node1['next'] = None
+            return
+
+        if node1 == None and node2 != None:
+            node2['previous'] = None
+            return
+
+        node1['next'] = node2
+        node2['previous'] = node1
+
+    def prepend(self, key, value):
+        """ Inserts a new value to the end of the list.
+
+        Also maintains the count of the elements in the list.
+        """
+        item = {'key': key, 'value': value, 'previous': None, 'next': None}
+
+        if self.count == 0:
+            self.first = self.last = item
+        else:
+            self.link(item, self.first)
+            self.first = item
+
+        self.count += 1
+        return item
+
+    def overflow(self):
+        """ Returns True if the number of items exceeds the allowed size. """
+        return self.count > self.size
+
+    def evict(self):
+        """ Removes the last element in the list. """
+        to_evict = self.last
+
+        if self.count == 0:
+            return
+
+        if self.count == 1:
+            self.first = self.last = None
+            self.data = {}
+        else:
+            self.link(self.last['previous'], None)
+            self.last = self.last['previous']
+            del self.data[to_evict['key']]
+
+        self.count -= 1
+
+        return {"key": to_evict["key"], "value": to_evict["value"]}
 
 
 class MRUCache(Cache):
@@ -329,7 +336,7 @@ class SLRUCache(Cache):
     When reading a key, it is moved in the most recently used section of the
     protected segment, even if the key was located in the probation segment.
     When overflow occurs on the probation segment, the least recently used key
-    is removed completely the cache. When overflow occurs on the protected
+    is removed completely from the cache. When overflow occurs on the protected
     segment, the least recently used key is moved to the probation segment.
 
     Attrs:

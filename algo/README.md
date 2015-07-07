@@ -58,6 +58,19 @@ python -m unittest discover test -p test_graph.py # to run a specific test case.
 19. minimum cut
 20. linear programming
 
+### Extra
+1. A* (a-start) search algorithm
+2. backtracking
+3. bit manipulation
+4. flood fill
+5. logical clocks
+6. multimap
+7. radix sort
+8. string matching
+9. skiplist
+10. splay tree
+11. trie
+
 ## Todo
 
 ### Part 1
@@ -67,30 +80,38 @@ python -m unittest discover test -p test_graph.py # to run a specific test case.
 3. [ ] dijkstra single source shortest path - return the actual shortest paths.
 4. [ ] red-black tree delete should work correctly.
 5. [ ] backtracking algorithms
+6. [ ] implement a compressed Trie data structure.
+7. [ ] implement range trees: [ ] interval trees, [ ] segment trees, [ ] binary indexed trees.
+8. [ ] implement KD-trees
+9. [ ] flood fill algorithm
 
 ### Part 2
-1. [caching] finish implementation of ARCache.
-2. [min spanning tree] randomized algorithm for min spanning tree by Tarjan.
-4. [min spanning tree] minimum spanning bottleneck tree!
-5. [min spanning tree] optimal branching problem for directed graphs (prim&kruskal work for undirected graphs)
-6. [min spanning tree] implement )(m) algorithm by Karger-Klein-Tarjan
-7. [huffman code] something is not correctly implemented!
-8. [dynamic programming][max-weight independent set] compute for trees. See Problem Set #3, problem 3.
-9. [dynamic programming] find best approximate match of substring in string.
-10. [dynamic programming] longest common subsequence of two strings.
-11. [dynamic programming][linear partition] solution reconstruction does not work.
-12. [dynamic programming] flower garden problem!
-13. [substring matching] implement knut-morris-pratt, boyer-moore, rabin-karp algorithms. See single_pattern_string_matching.py
-14. [knapsack] use dynamic programming to solve the two knapsack problem. (generalize to m different knapsacks!)
-    - Add another dimension to the array to keep track of the residual capacity of the second knapsack, this increases the running time by a factor of at most W.
-15. [bellman-ford] optimize memory consumption on the algorithm.
-16. [bellman-ford] implement solution reconstrunction.
-17. [3sat] implement the algorithm for 3sat by Uwe Schoening.
-18. [bipartite-matching] use maximum flow to solve bipartite matching.
-19. [maximum flow] solve minimum cost for maximum flow problem.
-20. [maximum flow] solve minimum cut using maximum flow algorithm.
-21. [data structures] implement the d-ary heap
-22. [traveling salesman] make the fast version work for very large instances (ie. programming assignment 5)
+1.  [ ] caching - finish implementation of ARCache.
+2.  [ ] min spanning tree - randomized algorithm for min spanning tree by Tarjan.
+4.  [ ] min spanning tree - minimum spanning bottleneck tree!
+5.  [ ] min spanning tree - optimal branching problem for directed graphs (prim&kruskal work for undirected graphs)
+6.  [ ] min spanning tree - implement O(m) algorithm by Karger-Klein-Tarjan
+7.  [ ] huffman code - something is not correctly implemented!
+8.  [ ] dynamic programming - max-weight independent set - compute for trees. See Problem Set #3, problem 3.
+9.  [ ] dynamic programming - find best approximate match of substring in string.
+10. [ ] dynamic programming - longest common subsequence of two strings.
+11. [ ] dynamic programming - linear partition - solution reconstruction does not work.
+12. [ ] dynamic programming - flower garden problem!
+13. [ ] substring matching - implement knut-morris-pratt, boyer-moore, rabin-karp algorithms. See single_pattern_string_matching.py
+14. [ ] knapsack - use dynamic programming to solve the two knapsack problem. (generalize to m different knapsacks!)
+        - Add another dimension to the array to keep track of the residual capacity of the second knapsack, this increases the running time by a factor of at most W.
+15. [ ] bellman-ford - optimize memory consumption on the algorithm.
+16. [ ] bellman-ford - implement solution reconstrunction.
+17. [ ] 3sat - implement the algorithm for 3sat by Uwe Schoening.
+18. [ ] bipartite-matching - use maximum flow to solve bipartite matching.
+19. [ ] maximum flow - implement the Edmonds-Karp advanced algorithm
+19. [ ] maximum flow - solve minimum cost for maximum flow problem.
+20. [ ] maximum flow - solve minimum cut using maximum flow algorithm.
+21. [ ] data structures - implement the d-ary heap
+22. [ ] traveling salesman - make the fast version work for very large instances (ie. programming assignment 5)
+23  [ ] fix tests for the convex hull implementation.
+24. [ ] learn linear programming
+25. [ ] learn semi-definite programming
 
 ## List of Computer Scientists
 

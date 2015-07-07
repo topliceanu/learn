@@ -10,9 +10,8 @@ class UnionFind(object):
     http://en.wikipedia.org/wiki/Disjoint-set_data_structure
 
     Optimizations used:
-    1. lazy union - only update the leader of a group to point to
-            the leader of the other group. `Find` has to now traverse multiple
-            layers to reach the root.
+    1. lazy union - when uniting two nodes, only update the leaders of the two
+            nodes. `Find` has to now traverse multiple layers to reach the root.
     2. union by rank - for each node, maintain the depth of the subgraph it
             is rooting for. On union, merge the smaller rank leader under the
             larger rank leader. Only if the two groups have the same rank

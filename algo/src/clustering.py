@@ -125,7 +125,7 @@ def cluster_k_means(points, k, distance, num_iterations=10):
        it to the cluster who's mean is closest.
     3. for each clusters, compute the mean of all points in the cluster
     4. repeat 2 and 3 until convergence, ie. until global error falls under
-       a specified threshold.
+       a specified threshold or the number of iterations allowed is finished.
 
     Args:
         points: list of tuples, format (x, y) where x and y are the coordinates.

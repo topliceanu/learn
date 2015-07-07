@@ -4,6 +4,8 @@ def simplex(A, b, c):
 
     Developed by George Dantzig in 1947
 
+    See: https://en.wikipedia.org/wiki/Simplex_algorithm
+
     Args:
         A: bidimensional array of coeficients
         b: vector of coefficients

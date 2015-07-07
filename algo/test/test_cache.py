@@ -14,7 +14,7 @@ class TestLRUCache(unittest.TestCase):
         lru.write('b', 20)
         evicted = lru.write('c', 30)
 
-        self.assertEqual(len(lru.data), 2, 'should have only one element')
+        self.assertEqual(len(lru.data), 2, 'should have only two elements')
         self.assertEqual(lru.first['key'], 'c', 'c is the most recent')
         self.assertEqual(lru.last['key'], 'b', 'b is the latest addition')
 
@@ -73,6 +73,7 @@ class TestLRUCache(unittest.TestCase):
         lru.write('b', 20)
 
         lru.read('a')
+
         self.assertEqual(lru.first['key'], 'a', 'a should now be the first')
         self.assertIsNone(lru.first['previous'],
             'first should not have anything before')
@@ -87,6 +88,7 @@ class TestLRUCache(unittest.TestCase):
     def test_evict_when_cache_has_no_elements(self):
         lru = LRUCache(2)
         lru.evict()
+        self.assertEqual(len(lru.data), 0, 'noop')
 
     def test_evict_when_cache_has_one_element(self):
         lru = LRUCache(2)
@@ -128,7 +130,6 @@ class TestLRUCache(unittest.TestCase):
         lru.write('a', 10)
         lru.write('b', 20)
         lru.write('c', 20)
-        # c -> b -> a
         lru.remove('c')
 
         self.assertIn('a', lru.data, 'a is in the cache')

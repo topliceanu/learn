@@ -2,6 +2,7 @@
 
 from math import floor, ceil
 
+
 def merge (left, right):
     """ Joins two sorted lists into a third list and returns that list.
 
@@ -35,7 +36,6 @@ def merge (left, right):
 
     return out
 
-
 def merge_sort (arr):
     """ Sort the input array.
 
@@ -43,7 +43,7 @@ def merge_sort (arr):
     Merge sort is better suited for sorting liked lists than arrays because
     of the low auxiliary storage required.
     Merge sort is better when sorting data from disk because it requires less
-    reads.
+    reads (ie. it can batch read data from disk).
 
     Complexity: O(nlogn)
 

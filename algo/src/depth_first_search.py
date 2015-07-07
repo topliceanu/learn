@@ -17,6 +17,25 @@ def dfs(graph, start_vertex):
         if graph.get_vertex_value(neighbour) != VISITED:
             dfs(graph, neighbour)
 
+def dfs_explicit_stack(graph, start_vertex):
+    """ Applies Depth-First Search algorithm without using recursion, ie. by
+    using a explicig stack.
+
+    Args:
+        graph: object, instance of src.graph.Graph
+        start_vertex: str, vertex to start the exploration from.
+    """
+    # stack maintains a list of vertices not yet visited.
+    stack = [start_vertex]
+
+    while len(stack) != 0:
+        vertex = stack.pop()
+        graph.set_vertex_value(vertex, VISITED)
+
+        for neighbour in graph.neighbours(vertex):
+            if graph.get_vertex_value(neighbour) != VISITED:
+                stack.append(neighbour)
+
 def dfs_paths(graph, start, end):
     """ Returns all possible paths from start to end vertices in a directed graph.
 

@@ -16,6 +16,9 @@ def schedule(jobs, score='ratio'):
     weight-length. On the second variant, if two jobs have the same score, the
     one with higher weight gets in front.
 
+    Also similar to the activity selection problem.
+    See: https://en.wikipedia.org/wiki/Activity_selection_problem
+
     Args:
         jobs: list of tuples, format [[key, weight, length]]
         score: str, either 'ratio' or 'diff'
