@@ -207,24 +207,31 @@ class TestHeap(unittest.TestCase):
 
 class TestIndexedHeap(unittest.TestCase):
 
-
     def test_insert(self):
         h = IndexedHeap()
-        h.insert('x', 100)
-        h.insert('y', 200)
-        h.insert('z', 300)
-        expected = [
-            {'key': 'x', 'value': 100, 'index': 0},
-            {'key': 'y', 'value': 200, 'index': 1},
-            {'key': 'z', 'value': 300, 'index': 2}
-        ]
-        self.assertItemsEqual(h.data, expected,
-            'correctly inserts data into the heap')
+
+        inserted1 = h.insert({'key': 'z', 'value': 300})
+        self.assertEqual(inserted1, {'key': 'z', 'value': 300, 'index': 0},
+            'correctly inserted and returned new item')
+
+        inserted2 = h.insert({'key': 'y', 'value': 200})
+        self.assertEqual(inserted2, {'key': 'y', 'value': 200, 'index': 0},
+            'correctly inserted and returned new item')
+        self.assertEqual(inserted1, {'key': 'z', 'value': 300, 'index': 1},
+            'correctly updated existing items')
+
+        inserted3 = h.insert({'key': 'x', 'value': 100})
+        self.assertEqual(inserted3, {'key': 'x', 'value': 100, 'index': 0},
+            'correctly inserted and returned new item')
+        self.assertEqual(inserted2, {'key': 'y', 'value': 200, 'index': 2},
+            'correctly inserted and returned item')
+        self.assertEqual(inserted1, {'key': 'z', 'value': 300, 'index': 1},
+            'correctly updated existing items')
 
     def test_extract_min(self):
         h = IndexedHeap.heapify([('z', 3), ('y', 2), ('x', 1)])
         item = h.extract_min()
-        expected = {'key': 'x', 'value': 1}
+        expected = {'key': 'x', 'value': 1, 'index': 0}
         self.assertEqual(expected, item, 'correctly extracts the min value')
 
     def test_remove(self):
@@ -241,8 +248,14 @@ class TestIndexedHeap(unittest.TestCase):
         ]
         self.assertItemsEqual(h.data, expected,
             'correctly removes the data')
-        self.assertEqual(item, {'key': 3, 'value': 30},
+        self.assertEqual(item, {'key': 3, 'value': 30, 'index': 1},
             'removed item is correct')
+
+    def test_remove_from_single_item_heap(self):
+        h = IndexedHeap()
+        h.insert({'key': 'x', 'value': 1000})
+        h.remove(0)
+        self.assertEqual(h.data, [], 'empty data in the heap')
 
     def test_heapify(self):
         h = IndexedHeap.heapify([(3, 'z'), (2, 'y'), (1, 'x')])

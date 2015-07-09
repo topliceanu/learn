@@ -339,20 +339,44 @@ class IndexedHeap(object):
 
     # Public API.
 
-    def insert(self, key, value=None):
+    def insert(self, item):
+        """ Insert object item into the heap.
+
+        Complexity: O(log n)
+
+        Args:
+            item: dict, format: {key,...}. Items are sorted by key.
+        Returns:
+            dict, item after insertion, format: {key, index,...}
+        """
         n = len(self.data)
-        item = {'key': key, 'value': value, 'index': n}
+        item['index'] = n
         self.data.append(item)
         self.bubble_up(n)
         return item
 
     def extract_min(self):
+        """ Returns the smallest element in the heap.
+
+        Complexity: O(log n)
+
+        Returns:
+            dict, format {key, index,...}
+        """
         return self.remove(0)
 
     # Helper API.
 
     def remove(self, index):
-        if 0 > index or index >= len(self.data):
+        """ Removes an item from the heap given by index.
+
+        Args:
+            index: int, the index in the heap array of the element to remove.
+
+        Returns:
+            dict, format {key, index,...}
+        """
+        if index < 0 or index >= len(self.data):
             raise Exception('Index {i} out of bounds for data'.format(i=index))
 
         n = len(self.data)
@@ -362,11 +386,19 @@ class IndexedHeap(object):
         item = self.data.pop()
         self.bubble_down(index)
 
-        return {'key': item['key'], 'value': item['value']}
+        return item
 
     def bubble_up(self, index):
+        """ Hoists the value in the heap array with index.
+
+        Args:
+            index: int, index of the value to hoist.
+
+        Returns:
+            int, new index where the element has stopped climbing.
+        """
         if 0 > index or index >= len(self.data):
-            raise Exception('Index {i} out of bounds for data'.format(i=index))
+            return index
 
         while True:
             parent_index = self.get_parent_index(index)
@@ -389,8 +421,16 @@ class IndexedHeap(object):
         return index
 
     def bubble_down(self, index):
-        if 0 > index or index >= len(self.data):
-            raise Exception('Index {i} out of bounds for data'.format(i=index))
+        """ Percolates down the value at index in the heap array.
+
+        Args:
+            index: int, the index of the value to percolate
+
+        Returns:
+            int, new index where the element has stopped descending.
+        """
+        if index < 0 or index >= len(self.data):
+            return index
 
         while True:
             [left_child, right_child] = self.get_child_indices(index)
@@ -423,7 +463,7 @@ class IndexedHeap(object):
         """ Returns the left and right child indices. If an index has no
         children it will return Nones instead.
         """
-        if 0 > index or index >= len(self.data):
+        if index < 0 or index >= len(self.data):
             raise Exception('Index {i} out of bounds for data'.format(i=index))
         left = index * 2 + 1
         right = (index + 1) * 2

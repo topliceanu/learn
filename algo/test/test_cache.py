@@ -3,7 +3,7 @@
 import time
 import unittest
 
-from src.cache import LRUCache, MRUCache, LFUCache, SLRUCache
+from src.cache import LRUCache, MRUCache, LFUCache, SLRUCache, ARCache
 
 
 class TestLRUCache(unittest.TestCase):
@@ -222,8 +222,8 @@ class TestLFUCache(unittest.TestCase):
         lfu.write('a', 1)
 
         self.assertIn('a', lfu.data, 'should contain the key a')
-        self.assertEqual(lfu.heap.data[0]['key'], 'a', 'a should be in the heap')
-        self.assertEqual(lfu.data['a']['freq'], 1, 'after insert the frequency is 1')
+        self.assertEqual(lfu.heap.data[0]['_key'], 'a', 'a should be in the heap')
+        self.assertEqual(lfu.data['a']['key'], 1, 'after insert the frequency is 1')
 
     def test_lfu_write_should_update_an_existing(self):
         lfu = LFUCache(2)
@@ -231,8 +231,8 @@ class TestLFUCache(unittest.TestCase):
         lfu.write('a', 2)
 
         self.assertIn('a', lfu.data, 'should contain the key a')
-        self.assertEqual(lfu.heap.data[0]['key'], 'a', 'a should be in the heap')
-        self.assertEqual(lfu.data['a']['freq'], 2, 'after each write the frequency is bumped by 1')
+        self.assertEqual(lfu.heap.data[0]['_key'], 'a', 'a should be in the heap')
+        self.assertEqual(lfu.data['a']['key'], 2, 'after each write the frequency is bumped by 1')
         self.assertEqual(lfu.data['a']['value'], 2, 'updates are persisted')
 
     def test_lfu_write_should_evict_a_key_to_make_room(self):
@@ -246,9 +246,9 @@ class TestLFUCache(unittest.TestCase):
         self.assertNotIn('b', lfu.data, 'should not contain the key b')
         self.assertIn('c', lfu.data, 'should contain the key c')
 
-        self.assertEqual(lfu.data['a']['freq'], 2, 'after insert and a read is 2')
-        self.assertEqual(lfu.data['c']['freq'], 1, 'after insert it is 1')
-        self.assertEqual(lfu.heap.data[0]['key'], 'c', 'c is the least frequently used key')
+        self.assertEqual(lfu.data['a']['key'], 2, 'after insert and a read is 2')
+        self.assertEqual(lfu.data['c']['key'], 1, 'after insert it is 1')
+        self.assertEqual(lfu.heap.data[0]['_key'], 'c', 'c is the least frequently used key')
 
         self.assertEqual(evicted['key'], 'b', 'should have evicted key b')
         self.assertEqual(evicted['value'], 2, 'should have evicted value for b')
@@ -263,9 +263,9 @@ class TestLFUCache(unittest.TestCase):
         lfu.read('a')
         lfu.read('b')
 
-        self.assertEqual(lfu.data['a']['freq'], 3, 'after insert and 2 reads')
-        self.assertEqual(lfu.data['b']['freq'], 2, 'after insert and 1 read')
-        self.assertEqual(lfu.data['c']['freq'], 1, 'after insert')
+        self.assertEqual(lfu.data['a']['key'], 3, 'after insert and 2 reads')
+        self.assertEqual(lfu.data['b']['key'], 2, 'after insert and 1 read')
+        self.assertEqual(lfu.data['c']['key'], 1, 'after insert')
 
 
 class TestSLRUCache(unittest.TestCase):
@@ -314,3 +314,25 @@ class TestSLRUCache(unittest.TestCase):
         self.assertEqual(slru.probation.last['key'], 'd', 'd is last in probation')
         self.assertEqual(slru.protected.first['key'], 'c', 'c is first in protected')
         self.assertEqual(slru.protected.last['key'], 'b', 'b is last in protected')
+
+
+class TestARCache(unittest.TestCase):
+
+    def test_write_to_empty_cache(self):
+        c = ARCache(10)
+        c.write('x', 1)
+
+        self.assertEqual(len(c.t1), 1, 'should have one data item in')
+        self.assertEqual(len(c.b1), 0, 'should be empty')
+        self.assertEqual(len(c.t2), 0, 'should be empty')
+        self.assertEqual(len(c.b2), 0, 'should be empty')
+
+    def x_test_write_to_cache_same_value(self):
+        c = ARCache(10)
+        c.write('x', 1)
+        c.write('x', 1)
+
+        self.assertEqual(len(c.t1), 0, 'should be empty')
+        self.assertEqual(len(c.b1), 0, 'should be empty')
+        self.assertEqual(len(c.t2), 1, 'should have a data item in')
+        self.assertEqual(len(c.b2), 0, 'should be empty')

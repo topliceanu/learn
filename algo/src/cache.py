@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import math
-import sys
 
-from src.heap import Heap
+from src.heap import IndexedHeap
 
 
 class Cache(object):
@@ -50,8 +49,12 @@ class LRUCache(object):
         data: dict, hash table to store references to nodes by key.
     """
     def __init__(self, size):
-        self.size = size
+        self.max_size = size
         self.reset()
+
+    def __len__(self):
+        """ Returns the number of elements in the cache. """
+        return len(self.data)
 
     def write(self, key, value):
         """ Writes a new key/value pair to the cache.
@@ -161,7 +164,7 @@ class LRUCache(object):
 
     def is_overflow(self):
         """ Returns True if the cache is overflowing. """
-        return self.count > self.size
+        return self.count > self.max_size
 
     def make_item(self, key, value):
         """ Override this to provide your own object format. """
@@ -252,28 +255,6 @@ class MRUCache(Cache):
         return {'key': node['key'], 'value': node['value']}
 
 
-class LFUHeap(Heap):
-    """ Extends the base Heap class to allow the heap to hold references to
-    the stored hash table int the queue and maintain the object with min
-    frequency as the root.
-
-    TODO This heap should also maintain a list of all the indexes of the nodes.
-
-    Attrs:
-        data: list, with format [{key, value, freq}]
-            key: str, the key for the index.
-            value: any, value to be stored in the cache.
-            freq: int, increments whenever the value is read/written.
-    """
-    def compare(self, left, right):
-        """ Compares two elements in the heap by their frequency property. """
-        return cmp(left['freq'], right['freq'])
-
-    def on_bubble(self, item, old_index, new_index):
-        """ Maintains the index of each element in the array. """
-        item['index'] = new_index
-
-
 class LFUCache(Cache):
     """ Least Frequently Used cache implementation.
 
@@ -286,7 +267,11 @@ class LFUCache(Cache):
     def __init__(self, max_size):
         Cache.__init__(self, max_size)
         self.data = {}
-        self.heap = LFUHeap()
+        self.heap = IndexedHeap()
+
+    def __len__(self):
+        """ Returns the number of items in the cache. """
+        return len(self.data)
 
     def write(self, key, value):
         """ Writes the data to the cache.
@@ -299,17 +284,21 @@ class LFUCache(Cache):
             key, the key to write the data under.
             value, the value to store.
         """
+        # Evict item if necessare before inserting.
         evicted = None
         if len(self.data) == self.max_size and key not in self.data:
             evicted = self.evict()
 
+        # Write the cache item.
         if key not in self.data:
-            node = {'key': key, 'value': value, 'freq': 0}
-            self.data[key] = node
-            self.heap.insert(node)
+            item = {'key': 0, 'value': value, '_key': key}
+            self.heap.insert(item)
+            self.data[key] = item
         else:
-            self.data[key]['value'] = value
-        self.increment_frequency(key)
+            item = self.data[key]
+            item['value'] = value
+
+        self.increment_frequency(item)
         return evicted
 
     def read(self, key):
@@ -323,32 +312,29 @@ class LFUCache(Cache):
         if key not in self.data:
             raise Exception('Cache miss for key={key}'.format(key=key))
 
-        # TODO implement using a ballanced binary tree in order to make lookups faster!
-        # Or you might use a heap with an key/value storage.
-        self.increment_frequency(key)
-        return self.data[key]
+        item = self.data[key]
+        self.increment_frequency(item)
 
-    def increment_frequency(self, key):
+        return item['value']
+
+    def increment_frequency(self, item):
         """ Increments the frequency of the given key.
 
         Method also normalizes frequencies whenever the values reach the top
         limit for integers in python.
 
+        See: src.heap.IndexedHeap for the way objects are inserted in the heap.
+
         Complexity: O(n) because of the index lookup.
 
         Args:
-            key: the key for which to increase frequency.
+            item: format: {key, _key, value, index} where key is the frequency
+                by which items are sorted in the heap.
         """
-        node = self.data[key]
-        index = self.heap.data.index(node)
-
-        if node['freq'] == sys.maxint:
-            for (__, item) in self.data.iteritems():
-                item['freq'] = int(round(float(item['freq']) / 2))
-
-        node['freq'] += 1
-        self.heap.remove(index)
-        self.heap.insert(node)
+        index = item['index']
+        item = self.heap.remove(index)
+        item['key'] += 1
+        self.heap.insert(item)
 
     def evict(self):
         """ Evicts the element with the least usage frequency.
@@ -362,8 +348,9 @@ class LFUCache(Cache):
             None, in case no eviction takes place
         """
         node = self.heap.extract_min()
-        del self.data[node['key']]
-        return {'key': node['key'], 'value': node['value']}
+        key = node['_key']
+        del self.data[key]
+        return {'key': node['_key'], 'value': node['value']}
 
 
 class SLRUCache(Cache):
@@ -427,85 +414,129 @@ class SLRUCache(Cache):
             return probation_value
 
 
-#class ARCache(Cache):
-#    """ Adaptive Replacement cache implementation.
-#
-#    See: http://en.wikipedia.org/wiki/Adaptive_replacement_cache
-#    See: https://www.ipvs.uni-stuttgart.de/export/sites/default/ipvs/abteilungen/as/lehre/lehrveranstaltungen/vorlesungen/WS1415/material/ARC.pdf
-#
-#    The idea is to optimize between a LRU and a LFU depending on the
-#    distribution of input data. Ie. when clients require frequent access to the
-#    same data, the LFU cache is favored because it is more efficient (in terms
-#    of higher cache hit rates), otherwise LRU is prefered bacause it offers
-#    optimal performance in average case.
-#
-#    Schema:
-#        . . . [   b1  <-[     t1    <-!->      t2   ]->  b2   ] . .
-#              [ . . . . [ . . . . . . ! . .^. . . . ] . . . . ]
-#                        [   fixed cache size (c)    ]
-#
-#    Data is split in tow lists: t1 (a LRU cache) and t2 (a LFU cache).
-#    Originally t1 and t2 have equal size.
-#    Evicted keys from t1 move into b1 (a LRU cache) with the same size.
-#    Evicted keys from t2 move to b2 (a LFU cache) with the same size.
-#    b1 and b2 are called ghosts of t1 and, respectively, t2 and only contain
-#    keys, not the actual data.
-#    """
-#    def __init__(self, max_size):
-#        Cache.__init__(self, max_size)
-#
-#        l1_max_size = max_size / 2
-#        l2_max_size = max_size - t1_max_size
-#
-#        self.t1 = LRUCache(l1_max_size)
-#        self.t2 = LFUCache(l2_max_size)
-#        self.b1 = LRUCache(l1_max_size)
-#        self.b2 = LFUCache(l2_max_size)
-#
-#    def write(self, key, value):
-#        """ Writes data to the disk. """
-#        evicted_from_t1 = self.t1.write(key, value)
-#        if evicted_from_t1 != None:
-#            {key, value} = evicted_from_t1
-#            evicted_from_b1 = self.b1.write(key, value)
-#            if evicted_from_b1 != None:
-#                {key, value} = evicted_from_b1
-#                evicted_from_t2 = self.t2.write(key, value)
-#                if evicted_from_t2 != None:
-#                    return self.b2.write(key, value)
-#
-#    def read(self, key):
-#        """ Read policy from the ARC. algorithm. """
-#        from_t1 = self.read_from(self.t1)
-#        from_b1 = self.read_from(self.b1)
-#        from_t2 = self.read_from(self.t2)
-#        from_b2 = self.read_from(self.b2)
-#
-#        if from_t1 != None or from_t2 != None:
-#            value = from_t1 if from_t1 != None else from_t2
-#            if from_t1 != None:
-#                extracted = self.t1.remove(key)
-#                self.t2.write(key, extracted)
-#            return value
-#
-#        if from_b1 != None:
-#            self.shift_cache_size('left')
-#            raise Exception('Cache miss for key {key}'.format(key=key))
-#
-#        if from_b2 != None:
-#            self.shift_cache_size('right')
-#            raise Exception('Cache miss for key {key}'.format(key=key))
-#
-#
-#
-#
-#    def shift_cache_size(self, direction):
-#        """ Modifies the size of the two caches depending on the direction. """
-#
-#
-#    def read_from(cache, key):
-#        """ Helper method to silence the cache miss exception. """
-#        try:
-#            return cache.read(key)
-#        except Exception, e:
-#            return None
+class ARCache(Cache):
+    """ Adaptive Replacement cache implementation.
+
+    See: http://en.wikipedia.org/wiki/Adaptive_replacement_cache
+    See: https://www.ipvs.uni-stuttgart.de/export/sites/default/ipvs/abteilungen/as/lehre/lehrveranstaltungen/vorlesungen/WS1415/material/ARC.pdf
+
+    The idea is to optimize between a LRU and a LFU depending on the
+    distribution of input data. Ie. when clients require frequent access to the
+    same data, the LFU cache is favored because it is more efficient (in terms
+    of higher cache hit rates), otherwise LRU is prefered bacause it offers
+    optimal performance in average case.
+
+    Schema:
+        . . . [   b1  <-[     t1    <-!->      t2   ]->  b2   ] . .
+              [ . . . . [ . . . . . . ! . .^. . . . ] . . . . ]
+                        [   fixed cache size (c)    ]
+
+    Data is split in tow lists: t1 (a LRU cache) and t2 (a LFU cache).
+    Originally t1 and t2 have equal size.
+    Evicted keys from t1 move into b1 (a LRU cache) with the same size.
+    Evicted keys from t2 move to b2 (a LFU cache) with the same size.
+    b1 and b2 are called ghosts of t1 and, respectively, t2 and only contain
+    keys, not the actual data.
+    """
+    def __init__(self, max_size):
+        Cache.__init__(self, max_size)
+
+        self.l1_size = max_size / 2
+        self.l2_size = max_size - self.l1_size
+
+        self.t1 = LRUCache(self.l1_size)
+        self.t2 = LFUCache(self.l2_size)
+        self.b1 = LRUCache(self.l1_size)
+        self.b2 = LFUCache(self.l2_size)
+
+    # Public API.
+
+    def write(self, key, value):
+        """ Writes a key to the cache. If key is already present it will
+        override the value.
+        """
+        if self.in_cache(self.t1, key) and not self.in_cache(self.t2, key):
+            self.extract_from_cache(self.t1, key)
+            self.insert_into_cache(self.t2, key, value)
+        elif not self.in_cache(self.t1, key) and self.in_cache(self.t1, key):
+            self.insert_into_cache(self.t2, key, value)
+        elif not self.in_cache(self.t1, key) and not self.in_cache(self.t2, key):
+            self.insert_into_cache(self.t1, key, value)
+
+        self.adapt_cache(key)
+
+    def read(self, key):
+        from_t1 = self.extract_from_cache(self.t1, key)
+        from_t2 = self.extract_from_cache(self.t2, key)
+        self.adapt_cache(key)
+        if from_t1 != None:
+            return from_t1
+        elif from_t2 != None:
+            return from_t2
+        else:
+            raise Exception('Cache miss for key {key}'.format(key=key))
+
+    # Helper API.
+
+    def in_cache(self, cache, key):
+        return key in cache.data
+
+    def extract_from_cache(self, cache, key):
+        """ Extract a value for the given key from the given cache. Also
+        muffles the error in case of a cache miss.
+        """
+        try:
+            value = cache.read(key)
+        except Exception, e:
+            value = None
+        return value
+
+    def insert_into_cache(self, cache, key, value):
+        """ Handles cache insertion and spill over if it is the cache. """
+        if cache == self.t1:
+            evicted = self.t1.write(key, value)
+            if evicted != None:
+                return self.insert_into_cache(self.b1, evicted['key'], evicted['value'])
+
+        if cache == self.b1:
+            return self.b1.write(key, value)
+
+        if cache == self.t2:
+            evicted = self.t2.write(key, value)
+            if evicted != None:
+                return self.insert_into_cache(self.b2, evicted['key'], evicted['value'])
+
+        if cache == self.b2:
+            return self.b2.write(key, value)
+
+    def adapt_cache(self, key):
+        """ Decrease cache size depending on where the cache hit occured.
+
+        If it occured in l1, then decrease l2 (both t2 and b2), and vice-versa.
+        """
+        if self.in_cache(self.t1, key) or self.in_cache(self.b1, key):
+            self.decrease_cache(self.b2)
+            item = self.decrease_cache(self.t2)
+            if item != None:
+                self.insert_into_cache(self.b2, item['key'], item['value'])
+
+            self.increase_cache(self.t1)
+            self.increase_cache(self.b1)
+        elif self.in_cache(self.t2, key) or self.in_cache(self.b2, key):
+            self.decrease_cache(self.b1)
+            item = self.decrease_cache(self.t1)
+            if item != None:
+                self.insert_into_cache(self.b1, item['key'], item['value'])
+
+            self.increase_cache(self.t2)
+            self.increase_cache(self.b2)
+
+    def decrease_cache(self, cache):
+        if len(cache) == 0:
+            return
+        item = cache.evict()
+        cache.max_size -= 1
+        return item
+
+    def increase_cache(self, cache):
+        cache.max_size += 1
