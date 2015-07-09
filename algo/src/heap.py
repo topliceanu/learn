@@ -71,7 +71,7 @@ class Median(object):
         median = -self.h_low[0]
         return median
 
-class HeapOld(object):
+class Heap(object):
     """ Implementation of a min-heap data structure.
 
     Attributes:
@@ -331,153 +331,100 @@ class HeapOld(object):
         return True
 
 
-class Heap(object):
-    """ Implements a min-heap data structure and allows clients to find item's
-    index in constant time.
+class IndexedHeap(object):
+    """ Indexed Min-Heap implementation. """
 
-    Attrs:
-        data: list, of items stored in the heap.
-        indices: dict, where keys are the elements and values are the indices in self.data.
-    """
-    def __init__(self, data=None):
-        if data == None:
-            data = []
-        self.data = data
-        self.indices = {}
+    def __init__(self):
+        self.data = []
 
-    def __len__(self):
-        """ Returns the size of the internal array of data. """
-        return len(self.data)
+    # Public API.
 
-    # PUBLIC API
-
-    def insert(self, element):
-        """ Inserts element in the heap.
-
-        Adds it to the back of the heap array, then bubbles it up.
-
-        Complexity: O(log n)
-        """
-        self.data.append(element)
-        last_position = len(self.data)-1
-        key = self.get_key(element)
-        self.indices[key] = last_position
-        new_position = self.bubble_up(last_position)
+    def insert(self, key, value=None):
+        n = len(self.data)
+        item = {'key': key, 'value': value, 'index': n}
+        self.data.append(item)
+        self.bubble_up(n)
+        return item
 
     def extract_min(self):
-        """ Removes the element with the min value in the heap.
-
-        Moves the last element in the list instead of the first one (smallest).
-        then bubbles down the first element in the list.
-
-        Complexity: O(logn)
-        """
         return self.remove(0)
 
-    def extract_min_and_insert(self, element):
-        """ Returns the min value of the heap, removes it and adds new_value.
-
-        The reason to combine an extract_min and an insert is for performance.
-        Both operations take O(log n) separately, combined they ammount also to
-        O(log n)
-
-        Complexity: O(log n)
-
-        Args:
-            new_value: int, a new value to add to the heap after removing min.
-
-        Returns:
-            The min of all the values in the heap.
-        """
-        min_value = self.extract_min()
-        self.insert(element)
-        return min_value
-
-    def index(self, element):
-        """ Returns the index of the current element in the heap array.
-
-        Complexity: O(1)
-
-        Returns:
-            int, if the element is found in the heap.
-            None, if the element is not in the heap.
-        """
-        key = self.get_key(element)
-        if key in self.indices:
-            return self.indices[key]
-        return None
+    # Helper API.
 
     def remove(self, index):
-        """ Removes any element given it's index in the heap array.
-        The complexity of this operation is liniar depends on what indexes
-        get removed.
+        if 0 > index or index >= len(self.data):
+            raise Exception('Index {i} out of bounds for data'.format(i=index))
 
-        Complexity: O(n)
-        """
         n = len(self.data)
-        if 0 < index >= n:
-            return
+        self.data[index], self.data[n-1] = self.data[n-1], self.data[index]
+        self.data[index]['index'] = index
 
-        if index != n - 1:
-            self.data[index], self.data[n-1] = self.data[n-1], self.data[index]
-
-        element = self.data.pop()
+        item = self.data.pop()
         self.bubble_down(index)
-        key = self.get_key(element)
-        del self.indices[key]
-        return element
 
-    # HELPERS
+        return {'key': item['key'], 'value': item['value']}
 
     def bubble_up(self, index):
-        """ Maintains the heap invariant by bubbling up the value from index.
-
-        Returns:
-            int, the new index of the value at the input index.
-        """
-        if index >= len(self.data) or index < 0:
-            return
+        if 0 > index or index >= len(self.data):
+            raise Exception('Index {i} out of bounds for data'.format(i=index))
 
         while True:
-            parent_index = Heap.get_parent_index(index)
+            parent_index = self.get_parent_index(index)
             if parent_index < 0:
                 break
 
-            if self.compare(self.data[parent_index], self.data[index]) > 0:
-                # Inter-change the two values.
-                self.data[parent_index], self.data[index] = \
-                    self.data[index], self.data[parent_index]
-                # Update indices for the keys.
-                key = self.get_key(self.data[index])
-                parent_key = self.get_key(self.data[parent_index])
-                self.indices[key] = parent_index
-                self.indices[parent_key] = index
+            if self.data[parent_index]['key'] <= self.data[index]['key']:
+                break
+
+            # Update indices.
+            self.data[index]['index'] = parent_index
+            self.data[parent_index]['index'] = index
+
+            # Update values.
+            self.data[parent_index], self.data[index] = \
+                self.data[index], self.data[parent_index]
+
             index = parent_index
+
         return index
 
     def bubble_down(self, index):
-        """ Maintains the heap invariant by bubbling donw the value from index.
+        if 0 > index or index >= len(self.data):
+            raise Exception('Index {i} out of bounds for data'.format(i=index))
 
-        Returns:
-            int, the new index of the value at the input index.
-        """
         while True:
-            [left, right] = self.get_child_indices(index)
-            min_index = self.get_min_for_indices([index, left, right])
-            if self.compare(self.data[min_index], self.data[index]) == 0:
+            [left_child, right_child] = self.get_child_indices(index)
+            if left_child == None and right_child == None:
                 break
+
+            min_index = self.get_min_for_indices([left_child, index, right_child])
+            if min_index == index: # Root is the minimum.
+                break
+
+            # Update indices.
+            self.data[index]['index'] = min_index
+            self.data[min_index]['index'] = index
+
+            # Update values.
             self.data[min_index], self.data[index] = \
                 self.data[index], self.data[min_index]
-            key = self.get_key(self.data[index])
-            child_key = self.get_key(self.data[min_index])
-            self.indices[key] = min_index
-            self.indices[child_key] = index
+
             index = min_index
 
-        return index
+    def get_parent_index(self, index):
+        """ Returns the parent index of the given index. """
+        if index < 0 or index >= len(self.data):
+            raise Exception('Index {i} out of bounds for data'.format(i=index))
+        if index == 0:
+            return None
+        return (index - 1) / 2
 
     def get_child_indices(self, index):
-        """ Compute the child indices for given index. """
+        """ Returns the left and right child indices. If an index has no
+        children it will return Nones instead.
+        """
+        if 0 > index or index >= len(self.data):
+            raise Exception('Index {i} out of bounds for data'.format(i=index))
         left = index * 2 + 1
         right = (index + 1) * 2
         if left >= len(self.data):
@@ -487,66 +434,25 @@ class Heap(object):
         return [left, right]
 
     def get_min_for_indices(self, indices):
-        """ Compute the index which corresponds to the minimum value. """
+        """ Compares the keys for the given indices and produces the index
+        with the smallest key.
+        """
         indices = filter(lambda i: i != None, indices)
-        return min(indices, key=lambda i: self.data[i])
-
-    def compare(self, element1, element2):
-        """ Compares two elements of the heap. """
-        return cmp(element1, element2)
-
-    def get_key(self, element):
-        """ Returns the key under which each element is indexed in the heap. """
-        return element
-
-    # STATICS
-
-    @staticmethod
-    def get_parent_index(index):
-        """ Computes the parent index of a given index. """
-        if index == 0:
-            return None
-        return (index - 1) / 2
+        return min(indices, key=lambda i: self.data[i]['key'])
 
     @classmethod
-    def heapify(cls, data):
-        """ Initializes a heap from a list of numbers.
-
-        Traverse the array from end to front and bubble keys down as needed.
-        Running time: O(n)
-
-        NOTE! This is a class method to allow for inheritance in subclasses.
-        See: http://stackoverflow.com/a/9755805 for an explanation on why the
-        running time is O(n) and not O(nlogn). Basically, it's much better to
-        run bubble-down starting from the root, the to do bubble-up starting
-        from the leaves.
-
-
-        Args:
-            data: list, array of elements to organize into a heap.
-        """
-        h = cls(data)
-        for i in xrange(len(h.data)-1, -1, -1):
+    def heapify(cls, data=None):
+        """ Heapifies a list of data. Complexity: O(n). """
+        if data == None:
+            data = []
+        h = cls()
+        if type(data[0]) == tuple:
+            for index, (key, value) in enumerate(data):
+                h.data.append({'key': key, 'value': value, 'index': index})
+        else:
+            for index, key in enumerate(data):
+                h.data.append({'key': key, 'value': None, 'index': index})
+        for i in range(len(h.data)):
             h.bubble_down(i)
+
         return h
-
-    @staticmethod
-    def is_heap(data):
-        """ Checks if a list of numbers has the min heap property, ie. parent
-        key is smaller than child keys
-
-        Complexity: O(n)
-
-        Args:
-            data: list, array of elements to check if a heap.
-
-        Returns:
-            bool
-        """
-        for i in xrange(1, len(data)):
-            parent = Heap.get_parent_index(i)
-            if parent is None:
-                continue
-            elif data[i] < data[parent]:
-                return False
-        return True
