@@ -34,25 +34,28 @@ class DoubleLinkedList(object):
 
     def insert_head(self, value):
         """ Insert new value in the front of the list. """
-        if self.is_empty():
-            self.head = self.last = Item(value)
-
         new_item = Item(value)
+        self.count += 1
+
+        if self.is_empty():
+            self.head = self.last = new_item
+            return
+
         self.head.set_pred(new_item)
         self.head = new_item
 
-        self.count += 1
 
     def insert_last(self, value):
         """ Insert new value after the last element of the list. """
-        if self.is_empty():
-            self.head = self.last = Item(value)
-
         new_item = Item(value)
+        self.count += 1
+
+        if self.is_empty():
+            self.head = self.last = new_item
+            return
+
         new_item.set_pred(self.last)
         self.last = new_item
-
-        self.count += 1
 
     def is_empty(self):
         """ Returns True if the list is empty, False otherwise. """

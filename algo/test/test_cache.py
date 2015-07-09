@@ -145,7 +145,6 @@ class TestLRUCache(unittest.TestCase):
         self.assertEqual(lru.last['previous']['key'], 'b', 'b comes before a')
 
 class TestMRUCache(unittest.TestCase):
-    # TODO: better tests are needed!
 
     def test_mru_writes_key_to_empty_cache(self):
         mru = MRUCache(2)
