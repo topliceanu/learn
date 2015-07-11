@@ -50,7 +50,8 @@ class BST(object):
             key: int, the value to insert in the tree.
 
         Returns:
-            A list representing the newly inserted node.
+            A list representing the newly inserted node. Format:
+                [parent, key, left, right, size]
         """
         if self.root is None:
             self.root = [None, key, None, None, 1]
@@ -781,3 +782,44 @@ class BST(object):
         joined_sorted = merge(sorted1, sorted2)
 
         return cls.from_sorted(joined_sorted)
+
+
+class BinarySearchTree(object):
+
+    def __init__(self):
+        self.root = None
+
+    def insert(self, item):
+        """ Insert a new item into the tree.
+
+        Args:
+            item: dict, format: {key, ...}
+        """
+
+    def delete(self, key):
+        pass
+
+    def lookup(self, key):
+        pass
+
+    def get_min(self):
+        pass
+
+    def get_max(self):
+        pass
+
+    def predecessor(self, key):
+        pass
+
+    def successor(self, key):
+        pass
+
+    def rank(self, key):
+        pass
+
+    def select(self, index):
+        pass
+
+    def in_order_traversal(self, index):
+        pass
+

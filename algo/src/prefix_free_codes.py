@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from heapq import heappop, heappush, heapify
+
 from src.graph import Graph
 
 
@@ -8,36 +10,39 @@ LEFT = 1
 RIGHT = 2
 SYMBOL = 3
 
+
 class HuffmanCode(object):
     """ Huffman variable length prefix-free codes.
 
-    TODO: This does not follow the course pseudo-code, but the course model
-    explanations. Implement the actual pseudo-code for this conversion.
-
     Attrs:
         symbols: dict, format {key: frequency}
+        nodes: dict, format {key: node} holds tree nodes indexed by symbol.
         tree: object, root of the transformation tree.
     """
     def __init__(self, symbols):
         self.symbols = symbols
+        self.nodes = {}
         self.tree = self.build_tree()
 
     def build_tree(self):
-        """ Builds the Hoffman encoding tree recursively. """
+        """ Builds the Hoffman encoding tree using a heap. """
+        h = []
+        for (symbol, probability) in self.symbols.iteritems():
+            node = [None, None, None, symbol]
+            self.nodes[symbol] = node
+            h.append((probability, node))
+        heapify(h)
 
-        def recurse(symbols):
-            if len(symbols) == 1:
-                return [None, None, None, symbols[0][0]]
+        while len(h) >= 2:
+            last = heappop(h)
+            second_last = heappop(h)
+            join_probability = last[0] + second_last[0]
+            join_node = [None, last[1], second_last[1], None]
+            last[1][PARENT] = join_node
+            second_last[1][PARENT] = join_node
+            heappush(h, (join_probability, join_node))
 
-            left = [None, None, None, symbols[0][0]]
-            right = recurse(symbols[1:])
-            root = [None, left, right, None]
-            left[PARENT] = root
-            right[PARENT] = root
-            return root
-
-        sorted_symbols = sorted(self.symbols.items(), key=lambda t: t[1], reverse=True)
-        return recurse(sorted_symbols)
+        return h[0][1]
 
     def encode(self, text):
         """ Encodes given text using the hoffman tree.
@@ -49,17 +54,19 @@ class HuffmanCode(object):
             str, a string of 1s and 0s.
         """
         out = ''
-        for char in list(text):
-            root = self.tree
-            encoded = ''
-            while root[LEFT] != None and root[RIGHT] != None:
-                if root[LEFT][SYMBOL] == char:
-                    root = root[LEFT]
-                    encoded += '0'
+        for symbol in text:
+            code = ''
+            node = self.nodes[symbol]
+            while node != None:
+                parent = node[PARENT]
+                if parent == None:
+                    break
+                if parent[LEFT] == node:
+                    code = '1' + code
                 else:
-                    root = root[RIGHT]
-                    encoded += '1'
-            out += encoded
+                    code = '0' + code
+                node = parent
+            out += code
         return out
 
     def decode(self, encoded):
@@ -76,9 +83,9 @@ class HuffmanCode(object):
         pointer = self.tree
         for bit in list(encoded):
             if bit == '0':
-                pointer = pointer[LEFT]
-            elif bit == '1':
                 pointer = pointer[RIGHT]
+            elif bit == '1':
+                pointer = pointer[LEFT]
 
             is_leaf = pointer[LEFT] == None and \
                       pointer[RIGHT] == None and \
@@ -90,16 +97,23 @@ class HuffmanCode(object):
 
     def to_string(self):
         """ String representation of the current huffman encode/decode tree. """
-        def traverse(node):
+        def traverse(node, count):
             if node == None:
                 return
+
+            name = node[SYMBOL] if node[SYMBOL] != None else count
+
             if node[LEFT] != None:
-                print 'left: {left}'.format(left=node[LEFT][SYMBOL])
+                left_name = node[LEFT][SYMBOL] if node[LEFT][SYMBOL] else count+1
+                print '{val}-L->{left}'.format(val=name, left=left_name)
+
             if node[RIGHT] != None:
-                if node[RIGHT][SYMBOL] != None:
-                    print 'right: {right}'.format(right=node[RIGHT][SYMBOL])
-                traverse(node[RIGHT])
-        traverse(self.tree)
+                right_name = node[RIGHT][SYMBOL] if node[RIGHT][SYMBOL] else count+2
+                print '{val}-R->{left}'.format(val=name, left=right_name)
+
+            traverse(node[LEFT], count+1)
+            traverse(node[RIGHT], count+2)
+        traverse(self.tree, 0)
 
     # STATIc METHODS.
 

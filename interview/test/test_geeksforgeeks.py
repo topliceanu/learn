@@ -109,3 +109,44 @@ class TestGeeksForGeeks(unittest.TestCase):
         expected = [None, None, None, None, None]
         actual = nearest_smallest_left_element(arr)
         self.assertEqual(expected, actual)
+
+    def test_max_fruit_gathered_by_birds(self):
+        fruits = [8, 1, 2, 7, 0]
+        time = 3
+        actual = max_fruit_gathered_by_birds(fruits, time)
+        expected = [7, 0, 8]
+        self.assertEqual(actual, expected, 'should compute the correct sum')
+
+        fruits = [8, 1, 2, 7, 0]
+        time = 10
+        actual = max_fruit_gathered_by_birds(fruits, time)
+        expected = [8, 1, 2, 7, 0]
+        self.assertEqual(actual, expected, 'should compute the correct sum')
+
+        fruits = range(100)
+        time = 10
+        actual = max_fruit_gathered_by_birds(fruits, time)
+        expected = range(90,100)
+        self.assertEqual(actual, expected, 'should compute the correct sum')
+
+    def test_is_interval_overlap(self):
+        intervals = [[1,2], [4,5], [6,7]]
+        actual = is_interval_overlap(intervals)
+        self.assertFalse(actual, 'no overlapping between intervals')
+
+        intervals = [[2,3], [1,2], [3,4]]
+        actual = is_interval_overlap(intervals)
+        self.assertFalse(actual, 'no overlapping between intervals')
+
+        intervals = [[2,4], [3,5], [1,3]]
+        actual = is_interval_overlap(intervals)
+        self.assertTrue(actual, 'found overlapping intervals')
+
+    def test_dot_product(self):
+        v1 = [0,0,0,0,0,0,1,1,0,0,0]
+        v1_compressed = [0,6,1,2,0,3]
+        v2 = [0,0,0,0,0,0,0,1,1,0,0]
+        v2_compressed = [0,7,1,2,0,2]
+
+        actual = dot_product(v1_compressed, v2_compressed)
+        self.assertEqual(actual, 1, 'should produce the correct dot product')

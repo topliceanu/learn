@@ -3,7 +3,7 @@
 
 import sys
 
-sys.path.insert(0, '/vagrant/algo')
+sys.path.insert(0, '../algo')
 from src.trie import Trie
 
 
@@ -154,3 +154,207 @@ def nearest_smallest_left_element(arr):
         stack.append(item)
 
     return out
+
+# 5 Facebook internship problems:
+# http://www.geeksforgeeks.org/facebook-interview-set-2-campus-interview-internship/
+
+def max_fruit_gathered_by_birds(fruits, m):
+    """" There are n trees in a circle. Each tree has a fruit value associated
+    with it. A bird can sit on a tree for 0.5 sec and then he has to move to a
+    neighbouring tree. It takes the bird 0.5 seconds to move from one tree to
+    another. The bird gets the fruit value when she sits on a tree. We are
+    given n and m (the number of seconds the bird has), and the fruit values
+    of the trees. We have to maximise the total fruit value that the bird can
+    gather. The bird can start from any tree.
+
+    Observations:
+    - it takes 1 second to travel to a tree and eat the fruit. So I can only
+    visit at most <time> trees.
+    - it's enough to visit trees in one direction, because we compute gain
+    starting from each tree.
+    - becomes a problem of finding the sliding window of fixed size with max
+    value in an array of integers.
+
+    Args:
+        fruits: list, of ints, representing the fruit quantity for each tree.
+        m: int, the number of seconds allowed to pick up all fruit.
+
+    Complexity: O(n), n - number of trees
+    """
+    n = len(fruits)
+    if m >= n:
+        return fruits
+
+    if len(fruits) == 0 or m == 0:
+        return 0
+
+    fruits.extend(fruits[:2])
+
+    s = sum(fruits[:m])
+    max_s = s
+    max_int = [0,m-1]
+    for r in range(m, len(fruits)):
+        l = r - m + 1
+        s += fruits[r]
+        s -= fruits[l-1]
+        if s > max_s:
+            max_s = s
+            max_int = [l, r]
+
+    return fruits[max_int[0] : max_int[1]+1]
+
+def base_convert_range(n, base):
+    """ You are given the encoding for a base 58 number. You have to convert
+    all the numbers from 1 to n to a base 58 number using the encoding given.
+
+    Args:
+        n: int, range of numbers to convert.
+        base: int, the base for convertion.
+
+    Returns:
+        list, of converted numbers
+    """
+    def inc(arr, base):
+        """ Increments a number represented in the given base.
+
+        Args:
+            arr: list, of ints, represents the number in reverse order.
+            base: int, the numeric base representation of arr
+
+        Returns:
+            list, of ints
+        """
+        arr[0] += 1
+        if arr[0] >= base:
+            tmp = inc(arr[1:])
+            tmp.insert(0, arr[0] % base)
+            arr = tmp
+        return arr
+
+
+    first = [1]
+    out = [first]
+    for i in range(1, n):
+        out.append(inc(out[i-1]))
+
+    return out
+
+def is_interval_overlap(intervals):
+    """ You are given the start time and finish time of n intervals. You have
+    to write a a function that returns boolean value indicating if there was
+    any overlapping interval in the set of existing intervals.
+
+    Complexity: O(nlogn)
+    """
+    sorted_intervals = sorted(intervals, key=lambda i: i[0]) # sort by position.
+
+    points = []
+    for i in sorted_intervals:
+        l = {'pos': i[0], 'start': True}
+        r = {'pos': i[1], 'start': False}
+        points.extend([l, r])
+
+    sorted_points = sorted(points, key=lambda i: i['pos']) # sort by position.
+
+    count_openings = 0
+    for p in sorted_points:
+        if p['start'] == True:
+            count_openings += 1
+        else:
+            count_openings -= 1
+        if count_openings > 1:
+            return True
+
+    return False
+
+# Needed for the following problem.
+class IntervalTree(object):
+    """ Interval tree where there are no overlapping intervals and each
+    interval has a value associated.
+    """
+    def __init__(self):
+        self.root = None # format: {start, end, left, right, parent}
+
+    def insert(self, interval, value):
+        """ Insert the corresponding interval and value in the tree.
+
+        TODO this requires a self-ballance routine!
+        """
+        [start, end] = interval
+
+        if self.root == None:
+            self.root = {'start': start, 'end': end, 'left': None,
+                         'right': None, 'parent': None, 'value': value}
+            return
+
+        node = self.root
+        while True:
+            if node['start'] >= end:
+                direction = 'left'
+            elif node['end'] <= start:
+                direction = 'right'
+
+            if node[direction] == None:
+                node[direction] = {'start': start, 'end': end, 'left': None,
+                                   'right': None, 'parent': node, 'value': value}
+                return
+            node = node[direction]
+
+    def lookup(self, point):
+        """ Lookup the value corresponding to the given point in the interval tree.
+        Note! The point can not "not exists" in any interval!
+        """
+        node = self.root
+
+        while node != None:
+            start = node['start']
+            end = node['end']
+            if start <= point <= end:
+                return node['value']
+            elif point < start:
+                node = node['left']
+            elif point > end:
+                node = node['right']
+
+def dot_product(vector1, vector2):
+    """ Represent the dot intersection between two vectors.
+    You have 2 sparse vectors (large number of 0’s). First tell me a way to
+    represent and store them, and then find the dot product.
+
+    Vector Compression (Run Length Encoding):
+    [0,0,0,0,0,0,1,1,0,0] -> [0,6,1,2,0,2]
+    [0,1,0,1,0,1,0,1,0,1] -> [0,1,1,1,0,1,1,1,0,1,1,1,0,1,1,1,0,1,1,1]
+
+    To multiply use an interval tree, whereby each interval has a value
+    assigned, either 1 or 0.
+
+    Complexity: O(nlogk) , n - number of bits each vector
+                           k - max number of intervals of continuous bits with the same value.
+    """
+    def length(vector):
+        return sum([vector[i] for i in range(1,len(vector),2)])
+
+    def build_interval_tree(vector):
+        """ Builds up the interval tree. """
+        int_tree = IntervalTree()
+        start = 0
+        for i in range(0, len(vector), 2):
+            value = vector[i]
+            end = start + vector[i+1] -1
+            int_tree.insert([start, end], value)
+            start = end + 1
+        return int_tree
+
+    n = length(vector2)
+    m = length(vector1)
+
+    if m != n:
+        raise Exception('Vectors must have the same length for dot product to work')
+
+    int_tree_1 = build_interval_tree(vector1)
+    int_tree_2 = build_interval_tree(vector2)
+
+    dot_product = 0
+    for i in range(n):
+        dot_product += int_tree_1.lookup(i) * int_tree_2.lookup(i)
+    return dot_product

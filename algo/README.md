@@ -74,6 +74,7 @@ python -m unittest discover test -p test_graph.py # to run a specific test case.
 ## Todo
 
 ### Part 1
+0. [ ] refactor trees to support custom data in the nodes..
 0. [ ] implement btree
 1. [X] implement avl tree
 1. [ ] implement lsm tree.
@@ -84,14 +85,15 @@ python -m unittest discover test -p test_graph.py # to run a specific test case.
 7. [ ] implement range trees: [ ] interval trees, [ ] segment trees, [ ] binary indexed trees.
 8. [ ] implement KD-trees
 9. [ ] flood fill algorithm
+10. [ ] implement Bitmapped Vector Trie
 
 ### Part 2
-1.  [ ] caching - finish implementation of ARCache.
+1.  [x] caching - finish implementation of ARCache.
 2.  [ ] min spanning tree - randomized algorithm for min spanning tree by Tarjan.
 4.  [ ] min spanning tree - minimum spanning bottleneck tree!
 5.  [ ] min spanning tree - optimal branching problem for directed graphs (prim&kruskal work for undirected graphs)
 6.  [ ] min spanning tree - implement O(m) algorithm by Karger-Klein-Tarjan
-7.  [ ] huffman code - something is not correctly implemented!
+7.  [x] huffman code - fix huffman coding
 8.  [ ] dynamic programming - max-weight independent set - compute for trees. See Problem Set #3, problem 3.
 9.  [ ] dynamic programming - find best approximate match of substring in string.
 10. [ ] dynamic programming - longest common subsequence of two strings.
