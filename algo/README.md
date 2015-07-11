@@ -80,11 +80,11 @@ python -m unittest discover test -p test_graph.py # to run a specific test case.
 1. [ ] implement lsm tree.
 3. [ ] dijkstra single source shortest path - return the actual shortest paths.
 4. [ ] red-black tree delete should work correctly.
-5. [ ] backtracking algorithms
+5. [X] backtracking algorithms
 6. [ ] implement a compressed Trie data structure.
 7. [ ] implement range trees: [ ] interval trees, [ ] segment trees, [ ] binary indexed trees.
 8. [ ] implement KD-trees
-9. [ ] flood fill algorithm
+9. [X] flood fill algorithm
 10. [ ] implement Bitmapped Vector Trie
 
 ### Part 2

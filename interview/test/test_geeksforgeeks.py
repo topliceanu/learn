@@ -150,3 +150,20 @@ class TestGeeksForGeeks(unittest.TestCase):
 
         actual = dot_product(v1_compressed, v2_compressed)
         self.assertEqual(actual, 1, 'should produce the correct dot product')
+
+    def test_find_possible_interpretations(self):
+        expected = [['a', 'a'], ['k']]
+        actual = find_possible_interpretations([1,1])
+        self.assertItemsEqual(actual, expected, 'correct result for [1,1]')
+
+        expected = [['a', 'b', 'a'], ['a', 'u'], ['l', 'a']]
+        actual = find_possible_interpretations([1,2,1])
+        self.assertItemsEqual(actual, expected), 'correct result for [1,2,1]'
+
+        expected = [['i', 'a', 'h'], ['i', 'r']]
+        actual = find_possible_interpretations([9,1,8])
+        self.assertItemsEqual(actual, expected), 'correct result for [9,1,8]'
+
+        expected = [['c', 'f', 'c', 'f', 'c', 'f']]
+        actual = find_possible_interpretations([3,6,3,6,3,6])
+        self.assertItemsEqual(actual, expected), 'correct result for [9,1,8]'

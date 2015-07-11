@@ -175,11 +175,12 @@ def max_fruit_gathered_by_birds(fruits, m):
     - becomes a problem of finding the sliding window of fixed size with max
     value in an array of integers.
 
+    Complexity: O(n), n - number of trees
+
     Args:
         fruits: list, of ints, representing the fruit quantity for each tree.
         m: int, the number of seconds allowed to pick up all fruit.
 
-    Complexity: O(n), n - number of trees
     """
     n = len(fruits)
     if m >= n:
@@ -358,3 +359,85 @@ def dot_product(vector1, vector2):
     for i in range(n):
         dot_product += int_tree_1.lookup(i) * int_tree_2.lookup(i)
     return dot_product
+
+# Problem from this set:
+# http://www.geeksforgeeks.org/find-all-possible-interpretations/
+
+class LettersTrie(object):
+
+    def __init__(self):
+        self.root = {'parent': None, 'children': {}, 'letter': None}
+
+    def insert(self, digits, letter):
+        node = self.root
+        for (index, digit) in enumerate(digits):
+            is_last_digit = index == len(digits) - 1
+            if digit not in node['children']:
+                new_node = {'children': {}, 'letter': None}
+                node['children'][digit] = new_node
+                if is_last_digit:
+                    new_node['letter'] = letter
+            else:
+                node = node['children'][digit]
+
+    def lookup(self, digits):
+        """ Returns the letter corresponding to the digits. """
+        node = self.root
+        for (index, digit) in enumerate(digits):
+            if digit not in node['children']:
+                return
+            node = node['children'][digit]
+            is_last_digit = index == len(digits) - 1
+            if is_last_digit:
+                return node['letter']
+
+def find_possible_interpretations(digits):
+    """ Consider a coding system for alphabets to integers where ‘a’ is
+    represented as 1, ‘b’ as 2, .. ‘z’ as 26. Given an array of digits (1 to 9)
+    as input, write a function that prints all valid interpretations of input
+    array.
+    """
+
+    # Build up the letters hash.
+    letters = {}
+    for i in range(1, 27):
+        letters[chr(64+i).lower()] = [int(j) for j in str(i)]
+
+    # Build up the trie.
+    t = LettersTrie()
+    for (letter, encoding) in letters.iteritems():
+        t.insert(encoding, letter)
+    #import pprint; pprint.pprint(t.root)
+
+    def decode(encoded):
+        """ Decodes the given encoded digits into all valid character combination.
+
+        Returns:
+            list, of lists, of possible encodigns.
+        """
+        if len(encoded) == 0:
+            return [[]]
+
+        sol1 = []
+        if len(encoded) > 0:
+            ch = t.lookup(encoded[:1])
+            rest = encoded[1:]
+            segments = decode(encoded[1:])
+            for segment in segments:
+                segment.insert(0, ch)
+            sol1 = segments
+
+        sol2 = []
+        if len(encoded) > 1:
+            ch = t.lookup(encoded[:2])
+            if ch != None:
+                segments = decode(encoded[2:])
+                for segment in segments:
+                    segment.insert(0, ch)
+                sol2 = segments
+
+        sol1.extend(sol2)
+        return sol1
+
+    # Build up the trie and decode the input.
+    return decode(digits)

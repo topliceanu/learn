@@ -72,3 +72,13 @@ class BitManipulation(unittest.TestCase):
         self.assertEqual(problem_10_7_bis(13), 3*3*5*5*5*7, 'should have worked')
         self.assertEqual(problem_10_7_bis(14), 3*3*3*3*3*5*7, 'should have worked')
         self.assertEqual(problem_10_7_bis(15), 3*3*5*5*7*7, 'should have worked')
+
+    def test_problem_3_5_my_queue(self):
+        q = MyQueue()
+        q.enqueue(1)
+        q.enqueue(2)
+
+        self.assertEqual(len(q), 2, 'two elements in the queue')
+        self.assertEqual(q.dequeue(), 1, 'should return the first value')
+        self.assertEqual(q.dequeue(), 2, 'should return the second value')
+        self.assertIsNone(q.dequeue(), 'queue is empty')
