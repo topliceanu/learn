@@ -39,3 +39,20 @@ class TestGlassdoor(unittest.TestCase):
         ]
         actual = connected_zeros_in_array(arr)
         self.assertTrue(actual, 'should detect that all zeroes are reachable')
+
+    def test_binary_tree_level_traversal(self):
+        a = Node('a')
+        b = Node('b')
+        c = Node('c')
+        d = Node('d')
+        e = Node('e')
+        f = Node('f')
+        a.add_child(b)
+        a.add_child(c)
+        b.add_child(d)
+        b.add_child(e)
+        c.add_child(f)
+
+        expected = {1: {'a'}, 2: {'b', 'c'}, 3: {'d', 'e', 'f'}}
+        actual = binary_tree_level_order_traversal(a)
+        self.assertEqual(actual, expected, 'should traverse the tree correctly')

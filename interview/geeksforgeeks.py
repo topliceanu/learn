@@ -441,3 +441,45 @@ def find_possible_interpretations(digits):
 
     # Build up the trie and decode the input.
     return decode(digits)
+
+# Facebook Interview problem set.
+# http://www.geeksforgeeks.org/facebook-interview-set-1/
+
+def check_palindrome(data):
+    """ Given a string, check if it is a palindrome by ignoring spaces. E.g.
+    race car would be a palindrome.
+    """
+    n = len(data)
+    i = 0
+    j = n - 1
+
+    while i < j:
+        if data[i] == ' ':
+            i += 1
+            continue
+        if data[j] == ' ':
+            j -= 1
+            continue
+        if data[i] != data[j]:
+            return False
+        i += 1
+        j -= 1
+
+    return True
+
+def multiply_vectors(x, y):
+    """ Given two very large strings, consisting of only digits, multiply the
+    two strings and return the result as a string.
+    """
+    def multiply(a, b):
+        pass
+
+    def add(a, b, offset):
+        pass
+
+    for i in range(len(y)-1, 0, -1):
+        multiplier = y[i]
+        partial = multiply(x, multiplier)
+        offset = len(y) - i - 1
+        s = add(s, partial, offset)
+    return s

@@ -256,6 +256,12 @@ class Graph:
         """
         return Graph.build(self.get_vertices(), self.get_edges(), self.directed)
 
+    def is_leaf(self, vertex):
+        """ Returns True if the vertex is leaf, ie. has no children. """
+        if vertex not in self.table:
+            return False
+        return len(self.table[vertex]) == 0
+
     @staticmethod
     def build(vertices=[], edges=[], directed = False):
         """ Builds a graph from the given vertices and edges.

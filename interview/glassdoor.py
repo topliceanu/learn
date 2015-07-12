@@ -73,3 +73,34 @@ def connected_zeros_in_array(arr):
         if sum(arr[i]) != n:
             return False
     return True
+
+# Facebook Interviews
+
+class Node(object):
+    """ A node in a tree. """
+
+    def __init__(self, key):
+        self.key = key
+        self.parent = None
+        self.children = []
+
+    def add_child(self, node):
+        self.children.append(node)
+        node.parent = self
+
+def binary_tree_level_order_traversal(tree):
+    """ Binary Tree level order traversal, a.k.a. breadth-first search. """
+    def traverse(node, level, out):
+        if node == None:
+            return
+
+        if level not in out:
+            out[level] = set([])
+        out[level].add(node.key)
+
+        for child in node.children:
+            traverse(child, level+1, out)
+
+    output = {}
+    traverse(tree, 1, output)
+    return output

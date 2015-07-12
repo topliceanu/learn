@@ -94,7 +94,7 @@ python -m unittest discover test -p test_graph.py # to run a specific test case.
 5.  [ ] min spanning tree - optimal branching problem for directed graphs (prim&kruskal work for undirected graphs)
 6.  [ ] min spanning tree - implement O(m) algorithm by Karger-Klein-Tarjan
 7.  [x] huffman code - fix huffman coding
-8.  [ ] dynamic programming - max-weight independent set - compute for trees. See Problem Set #3, problem 3.
+8.  [ ] dynamic programming - max-weight independent set - compute for trees.
 9.  [ ] dynamic programming - find best approximate match of substring in string.
 10. [ ] dynamic programming - longest common subsequence of two strings.
 11. [ ] dynamic programming - linear partition - solution reconstruction does not work.

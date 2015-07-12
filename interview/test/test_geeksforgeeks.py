@@ -167,3 +167,45 @@ class TestGeeksForGeeks(unittest.TestCase):
         expected = [['c', 'f', 'c', 'f', 'c', 'f']]
         actual = find_possible_interpretations([3,6,3,6,3,6])
         self.assertItemsEqual(actual, expected), 'correct result for [9,1,8]'
+
+    def test_check_palindrome(self):
+        sample = 'race car'
+        actual = check_palindrome(sample)
+        self.assertTrue(actual, 'if you ignore spaces it is a palindrome')
+
+        sample = 'alexela'
+        actual = check_palindrome(sample)
+        self.assertTrue(actual, 'if you ignore spaces it is a palindrome')
+
+        sample = 'alex  xela          '
+        actual = check_palindrome(sample)
+        self.assertTrue(actual, 'if you ignore spaces it is a palindrome')
+
+        sample = 'alexs  zxela          '
+        actual = check_palindrome(sample)
+        self.assertFalse(actual, 'if you ignore spaces it is a palindrome')
+
+    def test_multiply_vectors(self):
+        s1 = '11'
+        s2 = '11'
+        expected = '121'
+        actual = multiply_vectors(s1, s2)
+        self.assertEqual(actual, expected, 'should product the correct output')
+
+        s1 = '11111111'
+        s2 = '11111111'
+        expected = '123456787654321'
+        actual = multiply_vectors(s1, s2)
+        self.assertEqual(actual, expected, 'should product the correct output')
+
+        s1 = '99'
+        s2 = '99'
+        expected = '9801'
+        actual = multiply_vectors(s1, s2)
+        self.assertEqual(actual, expected, 'should product the correct output')
+
+        s1 = '99'
+        s2 = '999'
+        expected = '98901'
+        actual = multiply_vectors(s1, s2)
+        self.assertEqual(actual, expected, 'should product the correct output')

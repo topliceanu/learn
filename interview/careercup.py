@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
-import sys
+import heapq
+import math
 import string
+import sys
+import random
 
 sys.path.insert(0, '/vagrant/algo')
 from src.union_find import UnionFind
@@ -221,3 +224,166 @@ def sort_letters(word, template):
                     del letters[letter]
 
     return ''.join(output)
+
+# Source of problems:
+# http://www.careercup.com/page?pid=facebook-interview-questions
+
+def binary_search_rotated(key, arr, left, right):
+    """ Search in a sorted rotated array. """
+    if left > right:
+        return False
+
+    middle = (left + right) / 2
+
+    if arr[left] == key or arr[middle] == key or arr[right] == key:
+        return True
+
+    if arr[middle] <= arr[right]:
+        # Right side is sorted.
+        if arr[middle] < key < arr[right]:
+            return binary_search_rotated(key, arr, middle+1, right-1)
+        else:
+            return binary_search_rotated(key, arr, left+1, middle-1)
+    elif arr[left] <= arr[middle]:
+        # Left side is sorted.
+        if arr[left] < key < arr[middle]:
+            return binary_search_rotated(key, arr, left+1, middle-1)
+        else:
+            return binary_search_rotated(key, arr, middle+1, right-1)
+
+def merge_linked_lists(lists):
+    """ Merge K sorted singly linked list
+
+    Args:
+        lists: list of object, linked list with node of format: {value, next}
+    """
+    # Build references of lists.
+    refs = {}
+    for i in range(len(lists)):
+        refs[i] = lists[i]
+
+    # Build the initial heap.
+    h = []
+    for (list_name, list_ref) in refs.iteritems():
+        heapq.heappush(h, (list_ref['value'], list_name))
+
+    start = None
+    end = None
+
+    while len(refs) != 0:
+        (_, list_name) = heapq.heappop(h)
+
+        # Maintain the references in refs.
+        node = refs[list_name]
+        refs[list_name] = node['next']
+        node['next'] = None
+
+        # Wire the pointers to the result list.
+        if start == None:
+            start = end = node
+        else:
+            end['next'] = node
+            end = node
+
+        # Add back a new value to the heap from the same list.
+        if refs[list_name] == None:
+            del refs[list_name]
+        else:
+            heapq.heappush(h, (refs[list_name]['value'], list_name))
+
+    return start
+
+def paint_houses(n, m, cost):
+    """ Paint a list of N houses and M colors, each combination has cost,
+    minimize the total cost without color in row.
+
+    Args
+        n - number of houses
+        m - number of colors
+        cost - cost matrix of each combination. Format {color1: {color2: cost}}
+
+    Returns:
+        (min_cost, colors), min_cost - the total min cost of the coloring.
+                            colors - the order of the coloring.
+    """
+    def get_cost(i, j):
+        if i in cost:
+            if j in cost[i]:
+                return cost[i][j]
+        return 0
+
+    # Recursion:
+    # A[i][j] = min value obtained with i houses given the last color is j
+    # A[i][j] = min(A[i-1][k] + cost(k, j)), k != j, i=0..n, j=0..m
+    #            k
+
+    # Initialize.
+    A = [[0] * m for _ in range(n)]
+    B = [[None] * m for _ in range(n)]
+
+    # Compute min cost.
+    for i in range(1, n):
+        for j in range(0, m):
+            min_k = float('inf')
+            min_partial_cost = float('inf')
+            for k in range(0, m):
+                if k == j:
+                    continue
+                partial_cost = A[i-1][k] + get_cost(k, j)
+                if partial_cost < min_partial_cost:
+                    min_partial_cost = partial_cost
+                    min_k = k
+            A[i][j] = min_partial_cost
+            B[i][j] = min_k
+
+    (min_k, min_cost) = min(enumerate([A[n-1][k] for k in range(0, m)]), key=lambda t: t[1])
+
+    # Compute the color ordering that yields min cost.
+    colors = []
+    i = n-1 # Count houses.
+    while i >= 0:
+        colors.append(min_k)
+        min_k = B[i][min_k]
+        i -= 1
+    colors.reverse()
+
+    return (min_cost, colors)
+
+def shuffle(arr):
+    """ Given array A of size N, using function Random(returns random number
+    between 0 and 1) implement function that will return array of size N with
+    randomly shuffled elements of the array A. You should give only algo.
+
+    Algorithm: Fisher-Yeates
+
+    Args:
+        arr: list of ints. Note! it shuffles the list in-place.
+    """
+    for i in range(len(arr)):
+        j = int(math.floor(random.random() * len(arr)))
+        arr[i], arr[j] = arr[j], arr[i]
+
+def rewire_pointers(linked_list):
+    """ Given a singly linked list, swap the list items in pairs (reconnect the
+    pointers, not simply swap the values).
+    """
+    before = None
+    node = linked_list
+    after = node['next']
+    if after != None:
+        start = after
+
+    while after != None:
+        if before != None:
+            before['next'] = after
+        node['next'] = after['next']
+        after['next'] = node
+
+        previous = node
+        node = node['next']
+        if node['next']:
+            after = node['next']['next']
+        else:
+            after = None
+
+    return start

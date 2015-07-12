@@ -52,7 +52,45 @@ def max_weighted_independent_set_in_tree(g):
     Returns:
         list, format [max_weight: int, vertices: list]
     """
-    # TODO
+    # Recursion
+    # A[x][True|False] - total weight given the decision to take or not to take node x into consideration.
+    # A[x][True] = weight[x] + sum(A[y][False]), y - nodes which are children of x
+    # Results: max(A[root][True], A[root][False])
+
+    A = {}
+    def traverse(g, vertex):
+        if g.is_leaf(vertex):
+            A[vertex] = {True: g.get_vertex_value(vertex), False: 0}
+        else:
+            for child_vertex in g.neighbours(vertex):
+                traverse(g, child_vertex)
+
+            include_value = g.get_vertex_value(vertex)
+            exclude_value = 0
+            for child_vertex in g.neighbours(vertex):
+                include_value += A[child_vertex][False]
+                exclude_value += A[child_vertex][True]
+            A[vertex] = {True: include_value, False: exclude_value}
+
+    traverse(g, 'r')
+    max_value = max(A['r'][True], A['r'][False])
+
+    # Compute the set of vertices included in the result.
+    node = 'r'
+    solution = set([])
+    def collect(node):
+        if A[node][True] >= A[node][False]:
+            solution.add(node)
+            for child in g.neighbours(node):
+                for grand_child in g.neighbours(child):
+                    collect(grand_child)
+        else:
+            for child in g.neighbours(node):
+                collect(child)
+
+    collect('r')
+
+    return (max_value, solution)
 
 def sequence_alignment(X, Y, mismatch_penality, gap_penalty):
     """ Computes the similarity measure between the two strings.

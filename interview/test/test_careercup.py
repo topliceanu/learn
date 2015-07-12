@@ -105,3 +105,69 @@ class TestCareerCup(unittest.TestCase):
         expected = 'bac'
         actual = sort_letters(word, template)
         self.assertEqual(actual, expected, 'should sort the letters correctly')
+
+    def test_binary_search_rotated(self):
+        data = [8, 9, 10, 1, 2, 3, 4, 5, 6, 7]
+        found = binary_search_rotated(5, data, 0, len(data)-1)
+        self.assertTrue(found, 'should find 5')
+
+        data = [8, 9, 10, 1, 2, 3, 4, 5, 6, 7]
+        found = binary_search_rotated(10, data, 0, len(data)-1)
+        self.assertTrue(found, 'should find 10')
+
+        data = [8, 9, 10, 1, 2, 3, 4, 5, 6, 7]
+        found = binary_search_rotated(11, data, 0, len(data)-1)
+        self.assertFalse(found, 'should not find 11')
+
+        data = [4, 4, 5, 6, 7, 1, 2, 3, 4, 4, 4, 4]
+        found = binary_search_rotated(5, data, 0, len(data)-1)
+        self.assertTrue(found, 'should find 5')
+
+    def test_merge_linked_list(self):
+        l1 = {'value': 0, 'next': {'value': 1, 'next': {'value': 2, 'next': None}}}
+        l2 = {'value': 5, 'next': {'value': 6, 'next': {'value': 7, 'next': None}}}
+        l3 = {'value': 10, 'next': {'value': 11, 'next': {'value': 12, 'next': None}}}
+
+
+        expected = {'value': 0, 'next': {'value': 1, 'next': {'value': 2, 'next':
+                   {'value': 5, 'next': {'value': 6, 'next': {'value': 7, 'next':
+                   {'value': 10, 'next': {'value': 11, 'next': {'value': 12, 'next': None}}}}}}}}}
+
+        actual = merge_linked_lists([l1, l2, l3])
+        self.assertEqual(actual, expected, 'should build the correct list')
+
+    def test_paint_houses(self):
+        n = 5
+        m = 3
+        cost = {0: {1: 10, 2: 11}, 1: {2: 7, 0: 8}, 2: {0: 9, 1: 10}}
+
+        (actual_min_cost, actual_colors) = paint_houses(n, m, cost)
+
+        expected_min_cost = 33
+        expected_colors = [1,2,1,2,0]
+
+        self.assertEqual(actual_min_cost, expected_min_cost, \
+            'correctly computes the min cost')
+        self.assertEqual(actual_colors, expected_colors,
+            'should compute accurate colors')
+
+    def test_shuffle(self):
+        a = [1,2,3,4,5]
+        b = a[:]
+        self.assertNotEqual(a, shuffle(b), 'should correctly shuffle items')
+
+    def teest_rewire_pointers(self):
+        l = {'val': 'A', 'next': {'val': 'B', 'next': {'val': 'C', 'next': {'val': 'D', 'next': None}}}}
+        actual = rewire_pointers(l)
+        expected = {'val': 'B', 'next': {'val': 'A', 'next': {'val': 'D', 'next': {'val': 'C', 'next': None}}}}
+        self.assertEqual(actual, expected, 'should compute it correctly')
+
+        l = {'val': 'A', 'next': None}
+        actual = rewire_pointers(l)
+        expected = {'val': 'A', 'next': None}
+        self.assertEqual(actual, expected, 'should compute it correctly')
+
+        l = {'val': 'A', 'next': {'val': 'B', 'next': {'val': 'C', 'next': None}}}
+        actual = rewire_pointers(l)
+        expected = {'val': 'B', 'next': {'val': 'A', 'next': {'val': 'C', 'next': None}}}
+        self.assertEqual(actual, expected, 'should compute it correctly')
