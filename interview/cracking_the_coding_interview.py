@@ -1,9 +1,138 @@
 # -*- coding: utf-8 -*-
 import sys
 
-sys.path.insert(0, '/vagrant/algo')
+sys.path.insert(0, '../algo')
 from src.stack import Stack
 
+# Chapter 1: Arrays and Strings
+
+def problem_1_1(data):
+    """Implement an algorithm to determine if a string has all unique
+    characters. What if you can not use additional data structures?
+
+    Returns:
+        bool, True if all characters are unique.
+    """
+    chars = set([])
+    for c in data:
+        if c in chars:
+            return False
+        chars.add(c)
+    return True
+
+def problem_1_1_bis(data):
+    """ Same problem as above but without using the extra set. Solution is to
+    use a single long int, where each bit corresponds to a possible character,
+    when a character is visited, that bit is set to one.
+    """
+    class Filter(object):
+
+        def __init__(self):
+            self.seen = 0L
+
+        def visit(self, char):
+            index = ord(char)
+            self.seen = self.seen | (1 << index)
+
+        def is_visited(self, char):
+            index = ord(char)
+            return self.seen & (1 << index) != 0
+
+    f = Filter()
+    for c in data:
+        if f.is_visited(c):
+            return False
+        f.visit(c)
+    return True
+
+def problem_1_2(data):
+    """ Write code to reverse a C-Style String. (C-String means that “abcd” is
+    represented as five characters, including the null character.
+    """
+    out = []
+    for i in range(len(data)-2, -1, -1):
+        out.append(data[i])
+    out.append(data[len(data)-1])
+    return ''.join(out)
+
+def problem_1_3(data):
+    """ Design an algorithm and write code to remove the duplicate characters
+    in a string without using any additional buffer.
+    NOTE: One or two additional variables are fine. An extra copy of the array
+    is not.
+    FOLLOW UP: Write the test cases for this method.
+
+    Complexity: O(n)
+    """
+    n = len(data)
+
+    if n <= 1:
+        return data
+
+    data = list(data)
+    extra = {'start': 0, 'end': 0}
+
+    while extra['end'] + 1 < n:
+        if data[extra['start']] == data[extra['end'] + 1]:
+            # Add data[extra['end']] into the blog, ie. extend the end of blob.
+            extra['end'] += 1
+        else:
+            # Move the blob one index to the left.
+            if extra['start'] != extra['end']:
+                data[extra['start'] + 1], data[extra['end'] + 1] = \
+                    data[extra['end'] + 1], data[extra['start'] + 1]
+            extra['start'] += 1
+            extra['end'] += 1
+
+    extra_length = extra['end'] - extra['start']
+    if extra_length == 0:
+        return ''.join(data)
+    return ''.join(data[:-extra_length])
+
+def problem_1_4(s1, s2):
+    """ Write a method to decide if two strings are anagrams or not.
+
+    Complexity: O(n^2) time but O(n) space (no extra data structure)
+    """
+    if len(s1) != len(s2):
+        return False
+
+    letters = {}
+    for c in s1:
+        if c not in letters:
+            letters[c] = 1
+        else:
+            letters[c] += 1
+    for c in s2:
+        if c not in letters:
+            return False
+        letters[c] -= 1
+    for (__, count) in letters.iteritems():
+        if count > 0:
+            return False
+    return True
+
+def problem_1_5(data):
+    """ Write a method to replace all spaces in a string with ‘%20’ """
+    out = []
+    for c in data:
+        if c == ' ':
+            out.append('%20')
+        else:
+            out.append(c)
+    return ''.join(out)
+
+def problem_1_6(arr):
+    """ Given an image represented by an NxN matrix, where each pixel in the
+    image is 4 bytes, write a method to rotate the image by 90 degrees. Can you
+    do this in place?
+    """
+    n = len(arr)
+    for i in range(n/2):
+        for j in range(i, n - i):
+            x = (i, j)
+            y = ()
+    return arr
 
 # BIT MANIPULATION
 

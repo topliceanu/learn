@@ -5,7 +5,90 @@ import unittest
 from cracking_the_coding_interview import *
 
 
-class BitManipulation(unittest.TestCase):
+class CrackingTheCodeInterview(unittest.TestCase):
+
+    # Chapter 1: Arrays and Strings
+
+    def test_problem_1_1(self):
+        data = 'alexandru'
+        self.assertFalse(problem_1_1(data), 'should detect duplicate chars')
+
+        data = 'alex'
+        self.assertTrue(problem_1_1(data), 'all chars are unique')
+
+        data = 'alexandru'
+        self.assertFalse(problem_1_1_bis(data), 'should detect duplicate chars')
+
+        data = 'alex'
+        self.assertTrue(problem_1_1_bis(data), 'all chars are unique')
+
+    def test_problem_1_2(self):
+        data = 'alex$'
+        expected = 'xela$'
+        actual = problem_1_2(data)
+        self.assertEqual(actual, expected, 'should invert correctly')
+
+    def test_problem_1_3(self):
+        data = ""
+        expected = ""
+        self.assertEqual(problem_1_3(data), expected, 'removed duplicate consecutive chars')
+
+        data = "a"
+        expected = "a"
+        self.assertEqual(problem_1_3(data), expected, 'removed duplicate consecutive chars')
+
+        data = "abc"
+        expected = "abc"
+        self.assertEqual(problem_1_3(data), expected, 'removed duplicate consecutive chars')
+
+        data = "abcc"
+        expected = "abc"
+        self.assertEqual(problem_1_3(data), expected, 'removed duplicate consecutive chars')
+
+        data = "aabc"
+        expected = "abc"
+        self.assertEqual(problem_1_3(data), expected, 'removed duplicate consecutive chars')
+
+        data = "abca"
+        expected = "abca"
+        self.assertEqual(problem_1_3(data), expected, 'removed duplicate consecutive chars')
+
+        data = "aaaa"
+        expected = "a"
+        self.assertEqual(problem_1_3(data), expected, 'removed duplicate consecutive chars')
+
+    def test_problem_1_4(self):
+        s1 = 'cat'
+        s2 = 'act'
+        self.assertTrue(problem_1_4(s1, s2), 'are anagrams')
+
+        s1 = 'cats'
+        s2 = 'act'
+        self.assertFalse(problem_1_4(s1, s2), 'are not anagrams')
+
+        s1 = 'aab'
+        s2 = 'aba'
+        self.assertTrue(problem_1_4(s1, s2), 'are anagrams')
+
+        s1 = 'aab'
+        s2 = 'abc'
+        self.assertFalse(problem_1_4(s1, s2), 'are not anagrams')
+
+    def test_problem_1_5(self):
+        s = '   '
+        expected = '%20%20%20'
+        actual = problem_1_5(s)
+        self.assertEqual(actual, expected, 'correct url encode spaces')
+
+        s = ' a '
+        expected = '%20a%20'
+        actual = problem_1_5(s)
+        self.assertEqual(actual, expected, 'correct url encode spaces')
+
+        s = 'ab'
+        expected = 'ab'
+        actual = problem_1_5(s)
+        self.assertEqual(actual, expected, 'correct url encode spaces')
 
     def test_problem_5_1(self):
         n = int('10000000000', 2)
