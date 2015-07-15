@@ -579,8 +579,36 @@ def problem_3_6(stack):
     any assumptions about how the stack is implemented. The following are the
     only functions that should be used to write this program:
         push | pop | peek | isEmpty.
-    """
 
+    Solution #1: use one more stack.
+    Solution #1: no additional stack but using recursion.
+    """
+    def move_last(stack):
+        """ Finds the max element in stack and moves it to to the top. """
+        if len(stack) <= 1:
+            return stack
+
+        last = stack.pop()
+        stack = move_last(stack)
+        previous = stack.peek()
+        if previous > last:
+            previous = stack.pop()
+            stack.push(last)
+            stack.push(previous)
+        else:
+            stack.push(last)
+        return stack
+
+    def stack_sort(stack):
+        if stack.is_empty():
+            return stack
+        stack = move_last(stack)
+        last = stack.pop()
+        stack = stack_sort(stack)
+        stack.push(last)
+        return stack
+
+    return stack_sort(stack)
 
 # BIT MANIPULATION
 

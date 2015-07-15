@@ -340,6 +340,17 @@ class CrackingTheCodeInterview(unittest.TestCase):
         self.assertEqual(q.dequeue(), 2, 'should return the second value')
         self.assertIsNone(q.dequeue(), 'queue is empty')
 
+    def test_problem_3_6(self):
+        l = Stack()
+        for i in [7, 2, 1, 8, 3]:
+            l.push(i)
+        print '>>>>>>', l.top
+
+        problem_3_6(l)
+        print '>>>>>>', l.top
+        for i in [8, 7, 3, 2, 1]:
+            self.assertEqual(i, l.pop(), 'should have sorted the queue')
+
     # Chapter 5: Bit Manipulation.
 
     def test_problem_5_1(self):
