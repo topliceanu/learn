@@ -223,6 +223,123 @@ class CrackingTheCodeInterview(unittest.TestCase):
         actual = problem_2_5(l)
         self.assertEqual(actual, start, 'should detect the start node')
 
+    # Chapter 3: Stacks and Queues
+
+    def test_problem_3_1(self):
+        ThreeStacks = problem_3_1()
+        stacks = ThreeStacks()
+        stacks.push(0, 1)
+        stacks.push(0, 2)
+        stacks.push(1, 3)
+        stacks.push(1, 4)
+        stacks.push(2, 5)
+        stacks.push(2, 6)
+
+        expected = [6, 12, 18, 0, None, 1, 0, 3, 2, 1, None, 3, 1, 9, 4, 2, None, 5, 2, 15, 6]
+        self.assertEqual(stacks.arr, expected, 'array should look ok after all those inserts')
+
+        value = stacks.pop(0)
+        self.assertEqual(value, 2, 'stack #0 produces 2')
+        value = stacks.pop(0)
+        self.assertEqual(value, 1, 'stack #0 produces 1')
+        value = stacks.pop(0)
+        self.assertIsNone(value, 'stack #0 is now empty')
+
+        value = stacks.pop(1)
+        self.assertEqual(value, 4, 'stack #1 produces 4')
+        value = stacks.pop(1)
+        self.assertEqual(value, 3, 'stack #1 produces 3')
+        value = stacks.pop(1)
+        self.assertIsNone(value, 'stack #1 is now empty')
+
+        value = stacks.pop(2)
+        self.assertEqual(value, 6, 'stack #2 produces 6')
+        value = stacks.pop(2)
+        self.assertEqual(value, 5, 'stack #2 produces 5')
+        value = stacks.pop(2)
+        self.assertIsNone(value, 'stack #2 is now empty')
+
+        expected = [None, None, None, '__', '__', '__', '__', '__', '__', '__', '__', '__', '__', '__', '__', '__', '__', '__', '__', '__', '__']
+        self.assertEqual(stacks.arr, expected, 'stacks are all empty')
+
+    def test_problem_3_2(self):
+        MinStack = problem_3_2()
+        s = MinStack()
+
+        s.push(2)
+        self.assertEqual(s.min(), 2, 'should compute the min value')
+
+        s.push(1)
+        self.assertEqual(s.min(), 1, 'should compute the min value')
+
+        s.pop()
+        self.assertEqual(s.min(), 2, 'should compute the min value')
+
+        s.pop()
+        self.assertIsNone(s.min(), 'no more components in the stack')
+
+    def test_problem_3_3(self):
+        SetOfStacks = problem_3_3()
+
+        s = SetOfStacks(2)
+        s.push(1)
+        s.push(2)
+        s.push(3)
+        s.push(4)
+        s.push(5)
+        self.assertEqual(len(s.stacks), 3, 'should have built three stacks')
+        self.assertEqual(s.stacks[0], [1, 2], 'should have filled the first stack')
+        self.assertEqual(s.stacks[1], [3, 4], 'should have filled the second stack')
+        self.assertEqual(s.stacks[2], [5], 'should have added to the third stack')
+
+        value = s.pop()
+        self.assertEqual(value, 5, 'removed the last value')
+        self.assertEqual(s.stacks[2], [], 'last stack is now empty')
+
+        value = s.pop()
+        self.assertEqual(value, 4, 'removed the last value')
+        self.assertEqual(len(s.stacks), 2, 'only two stacks are left')
+        self.assertEqual(s.stacks[1], [3], 'last stack now has only one element')
+
+        s.pop()
+        s.pop()
+        value = s.pop()
+        self.assertEqual(value, 1, 'removed the last element from the set of stacks')
+        self.assertEqual(len(s.stacks), 1, 'only one stack left')
+        self.assertEqual(s.stacks[0], [], 'last stack left is empty')
+
+        value = s.pop()
+        self.assertIsNone(value, 'no more data in the set of stacks')
+        self.assertEqual(len(s.stacks), 0, 'all stacks have been deleted')
+
+        s.push(1)
+        s.push(2)
+        s.push(3)
+        s.push(4)
+        s.push(5)
+        value = s.popAt(1)
+        self.assertEqual(value, 4, 'should have returned the last value of the second stack')
+        self.assertEqual(s.stacks[0], [1, 2], 'should have filled the first stack')
+        self.assertEqual(s.stacks[1], [3, 5], 'should have the value from the last stack')
+        self.assertEqual(s.stacks[2], [], 'should be left an empty stack')
+
+    def test_problem_3_4(self):
+        actual = problem_3_4([1,2,3,4,5,6], [], [])
+        expected = ([], [], [1,2,3,4,5,6])
+        self.assertEqual(actual, expected,
+            'should have moved the disks to the last rod')
+
+    def test_problem_3_5(self):
+        MyQueue = problem_3_5()
+        q = MyQueue()
+        q.enqueue(1)
+        q.enqueue(2)
+
+        self.assertEqual(len(q), 2, 'two elements in the queue')
+        self.assertEqual(q.dequeue(), 1, 'should return the first value')
+        self.assertEqual(q.dequeue(), 2, 'should return the second value')
+        self.assertIsNone(q.dequeue(), 'queue is empty')
+
     # Chapter 5: Bit Manipulation.
 
     def test_problem_5_1(self):
@@ -290,13 +407,3 @@ class CrackingTheCodeInterview(unittest.TestCase):
         self.assertEqual(problem_10_7_bis(13), 3*3*5*5*5*7, 'should have worked')
         self.assertEqual(problem_10_7_bis(14), 3*3*3*3*3*5*7, 'should have worked')
         self.assertEqual(problem_10_7_bis(15), 3*3*5*5*7*7, 'should have worked')
-
-    def test_problem_3_5_my_queue(self):
-        q = MyQueue()
-        q.enqueue(1)
-        q.enqueue(2)
-
-        self.assertEqual(len(q), 2, 'two elements in the queue')
-        self.assertEqual(q.dequeue(), 1, 'should return the first value')
-        self.assertEqual(q.dequeue(), 2, 'should return the second value')
-        self.assertIsNone(q.dequeue(), 'queue is empty')

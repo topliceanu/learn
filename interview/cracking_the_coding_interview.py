@@ -370,6 +370,218 @@ def problem_2_5(node):
 
     return n1
 
+# Chapter 3: Stacks and Queues
+
+def problem_3_1():
+    """ Describe how you could use a single array to implement three stacks. """
+
+    class ThreeStacks(object):
+        """ Implement three stacks using one array.
+
+        Array is split like so:
+        arr[0] - index of the last element in the first stack
+        arr[1] - index of the last element in the second stack
+        arr[2] - index of the last element in the third stack
+        arr[i:i+2] - an entry in a stack, such that:
+            arr[i] - stores the id of the stack whose element this belongs to.
+            arr[i+1] - stores the index of the previous value in the stack.
+            arr[i+2] - stores the actual value of the element in the stack.
+        """
+        def __init__(self, num_stacks=3):
+            self.num_stacks = num_stacks
+            self.arr = [None] * self.num_stacks
+
+        def push(self, stack_id, value):
+            if not (0 <= stack_id <= self.num_stacks):
+                raise Exception("Stack id must be between 0 and number of stacks")
+            last_index = self.arr[stack_id]
+            self.arr.append(stack_id)
+            self.arr.append(last_index)
+            self.arr.append(value)
+            self.arr[stack_id] = len(self.arr) - 3
+
+        def pop(self, stack_id):
+            last_index = self.arr[stack_id]
+            if last_index == None:
+                return None
+
+            previous_index = self.arr[last_index + 1]
+            value = self.arr[last_index + 2]
+
+            self.arr[stack_id] = previous_index
+            for i in range(last_index, last_index + 3):
+                self.arr[i] = '__'
+
+            return value
+
+    return ThreeStacks
+
+def problem_3_2():
+    """ How would you design a stack which, in addition to push and pop, also
+    has a function min which returns the minimum element? Push, pop and min
+    should all operate in O(1) time.
+    """
+    class MinStack(object):
+        def __init__(self):
+            self.values = []
+            self.mins = []
+
+        def push(self, value):
+            self.values.append(value)
+            if len(self.mins) == 0 or value < self.mins[-1]:
+                self.mins.append(value)
+
+        def pop(self):
+            value = self.values.pop()
+            while len(self.mins) > 0 and value >= self.mins[-1]:
+                self.mins.pop()
+            return value
+
+        def min(self):
+            if len(self.mins) == 0:
+                return None
+            return self.mins[-1]
+
+    return MinStack
+
+def problem_3_3():
+    """ Imagine a (literal) stack of plates. If the stack gets too high, it
+    might topple. Therefore, in real life, we would likely start a new stack
+    when the previous stack exceeds some threshold.
+
+    Implement a data structure SetOfStacks that mimics this. SetOfStacks
+    should be composed of several stacks, and should create a new stack once
+    the previous one exceeds capacity. SetOfStacks.push() and SetOfStacks.pop()
+    should behave identically to a single stack (that is, pop() should return
+    the same values as it would if there were just a single stack). Implement a
+    function popAt(int index) which performs a pop operation on a specific
+    sub-stack.
+    """
+    class SetOfStacks(object):
+        """
+        Attrs:
+            limit: int, number of values a single stack can support
+            stacks: list, of lists, each acting as a stack.
+        """
+        def __init__(self, limit):
+            self.limit = limit
+            self.stacks = []
+
+        def push(self, value):
+            """ Pushes a value in the stack of stacks.
+
+            If no stack is present, it will first insert a new empty stack,
+            then call itself again to insert the new values.
+
+            Args:
+                value: mixed, the value to push into the data structure.
+            """
+            if len(self.stacks) == 0:
+                self.stacks.append([])
+                return self.push(value)
+
+            top_stack = self.stacks[-1]
+            if len(top_stack) == self.limit:
+                self.stacks.append([])
+                return self.push(value)
+
+            top_stack.append(value)
+
+        def pop(self):
+            """ Pops the last value of the stack of stacks.
+            If the top stack is empty, pop it from the stack then try again.
+            if stack of stacks is empty return None.
+            """
+            if len(self.stacks) == 0:
+                return None
+
+            top_stack = self.stacks[-1]
+            if len(top_stack) == 0:
+                self.stacks.pop()
+                return self.pop()
+
+            return top_stack.pop()
+
+        def popAt(self, index):
+            """ Pop a value from the stack with a given index.
+
+            Args:
+                index: int, the index of the user whose values
+            """
+            if index < 0 or index >= len(self.stacks):
+                raise Exception('Cannot accesss stack index')
+
+            stack = self.stacks[index]
+            value = stack.pop()
+
+            # Reballance the stacks.
+            for i in range(index, len(self.stacks)-1):
+                head = self.stacks[i+1][0]
+                self.stacks[i+1] = self.stacks[i+1][1:]
+                self.stacks[i].append(head)
+
+            return value
+
+    return SetOfStacks
+
+def problem_3_4(rod1, rod2, rod3):
+    """In the classic problem of the Towers of Hanoi, you have 3 rods and
+    N disks of different sizes which can slide onto any tower. The puzzle
+    starts with disks sorted in ascending order of size from top to bottom
+    (e.g., each disk sits on top of an even larger one). You have the
+    following constraints:
+        (A) Only one disk can be moved at a time.
+        (B) A disk is slid off the top of one rod onto the next rod.
+        (C) A disk can only be placed on top of a larger disk.
+    Write a program to move the disks from the first rod to the last using stacks.
+    """
+    def move_tower(height, fromPole, toPole, withPole):
+        if height >= 1:
+            move_tower(height-1,fromPole,withPole,toPole)
+            toPole.append(fromPole.pop())
+            move_tower(height-1,withPole,toPole,fromPole)
+
+    move_tower(len(rod1), rod1, rod3, rod2)
+    return (rod1, rod2, rod3)
+
+def problem_3_5():
+    """ Implement a MyQueue class which implements a queue using two stacks. """
+
+    class MyQueue(object):
+        """
+        Attrs:
+            for_enqueue: object, instance of algo.src.Stack
+            for_dequeue: object, instance of algo.src.Stack
+        """
+        def __init__(self):
+            self.for_enqueue = Stack()
+            self.for_dequeue = Stack()
+
+        def __len__(self):
+            return len(self.for_enqueue) + len(self.for_dequeue)
+
+        def enqueue(self, value):
+            self.for_enqueue.push(value)
+
+        def dequeue(self):
+            if len(self.for_dequeue) == 0:
+                self._carry_over(self.for_enqueue, self.for_dequeue)
+            return self.for_dequeue.pop()
+
+        def _carry_over(self, src, dest):
+            while len(src) != 0:
+                dest.push(src.pop())
+
+    return MyQueue
+
+def problem_3_6(stack):
+    """ Write a program to sort a stack in ascending order. You should not make
+    any assumptions about how the stack is implemented. The following are the
+    only functions that should be used to write this program:
+        push | pop | peek | isEmpty.
+    """
+
+
 # BIT MANIPULATION
 
 def problem_5_1(n, m, i, j):
@@ -485,87 +697,3 @@ def problem_10_7_bis(k):
         q7.append(number*7)
 
     return number
-
-# Problem 3.3
-class StackOfStacks(object):
-    """ Imagine a (literal) stack of plates. If the stack gets too high, it might topple.
-    Therefore, in real life, we would likely start a new stack when the previous stack exceeds
-    some threshold. Implement a data structure SetOfStacks that mimics this. SetOf-
-    Stacks should be composed of several stacks, and should create a new stack once
-    the previous one exceeds capacity. SetOfStacks.push() and SetOfStacks.pop() should
-    behave identically to a single stack (that is, pop() should return the same values as it
-    would if there were just a single stack).
-    Implement a function popAt(int index) which performs a pop operation on a specific
-    sub-stack.
-
-    Attrs:
-        limit: int, number of values a single stack can support
-        stacks: object, instance of algo.src.Stack
-
-    TODO this needs further testing.
-    """
-    def __init__(self, limit):
-        self.limit = limit
-        self.stacks = Stack()
-
-    def pop(self):
-        """ Pops a value from the stack of stacks. """
-        if len(self.stacks) == 0:
-            return None
-
-        if len(self.stacks) == 1:
-            return self.stacks.peek().pop()
-
-        top_stack = self.stacks.peek()
-        value = top_stack.pop()
-        if value == None:
-            self.stacks.pop()
-            return self.stacks.peek().pop()
-        else:
-            return value
-
-    def push(self, value):
-        """ Pushes a value in the stack of stacks. """
-        if len(self.stacks) == 0:
-            new_stack = Stack()
-            new_stack.push(value)
-            self.stacks.push(new_stack)
-            return
-
-        top_stack = self.stacks.peek()
-        if len(top_stack) == self.limit:
-            new_stack = Stack()
-            new_stack.push(value)
-            self.stacks.push(new_stack)
-        else:
-            top_stack.push(value)
-
-# Problem 3.5
-
-class MyQueue(object):
-    """ Implement a MyQueue class which implements a queue using two stacks.
-
-    Attrs:
-        for_enqueue: object, instance of algo.src.Stack
-        for_dequeue: object, instance of algo.src.Stack
-    """
-
-    def __init__(self):
-        self.for_enqueue = Stack()
-        self.for_dequeue = Stack()
-
-    def __len__(self):
-        return len(self.for_enqueue) + len(self.for_dequeue)
-
-    def enqueue(self, value):
-        self.for_enqueue.push(value)
-
-    def dequeue(self):
-        if len(self.for_dequeue) != 0:
-            return self.for_dequeue.pop()
-        self._carry_over(self.for_enqueue, self.for_dequeue)
-        return self.for_dequeue.pop()
-
-    def _carry_over(self, src, dest):
-        while len(src) != 0:
-            dest.push(src.pop())
