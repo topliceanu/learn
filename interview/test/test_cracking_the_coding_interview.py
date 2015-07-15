@@ -90,6 +90,141 @@ class CrackingTheCodeInterview(unittest.TestCase):
         actual = problem_1_5(s)
         self.assertEqual(actual, expected, 'correct url encode spaces')
 
+    def test_problem_1_6(self):
+        arr = [
+            [ 1,  2,  3,  4,  5],
+            [ 6,  7,  8,  9, 10],
+            [11, 12, 13, 14, 15],
+            [16, 17, 18, 19, 20],
+            [21, 22, 23, 24, 25],
+        ]
+        actual = problem_1_6(arr)
+        expected = [
+            [21, 16, 11,  6, 1],
+            [22, 17, 12,  7, 2],
+            [23, 18, 13,  8, 3],
+            [24, 19, 14,  9, 4],
+            [25, 20, 15, 10, 5]
+        ]
+        self.assertItemsEqual(actual, expected, 'should rotate array')
+
+    def test_problem_1_7(self):
+        arr = [
+            [ 0,  2,  3,  4,  5],
+            [ 6,  7,  8,  0, 10],
+            [ 0, 12,  0, 14, 15],
+            [16, 17, 18, 19, 20],
+            [21, 22, 23, 24, 25],
+        ]
+        expected = [
+            [ 0,  0,  0,  0,  0],
+            [ 0,  0,  0,  0,  0],
+            [ 0,  0,  0,  0,  0],
+            [ 0, 17,  0,  0, 20],
+            [ 0, 22,  0,  0, 25],
+        ]
+        actual = problem_1_7(arr)
+        self.assertItemsEqual(actual, expected, 'should turn correct items to zero')
+
+    def test_problem_1_8(self):
+        s1 = 'waterbottle'
+        s2 = 'erbottlewat'
+        self.assertTrue(problem_1_8(s1, s2), 'should detect rotated string')
+
+        s1 = 'waterbottle'
+        s2 = 'wabottleter'
+        self.assertFalse(problem_1_8(s1, s2), 'should not detect any rotated string')
+
+        s1 = 'abcd'
+        s2 = 'bcdab'
+        self.assertFalse(problem_1_8(s1, s2), 'should not detect any rotated string')
+
+    # Chapter 2: Linked Lists.
+
+    def test_problem_2_1(self):
+        initial = SingleLinkedListNode.from_list([1,2,2,2,3,4,5])
+        actual = problem_2_1(initial)
+        expected = [1,2,3,4,5]
+        self.assertEqual(actual.to_list(), expected, 'should remove duplicate 2s')
+
+    def test_problem_2_2(self):
+        l = SingleLinkedListNode.from_list([1,2,3,4,5])
+        expected = 4
+        actual = problem_2_2(l, 2).key
+        self.assertEqual(actual, expected, 'should detect the correct value')
+
+        l = SingleLinkedListNode.from_list([1])
+        expected = 4
+        actual = problem_2_2(l, 2)
+        self.assertIsNone(actual, 'should detect index error')
+
+        self.assertRaises(Exception, problem_2_2, None, -2,
+            'should detect bad input params and raise exception')
+
+        l = SingleLinkedListNode.from_list([1,2,3,4,5])
+        expected = 5
+        actual = problem_2_2(l, 1).key
+        self.assertEqual(actual, expected, 'should detect the correct value')
+
+        l = SingleLinkedListNode.from_list([1,2,3,4,5])
+        expected = 1
+        actual = problem_2_2(l, 5).key
+        self.assertEqual(actual, expected, 'should detect the correct value')
+
+    def test_problem_2_3(self):
+        l = SingleLinkedListNode.from_list([1,2,3,4,5])
+        node = l.next.next # Node with key 3.
+        problem_2_3(node)
+
+        actual = l.to_list()
+        expected = [1,2,4,5]
+        self.assertEqual(actual, expected, 'should have removed the key 3')
+
+        l = SingleLinkedListNode.from_list([1,2,3,4,5])
+        node = l.next.next.next.next # Node with key 5.
+        self.assertRaises(Exception, problem_2_3, node,
+            'should detect the last node in the list')
+
+    def test_problem_2_4(self):
+        l1 = SingleLinkedListNode.from_list([2,3,4])
+        l2 = SingleLinkedListNode.from_list([1,2,3])
+        expected = SingleLinkedListNode.from_list([3,5,7])
+        actual = problem_2_4(l1, l2)
+        self.assertEqual(actual.to_list(), expected.to_list(),
+            'should compute sum of two regular numbers')
+
+        l1 = SingleLinkedListNode.from_list([])
+        l2 = SingleLinkedListNode.from_list([1,2,3])
+        expected = SingleLinkedListNode.from_list([1,2,3])
+        actual = problem_2_4(l1, l2)
+        self.assertEqual(actual.to_list(), expected.to_list(),
+            'should compute sum when the other element is empty')
+
+        l1 = SingleLinkedListNode.from_list([1,2,3])
+        l2 = SingleLinkedListNode.from_list([2])
+        expected = SingleLinkedListNode.from_list([3,2,3])
+        actual = problem_2_4(l1, l2)
+        self.assertEqual(actual.to_list(), expected.to_list(),
+            'should compute sum when one number has less digits')
+
+        l1 = SingleLinkedListNode.from_list([9,9,9])
+        l2 = SingleLinkedListNode.from_list([9,9,9])
+        expected = SingleLinkedListNode.from_list([8,9,9,1])
+        actual = problem_2_4(l1, l2)
+        self.assertEqual(actual.to_list(), expected.to_list(),
+            'should compute sum when digit overflow occurs')
+
+    def test_problem_2_5(self):
+        l = SingleLinkedListNode.from_list([1,2,3,4,5,6,7])
+        start = l.next.next # Node with key 3.
+        last = start.next.next.next.next # Node with key 7.
+        last.next = start
+
+        actual = problem_2_5(l)
+        self.assertEqual(actual, start, 'should detect the start node')
+
+    # Chapter 5: Bit Manipulation.
+
     def test_problem_5_1(self):
         n = int('10000000000', 2)
         m = int('10101', 2)
