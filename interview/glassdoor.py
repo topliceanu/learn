@@ -104,3 +104,142 @@ def binary_tree_level_order_traversal(tree):
     output = {}
     traverse(tree, 1, output)
     return output
+
+# Problem source: https://www.facebook.com/Engineering/videos/vl.922576297773331/10153034510412200/?type=1
+def get_nearby_words(data):
+    """ When typing on a touch screen, occasionally the wrong key is registered.
+    Write a function, which, give a string, returns all nearby words.
+
+    A nearby word is composed by taking the input word and replacing one letter
+    with one of it's nearby letters.
+
+    MOCK!
+
+    Args:
+        data: str, invalid input string.
+        words: list, of str, available valid words.
+
+    Returns:
+        list, of str, top valid words available closest to the input string.
+    """
+    def get_nearby_chars(char):
+        pass
+
+    def is_word(data):
+        pass
+
+    def permutations(data): # gi | i
+        if len(data) == 0:
+            return ['']
+
+        head = data[0] # g | i
+        tail = data[1:] # [i] | []
+        perms = permutations(tail) # [u,i,o] | ['']
+        nearby_chars = get_nearby_chars(head) # [h,g,j] | [u,i,o]
+
+        out = []
+        for nearby_char in nearby_chars: # [h,g,j]
+            for perm in perms: # [u, i, o]
+                out.append(nearby_char+perm)
+        return out # [hu, hi, ho, gu, gi, go, ju, ji, jo]
+
+
+    perms = permutations(data)
+    out = []
+    for p in perms:
+        if is_word(p):
+            out.append(p)
+    return out
+
+def match(text, pattern):
+    """ Given a string and a pattern, where:
+    '.' - matches any single character.
+    '*' - matches zero or more of the preceding element.
+    Find the first substring matching this pattern.
+
+    Tests:
+    >>> match('alex', 'le')
+    le
+    >>> match('alexandra', 'al.*a') # an
+    alexa
+    >>> match('alexandru', 'al.*a.dru*')
+    alexandru
+    >>> match('alex', '.')
+    'a'
+    >>> match('alex', '.*')
+    'alex'
+    >>> match('aleex', 'e*')
+    'ee'
+    >>> match('alex', 'alex*')
+    'alex'
+    >>> match('alex', '*alex')
+    Error
+    >>> match('alex', 'alex.')
+    ''
+    >>> match('alex', '**')
+    Error
+    """
+
+    END = '$'
+
+    class Automaton(object):
+        """ Builds a new automaton for matching strings. """
+        def __init__(self, pattern):
+            self.start = {}
+
+            state = self.start
+            symbols = self.extract_symbols(pattern)
+            for (index, symbol) in enumerate(symbols):
+                if len(symbol) == 1:
+                    state[symbol] = {}
+                    state = state[symbol]
+                else:
+                    [x, y, z] = symbol
+                    state[x] = state
+                    if z != None:
+                        state[z] = {}
+                        state = state[z]
+            state[END] = None
+
+
+        def extract_symbols(self, pattern):
+            """ Returns: list, of string, format ([A-z.]|([A-z.]\*[A-z]) """
+            out = []
+            i = 0
+            while i < len(pattern):
+                c = pattern[i]
+                n = pattern[i+1] if i+1 < len(pattern) else None
+                nn = pattern[i+2] if i+2 < len(pattern) else None
+                if c == '*' and i == 0:
+                    raise Exception('Pattern does not support * in first position')
+                if c == '*' and n == '*':
+                    raise Exception('Pattern does not support successive *')
+                if n == '*':
+                    out.append([c, n, nn])
+                    i += 3
+                else:
+                    out.append(c)
+                    i += 1
+            return out
+
+        def check(self, text, index):
+            """ Checks if the string matches the automaton. """
+            text += END
+            state = self.start
+            while index < len(text):
+                char = text[index]
+                index += 1
+                if char in state:
+                    state = state[char]
+                elif '.' in state:
+                    state = state['.']
+                else:
+                    return False
+            return True
+
+    a = Automaton(pattern)
+    for i in range(len(text)):
+        is_match = a.check(text, i)
+        if is_match == True:
+            return True
+    return False
