@@ -15,6 +15,9 @@ class Stack(object):
     def __len__(self):
         return self.count
 
+    def is_empty(self):
+        return self.count == 0
+
     def pop(self):
         """ Returns the value at the top of the stack. """
         if self.top == None:
