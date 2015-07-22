@@ -56,3 +56,9 @@ class TestGlassdoor(unittest.TestCase):
         expected = {1: {'a'}, 2: {'b', 'c'}, 3: {'d', 'e', 'f'}}
         actual = binary_tree_level_order_traversal(a)
         self.assertEqual(actual, expected, 'should traverse the tree correctly')
+
+    def test_match(self):
+        text = 'alexandru'
+        pattern = 'al.*a.dru*'
+        matched = match(text, pattern)
+        self.assertTrue(matched, 'should discover pattern')
