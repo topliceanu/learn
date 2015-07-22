@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from collections import deque
 import sys
 
 sys.path.insert(0, '../algo')
@@ -610,7 +611,111 @@ def problem_3_6(stack):
 
     return stack_sort(stack)
 
-# BIT MANIPULATION
+# Chapter 4: Trees and Graphs
+
+class TreeNode(object):
+    """ A node in a tree. """
+    def __init__(self, key):
+        self.key = key
+        self.children = []
+
+    def is_leaf(self):
+        return len(self.children) == 0
+
+def problem_4_1(root):
+    """ Implement a function to check if a tree is balanced. For the purposes
+    of this question, a balanced tree is defined to be a tree such that no two
+    leaf nodes differ in distance from the root by more than one.
+
+    Solution: modify Pre-Order Traversal to collect the depth of each leaf.
+    """
+    max_leaf_depth = None
+    node_stack = [(root, 0)]
+    leaf_depths = set([])
+
+    while len(node_stack) != 0:
+        (node, depth) = node_stack.pop()
+        if node.is_leaf():
+            leaf_depths.add(depth)
+        else:
+            for child in node.children:
+                node_stack.append((child, depth + 1))
+
+    return max(leaf_depths) - min(leaf_depths) <= 1
+
+class GraphVertex(object):
+    def __init__(self, key):
+        self.key = key
+        self.adjacent = []
+
+def problem_4_2(start, end):
+    """ Given a directed graph, design an algorithm to find out whether there
+    is a route between two nodes.
+    Solution: Depth-First Search.
+    """
+    def bfs(start):
+        vertex_stack = [start]
+        explored_vertices = set([])
+        while len(vertex_stack) != 0:
+            vertex = vertex_stack.pop()
+            explored_vertices.add(vertex.key)
+            for neighbour_vertex in vertex.adjacent:
+                if neighbour_vertex.key not in explored_vertices:
+                    vertex_stack.append(neighbour_vertex)
+        return explored_vertices
+
+    explored_nodes = bfs(start)
+    return end.key in explored_nodes
+
+def problem_4_3(sorted_arr):
+    """ Given a sorted (increasing order) array, write an algorithm to create
+    a binary tree with minimal height.
+    Solution: minimal height implies perfectly ballanced.
+    """
+    def build_node(arr, left, right):
+        if left > right:
+            return None
+        middle = int(float(left + right) / 2)
+        node = TreeNode(arr[middle])
+        left = build_node(arr, left, middle - 1)
+        right = build_node(arr, middle + 1, right)
+        node.children = [left, right]
+        return node
+
+    return build_node(sorted_arr, 0, len(sorted_arr) - 1)
+
+def problem_4_4(tree):
+    """ Given a binary search tree, design an algorithm which creates a linked
+    list of all the nodes at each depth (i.e., if you have a tree with depth D,
+    you’ll have D linked lists).
+
+    Solution: use pre-order traversal to pass through each node and it's depth.
+    """
+    linked_lists_start = []
+    linked_lists_end = []
+
+    node_queue = deque([(tree, 0)])
+    while len(node_queue) != 0:
+        (node, depth) = node_queue.popleft()
+        linked_list_node = SingleLinkedListNode(node)
+        if depth == len(linked_lists_start):
+            linked_lists_start.append(linked_list_node)
+            linked_lists_end.append(linked_list_node)
+        else:
+            linked_lists_end[depth].next = linked_list_node
+            linked_lists_end[depth] = linked_list_node
+        for child in node.children:
+            node_queue.append((child, depth + 1))
+
+    return linked_lists_start
+
+def problem_4_5(tree):
+    """ Write an algorithm to find the ‘next’ node (i.e., in-order successor)
+    of a given node in a binary search tree where each node has a link to its
+    parent.
+    """
+
+# Chapter 5: Bit Manipulation
 
 def problem_5_1(n, m, i, j):
     """ You are given two 32-bit numbers, N and M, and two bit positions, i and j. Write a

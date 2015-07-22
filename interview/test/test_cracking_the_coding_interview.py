@@ -344,12 +344,86 @@ class CrackingTheCodeInterview(unittest.TestCase):
         l = Stack()
         for i in [7, 2, 1, 8, 3]:
             l.push(i)
-        print '>>>>>>', l.top
 
         problem_3_6(l)
-        print '>>>>>>', l.top
         for i in [8, 7, 3, 2, 1]:
             self.assertEqual(i, l.pop(), 'should have sorted the queue')
+
+    # Chapter 4: Trees and Graphs
+
+    def test_problem_4_1(self):
+        # Inballanced tree.
+        r = TreeNode('r')
+        n1 = TreeNode('1')
+        n2 = TreeNode('2')
+        n3 = TreeNode('3')
+        n4 = TreeNode('4')
+        n5 = TreeNode('5')
+        n6 = TreeNode('6')
+        r.children = [n1, n2, n3]
+        n3.children = [n4, n5]
+        n4.children = [n6]
+        self.assertFalse(problem_4_1(r), 'should detect that the tree is inballanced')
+
+        # Ballanced tree.
+        r = TreeNode('r')
+        n1 = TreeNode('1')
+        n2 = TreeNode('2')
+        n3 = TreeNode('3')
+        n4 = TreeNode('4')
+        n5 = TreeNode('5')
+        n6 = TreeNode('6')
+        r.children = [n1, n2, n3]
+        n1.children = [n4, n5]
+        n2.children = [n6]
+        self.assertTrue(problem_4_1(r), 'should detect that the tree is ballanced')
+
+    def test_problem_4_2(self):
+        v1 = GraphVertex('1')
+        v2 = GraphVertex('2')
+        v3 = GraphVertex('3')
+        v4 = GraphVertex('4')
+        v5 = GraphVertex('5')
+        v1.adjacent = [v2, v3]
+        v2.adjacent = [v4]
+        v3.adjacent = [v4]
+        v5.adjacent = [v4]
+        self.assertTrue(problem_4_2(v1, v4), 'there is a direct route from v1 to v4')
+        self.assertTrue(problem_4_2(v5, v4), 'there is a direct route from v5 to v4')
+        self.assertFalse(problem_4_2(v1, v5), 'there is no direct route from v1 to v5')
+
+    def test_problem_4_3(self):
+        arr = [1,2,3,4,5,6]
+        actual = problem_4_3(arr)
+        self.assertEqual(actual.key, 3)
+        self.assertEqual(actual.children[0].key, 1)
+        self.assertEqual(actual.children[0].children[1].key, 2)
+        self.assertEqual(actual.children[1].key, 5)
+        self.assertEqual(actual.children[1].children[0].key, 4)
+        self.assertEqual(actual.children[1].children[1].key, 6)
+
+    def test_problem_4_4(self):
+        r = TreeNode('r')
+        n1 = TreeNode('1')
+        n2 = TreeNode('2')
+        n3 = TreeNode('3')
+        n4 = TreeNode('4')
+        n5 = TreeNode('5')
+        n6 = TreeNode('6')
+        r.children = [n1, n2]
+        n1.children = [n3, n4]
+        n2.children = [n5, n6]
+
+        lists = problem_4_4(r)
+        self.assertEqual(len(lists), 3, 'three lists are produces')
+
+        self.assertEqual(lists[0].key, r, 'the first list contains the root')
+        self.assertEqual(lists[1].key, n1, 'first level of nodes')
+        self.assertEqual(lists[1].next.key, n2, 'first level of nodes')
+        self.assertEqual(lists[2].key, n3, 'second level of nodes')
+        self.assertEqual(lists[2].next.key, n4, 'second level of nodes')
+        self.assertEqual(lists[2].next.next.key, n5, 'second level of nodes')
+        self.assertEqual(lists[2].next.next.next.key, n6, 'second level of nodes')
 
     # Chapter 5: Bit Manipulation.
 
