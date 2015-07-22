@@ -784,42 +784,288 @@ class BST(object):
         return cls.from_sorted(joined_sorted)
 
 
-class BinarySearchTree(object):
+class BinarySearchTreeNode(object):
+    """ A node in a binary search tree.
 
-    def __init__(self):
-        self.root = None
+    Implements all binary search tree algorithms recursively.
 
-    def insert(self, item):
-        """ Insert a new item into the tree.
+    Attrs:
+        key: any, used to sort the tree.
+        value: any, the value to store under the key.
+        size: int, the number of nodes in the subtree rooted at current node.
+        parent: object, reference to the parent node or None
+        left: object, reference to the left child node or None
+        right: object, reference to the right child node or None
+    """
+    def __init__(self, key, value=None):
+        self.key = key
+        self.value = value
+        self.size = 1
+        self.parent = None
+        self.left = None
+        self.right = None
 
-        Args:
-            item: dict, format: {key, ...}
-        """
+    def insert(self, key, value=None):
+        """ Insert the new value in the appropriate direction. """
+        if self.key > key:
+            direction = 'right'
+        else:
+            direction = 'left'
+        child = getattr(self, direction)
+        if child == None:
+            node = BinarySearchTreeNode(key, value)
+            node.parent = self
+            setattr(self, direction, node)
 
-    def delete(self, key):
-        pass
+            node = node.parent
+            while node != None:
+                node.size += 1
+                node = node.parent
+        else:
+            child.insert(key, value)
 
     def lookup(self, key):
-        pass
+        """ Find a node with the given key in the subtree rooted by the current
+        node.
+        """
+        if self.key == key:
+            return self
+
+        if self.key > key:
+            direction = 'right'
+        else:
+            direction = 'left'
+        child = getattr(self, direction)
+
+        if child == None:
+            return None
+        else:
+            child.lookup(key)
 
     def get_min(self):
-        pass
+        """ Retrieves the node with the smallest key in the tree rooted at this
+        node.
+        """
+        if self.left == None:
+            return self
+        return self.left.get_min()
 
     def get_max(self):
-        pass
+        """ Retrieves the node with the largest key in the tree rooted at this
+        node.
+        """
+        if self.right == None:
+            return self
+        return self.right.get_max()
 
-    def predecessor(self, key):
-        pass
+    def predecessor(self):
+        """ Compute the node with the key immediately before the current
+        node's key in the list of sorted keys.
+        Two cases:
+            1. node has a left child, return the maximum of the tree rooted in
+                the left child.
+            2. node has no left child, in which case we need to go up the parent
+                list untill we find a parent on the left side to return it or
+                return None if the root is reached.
+        """
+        if self.left != None:
+            return self.left.get_max()
+        node = self
+        while node.parent != None:
+            if node.parent.right == node:
+                node = node.parent
+            else:
+                return node
+        return None
 
-    def successor(self, key):
-        pass
+    def successor(self):
+        """ Compute the node whose key is immediately larger than current
+        node's key in the list of sorted keys.
+        Three cases:
+            1. node has a right child, return the node with minimum key in the
+                subtree rooted in the right child.
+            2. node has no right child,
+        """
+        if self.right != None:
+            return self.right.get_min()
+        node = self
+        while node.parent != None:
+            if node.parent.left == node:
+                node = node.parent
+            else:
+                return node
+        return None
 
-    def rank(self, key):
-        pass
+    def rank(self):
+        """ Returns the index of the current node in the array obtained by
+        sorting all the nodes in the tree. OR. Returns the number of elements
+        with the keys smaller or equal to the current node's key.
+
+        Idea: Count the number of keys smaller than current key.
+        """
+        index = 0
+        if self.left != None:
+            index += self.left.size
+
+        node = self.parent
+        while node != None:
+            if node.parent.right == node and node.parent.left != None:
+                index += 1 + node.parent.left.rank()
+            node = node.parent
+
+        return index
 
     def select(self, index):
-        pass
+        """ Find the node whose position in the sorted array of keys of the
+        subindexed tree is index.
 
-    def in_order_traversal(self, index):
-        pass
+        If node has less ancestors in the left side than the required index,
+        then recurse on the right side, otherwise, recurse on the left side.
+        """
+        if self.left == None:
+            left = 0
+        else:
+            left = self.size
 
+        if index == left + 1:
+            return node
+        elif index < left + 1:
+            return self.left.select(index)
+        else:
+            return self.right.select(index - left - 1)
+
+    def delete(self):
+        """ Removes the current node at the same time maintaining the search
+        tree invariant.
+
+        Cases:
+        1. is node is leaf, then simply remove the node.
+        2. if the node has one child, swap the child in place of the node.
+        3. if the node has both children, compute the predecessor, swap it in
+        place of the node, then call delete on the predecessor.
+        """
+        direction = 'left' if self.parent.left == self else 'right'
+
+        if self.is_leaf(): # Case 1.
+            setattr(self.parent, direction, None)
+            return self
+
+        if self.left == None or self.right == None: # Case 2
+            child_direction = 'left' if self.left != None else 'right'
+            setattr(self.parent, direction, getattr(self, child_direction))
+            self.parent.size -= 1
+            return self
+
+        if self.left != None and self.right != None: # Case 3
+            predecessor = self.predecessor()
+            self.swap(predecessor)
+            self.delete()
+
+    def swap(self, other):
+        """ Interchange the current node with the other node by rewiring the
+        pointers for parent, left and right children accordingly.
+        """
+        other_parent_direction = 'left' if other.parent.left == other else 'right'
+        self_parent_direction = 'left' if self.parent.left == self else 'right'
+        tmp = self.parent
+        self.parent[self_parent_direction] = other
+        self.parent = other.parent
+        other.parent = tmp
+        other.parent[other_parent_direction] = self
+
+        for ref in ['left', 'right']:
+            tmp = getattr(self, ref)
+            setattr(self, ref, getattr(other, ref))
+            setattr(other, ref, getattr(self, ref))
+
+    def is_leaf(self):
+        """ Returns True if the node has no children. """
+        return self.left == None and self.right == None
+
+    def in_order_traversal(self):
+        """ Traverse the tree rooted in this node, in the following order:
+        left subtree, root, right subtree.
+        """
+        out = []
+        if self.left != None:
+            out.extend(self.left.in_order_traversal())
+        out.append(self)
+        if self.right != None:
+            out.extend(self.right.in_order_traversal())
+        return out
+
+    def pre_order_traversal(self):
+        """ Traverse the tree rooted in this node, in the following order:
+        root, left subtree, right subtree.
+        """
+        out = [self]
+        if self.left != None:
+            out.extend(self.left.in_order_traversal())
+        if self.right != None:
+            out.extend(self.right.in_order_traversal())
+        return out
+
+    def post_order_traversal(self):
+        """ Traverse the tree rooted in this node, in the following order:
+        left subtree, right subtree, root.
+        """
+        out = []
+        if self.left != None:
+            out.extend(self.left.in_order_traversal())
+        if self.right != None:
+            out.extend(self.right.in_order_traversal())
+        out.append(self)
+        return out
+
+    def is_subtree(self, tree):
+        """ Check if the given tree is a subtree of the current tree. """
+        # TODO
+
+    def rotate(self, direction):
+        """ Rotate the current node with eithe his left or right child given by
+        the direction parameter.
+        """
+        # TODO
+
+    def is_root(self):
+        """ Returns True if the current node is the root of the tree. """
+        return self.parent == None
+
+    def depth(self):
+        """ Compute the number nodes exist between current node and root. """
+        if self.is_root():
+            return 0
+        return 1 + self.parent.depth()
+
+    def height(self):
+        """ Compute the number of node between current node and the furthest leaf.
+        """
+        if self.is_leaf():
+            return 1
+        heights = []
+        if self.left != None:
+            heights.append(self.left.height())
+        if self.right != None:
+            heights.append(self.right.height())
+        return 1 + max(depths)
+
+    def diameter(self):
+        """ Computes the diameter of the tree rooted in the current node.
+
+        The diameter is the longest path of any two nodes in the subtree.
+        It is computed as the maximum of:
+        - the diameter of the left subtree
+        - the diameter of the right subtree
+        - the height of the left subtree plus the height of the right subtree
+        """
+        height_left = self.left.height() if self.left != None else 0
+        height_right = self.right.height() if self.right != None else 0
+        diameter_left = self.left.diameter() if self.left != None else 0
+        diameter_right = self.right.diameter() if self.right != None else 0
+        return max([height_left + height_right, diameter_left, diameter_right])
+
+    def is_ballanced(self):
+        """ Checks if the tree rooted in the current node is ballanced. """
+
+    def merge(self, other):
+        """ Merges two binary search trees into one. """

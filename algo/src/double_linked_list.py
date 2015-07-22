@@ -15,7 +15,7 @@ class Item(object):
 
 class DoubleLinkedList(object):
     """ Implements a double linked list. This exposes the endpoints for read,
-    remove and append.
+    remove and append. Also known as Deque.
     """
     def __init__(self):
         self.head = None
