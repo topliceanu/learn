@@ -817,6 +817,7 @@ class BinarySearchTreeNode(object):
             node.parent = self
             setattr(self, direction, node)
 
+            # Recursively increment size of all parents of the newly inserted node.
             node = node.parent
             while node != None:
                 node.size += 1
@@ -843,16 +844,16 @@ class BinarySearchTreeNode(object):
             child.lookup(key)
 
     def get_min(self):
-        """ Retrieves the node with the smallest key in the tree rooted at this
-        node.
+        """ Retrieves the node with the smallest key in the subtree rooted at
+        the current node.
         """
         if self.left == None:
             return self
         return self.left.get_min()
 
     def get_max(self):
-        """ Retrieves the node with the largest key in the tree rooted at this
-        node.
+        """ Retrieves the node with the largest key in the subtree rooted at
+        the current node.
         """
         if self.right == None:
             return self
@@ -865,11 +866,13 @@ class BinarySearchTreeNode(object):
             1. node has a left child, return the maximum of the tree rooted in
                 the left child.
             2. node has no left child, in which case we need to go up the parent
-                list untill we find a parent on the left side to return it or
+                list until we find a parent on the left side to return it or
                 return None if the root is reached.
         """
         if self.left != None:
             return self.left.get_max()
+
+        # Recurse up the parent stack until a parent in the right direction is found.
         node = self
         while node.parent != None:
             if node.parent.right == node:
@@ -888,6 +891,8 @@ class BinarySearchTreeNode(object):
         """
         if self.right != None:
             return self.right.get_min()
+
+        # Recurse up the parent stack until a parent in the left direction is found.
         node = self
         while node.parent != None:
             if node.parent.left == node:
@@ -901,7 +906,8 @@ class BinarySearchTreeNode(object):
         sorting all the nodes in the tree. OR. Returns the number of elements
         with the keys smaller or equal to the current node's key.
 
-        Idea: Count the number of keys smaller than current key.
+        A node is larger than all nodes in it's left subtree and all his
+        ancestors from the right direction and the nodes in their left subtrees.
         """
         index = 0
         if self.left != None:
@@ -909,8 +915,10 @@ class BinarySearchTreeNode(object):
 
         node = self.parent
         while node != None:
-            if node.parent.right == node and node.parent.left != None:
-                index += 1 + node.parent.left.rank()
+            if node.parent.right == node:
+                index += 1
+                if node.parent.left != None:
+                    index += node.parent.left.rank()
             node = node.parent
 
         return index
@@ -948,12 +956,17 @@ class BinarySearchTreeNode(object):
 
         if self.is_leaf(): # Case 1.
             setattr(self.parent, direction, None)
+            setattr(self.parent, None)
             return self
 
         if self.left == None or self.right == None: # Case 2
             child_direction = 'left' if self.left != None else 'right'
-            setattr(self.parent, direction, getattr(self, child_direction))
+            child = getattr(self.child_direction)
+            setattr(self.parent, direction, child)
+            setattr(child, 'parent', self.parent)
             self.parent.size -= 1
+            self.parent = None
+            setattr(self, child_direction, None)
             return self
 
         if self.left != None and self.right != None: # Case 3
@@ -962,21 +975,30 @@ class BinarySearchTreeNode(object):
             self.delete()
 
     def swap(self, other):
-        """ Interchange the current node with the other node by rewiring the
-        pointers for parent, left and right children accordingly.
+        """ Interchange the current node with the other node by properly
+        rewiring the pointers for parent, left and right children.
         """
         other_parent_direction = 'left' if other.parent.left == other else 'right'
         self_parent_direction = 'left' if self.parent.left == self else 'right'
-        tmp = self.parent
+
+        # Replace parent pointers for the two nodes.
         self.parent[self_parent_direction] = other
-        self.parent = other.parent
-        other.parent = tmp
         other.parent[other_parent_direction] = self
 
-        for ref in ['left', 'right']:
-            tmp = getattr(self, ref)
-            setattr(self, ref, getattr(other, ref))
-            setattr(other, ref, getattr(self, ref))
+        # Replace the two nodes' pointers to parents.
+        tmp = other.parent
+        other.parent = self.parent
+        self.parent = tmp
+
+        # Replace pointers for the children of two nodes.
+        for direction in ['left', 'right']:
+            tmp = getattr(self, direction)
+            self_child = getattr(self, direction)
+            other_child = getattr(other, direction)
+            setattr(self, direction , other_child)
+            setattr(other, direction, self_child)
+            other_child.parent = self
+            self_child.parent = other
 
     def is_leaf(self):
         """ Returns True if the node has no children. """
@@ -1017,15 +1039,94 @@ class BinarySearchTreeNode(object):
         out.append(self)
         return out
 
-    def is_subtree(self, tree):
-        """ Check if the given tree is a subtree of the current tree. """
-        # TODO
+    def common_ancestor(self, other):
+        """ Detect the first common ancestor between the current node the
+        passed other node.
+
+        Start by checking if other is a descendent of self, if not, move up to
+        the parent of self and see if other is found on the other child, etc.
+        """
+        if self == other:
+            return self
+        if self.left.lookup(other.key) == other:
+            return self
+
+        node = self
+        while node != None:
+            if node == other:
+                return node
+            if node.right != None and node.right.lookup(other.key) == other:
+                return node
+            node = node.parent
+        return None
+
+    def is_subtree(self, other):
+        """ Check if the given other node is a subtree of the tree rooted in
+        the current node.
+        """
+        if other == None:
+            return False
+        if self.key == other.key:
+            return self.is_identical(other)
+        is_left_subtree = self.left.is_subtree(other) if self.left != None else True
+        is_right_subtree = self.right.is_subtree(other) if self.right != None else True
+        return is_left_subtree and is_right_subtree
+
+    def is_identical(self, other):
+        """ Checks if two nodes have the same subtree keys. """
+        if other == None:
+            return False
+        if self.key != other.key:
+            return False
+        if self.is_leaf() and other.is_leaf():
+            return self.key == other.key
+        if (self.is_leaf() and not other.is_leaf()) or (not self.is_leaf() and other.is_leaf()):
+            return False
+
+        return self.left.is_identical(other.left) and \
+               self.right.is_identical(other.right)
 
     def rotate(self, direction):
-        """ Rotate the current node with eithe his left or right child given by
-        the direction parameter.
+        """ Rotate the current node with either his left or right child given
+        by the direction parameter. Returns the new node.
+
+        Left Rotation Schema:
+                (p)                       (p)
+                 |                         |
+                (x)           =>          (y)
+               /   \                     /   \
+             ...   (y)                 (x)   ...
+                  /   \               /   \
+                (a)   ...           ...   (a)
+
+        Right Rotation Schema:
+                (p)                       (p)
+                 |                         |
+                (x)           =>          (y)
+               /   \                     /   \
+             (y)   ...                ...   (x)
+            /   \                           /   \
+          ...   (a)                       (a)   ...
         """
-        # TODO
+        parent_direction = 'left' if self.parent.left == self else 'right'
+        other_direction = 'left' if direction == 'right' else 'right'
+
+        x = self
+        y = getattr(self, other_direction)
+        a = getattr(y, direction)
+
+        # Handle parent pointers.
+        y.parent = x.parent
+        if y.parent != None:
+            setattr(y.parent, parent_direction, y)
+
+        # Handle exchange between x and y.
+        setattr(y, direction, x)
+        x.parent = y
+
+        # Handle rewire pointer for a node.
+        setattr(x, other_direction, a)
+        a.parent = x
 
     def is_root(self):
         """ Returns True if the current node is the root of the tree. """
@@ -1065,7 +1166,65 @@ class BinarySearchTreeNode(object):
         return max([height_left + height_right, diameter_left, diameter_right])
 
     def is_ballanced(self):
-        """ Checks if the tree rooted in the current node is ballanced. """
+        """ Checks if the tree rooted in the current node is ballanced.
+
+        Solution: a tree is ballanced if all the levels are fully completed
+        except of the last one, ie. the depths of all leaves are not more than
+        one unit of difference.
+        """
+        return self.max_depth() - self.min_depth() <= 1
+
+    def min_depth(self):
+        """ Find the leaf in the subtree rooted the current node with the
+        minimum depth.
+        """
+        if self.is_leaf():
+            return 1
+        min_left_depth = float('inf') if self.left == None else self.left.min_depth()
+        min_right_depth = float('inf') if self.right == None else self.right.min_depth()
+        return 1 + min([min_left_depth, min_right_depth])
+
+    def max_depth(self):
+        """ Find the leaf in the subtree rooted at the current node with the
+        maximum depth.
+        """
+        if self.is_leaf():
+            return 1
+        max_left_depth = float('-inf') if self.left == None else self.left.max_depth()
+        max_right_depth = float('-inf') if self.right == None else self.right.max_depth()
+        return 1 + min([min_left_depth, min_right_depth])
 
     def merge(self, other):
-        """ Merges two binary search trees into one. """
+        """ Merges the given binary tree into the current one. The result is a
+        new data structure. This does not modify the current tree.
+        """
+        self_data = self.in_order_traversal()
+        other_data = other.in_order_traversal()
+
+        def merge(arr1, arr2):
+            pass
+
+        composed_data = merge(self_daata, other_data)
+        return BinarySearchTreeNode.from_sorted_list(composed_data)
+
+    @classmethod
+    def from_sorted_list(cls, arr):
+        """ Given a previously sorted array, builds a ballanced binary search
+        tree.
+        """
+
+        def build(arr, left, right):
+            """ Builds a ballanced binary search tree given a slice of a
+            sorted list.
+            """
+            if left > right:
+                return None
+
+            middle = (right + left) / 2
+            root = cls(arr[middle])
+            root.size = len(arr[left:middle])
+            root.left = build(arr, left, middle-1)
+            root.right = build(arr, middle+1, right)
+            return root
+
+        return build(arr, 0, len(arr))

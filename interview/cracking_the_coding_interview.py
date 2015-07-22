@@ -617,6 +617,7 @@ class TreeNode(object):
     """ A node in a tree. """
     def __init__(self, key):
         self.key = key
+        self.parent = None
         self.children = []
 
     def is_leaf(self):
@@ -709,11 +710,121 @@ def problem_4_4(tree):
 
     return linked_lists_start
 
+class BinaryTreeNode(object):
+    def __init__(self, key):
+        self.key = key
+        self.parent = None
+        self.left = None
+        self.right = None
+
 def problem_4_5(tree):
     """ Write an algorithm to find the ‘next’ node (i.e., in-order successor)
     of a given node in a binary search tree where each node has a link to its
     parent.
+
+    Solution: There are two cases:
+    1. the node has a right subtree, in which case his immediate successor is
+    the smallest node in the right subtree.
+    2. if the node has ane empty right subtree, then go up the ancestors until
+    you reach a right one. If you reach the root, then the node has on successor
+    because it's the max node.
     """
+    def get_min(node):
+        if node.left == None:
+            return node
+        return get_min(node.left)
+
+    def successor(node):
+        if node.right != None:
+            return get_min(node.right)
+        while node != None:
+            if node.parent.left == node:
+                return node.parent
+            node = node.parent
+        return None
+
+    return successor(tree)
+
+def problem_4_6(node1, node2):
+    """ Design an algorithm and write code to find the first common ancestor of
+    two nodes in a binary tree. Avoid storing additional nodes in a data
+    structure. NOTE: This is not necessarily a binary search tree.
+    """
+    n1 = node1
+    while n1 != None:
+        n2 = node2
+        while n2 != None:
+            if n2 == n1:
+                return n1
+            n2 = n2.parent
+        n1 = n1.parent
+    return None
+
+def problem_4_7(T1, T2):
+    """ You have two very large binary trees: T1, with millions of nodes, and
+    T2, with hundreds of nodes. Create an algorithm to decide if T2 is a
+    subtree of T1.
+    """
+    def is_identical(t1, t2):
+        if t1 == None and t2 == None:
+            return True
+        if t1 == None or t2 == None:
+            return False
+        return t1.key == t2.key and \
+               is_identical(t1.left, t2.left) and \
+               is_identical(t1.right, t2.right)
+
+    def is_subtree(t1, t2):
+        """ Check if t2 is subtree of t1. """
+        if t1 == None and t2 == None:
+            return True
+        if t1 == None or t2 == None:
+            return False
+        if t1.key == t2.key:
+            if is_identical(t1, t2) == True:
+                return True
+        return is_subtree(t1.left, t2) or is_subtree(t1.right, t2)
+
+    return is_subtree(T1, T2)
+
+def problem_4_8(tree, value):
+    """ You are given a binary tree in which each node contains a value. Design
+    an algorithm to print all paths which sum up to that value. Note that it
+    can be any path in the tree, it does not have to start at the root.
+    """
+    def find_paths(node, s):
+        """ Retrive all paths that sum to s and start with node.
+        Once it finds a path it can stop!
+        Returns:
+            list, of lists, of keys
+        """
+        if node == None:
+            return []
+
+        paths = []
+        if node.key == s:
+            paths.append([])
+        paths.extend(find_paths(node.left, s - node.key))
+        paths.extend(find_paths(node.right, s - node.key))
+        for p in paths:
+            p.insert(0, node.key)
+        return paths
+
+    def traverse(node, s):
+        """ Find all paths in the tree rooted in node with sum up to s.
+        Returns:
+            list, of lists of keys which sum up to s.
+        """
+        if node == None:
+            return
+        sums = find_paths(node, s)
+        if node.left != None:
+            sums.extend(traverse(node.left, s))
+        if node.right != None:
+            sums.extend(traverse(node.right, s))
+        return sums
+
+    return traverse(tree, value)
 
 # Chapter 5: Bit Manipulation
 
@@ -738,7 +849,6 @@ def problem_5_2(n):
     print the binary representation. If the number can not be represented
     accurately in binary, print ERROR.
     """
-    # TODO
 
 def problem_10_6(points, precision=4):
     """ Given a two dimensional graph with points on it, find a line which

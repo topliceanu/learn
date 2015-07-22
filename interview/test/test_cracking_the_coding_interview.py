@@ -425,6 +425,77 @@ class CrackingTheCodeInterview(unittest.TestCase):
         self.assertEqual(lists[2].next.next.key, n5, 'second level of nodes')
         self.assertEqual(lists[2].next.next.next.key, n6, 'second level of nodes')
 
+    def test_problem_4_5(self):
+        """ The tree under test is the following:
+                (4)
+               /   \
+            (2)     (6)
+            / \     / \
+          (1) (3) (5) (7)
+        """
+        n1 = BinaryTreeNode('1')
+        n2 = BinaryTreeNode('2')
+        n3 = BinaryTreeNode('3')
+        n4 = BinaryTreeNode('4')
+        n5 = BinaryTreeNode('5')
+        n6 = BinaryTreeNode('6')
+        n7 = BinaryTreeNode('7')
+        n4.left = n2; n4.right = n6
+        n2.left = n1; n2.right = n3
+        n6.left = n5; n6.right = n7
+        n2.parent = n6.parent = n4
+        n1.parent = n3.parent = n2
+        n5.parent = n7.parent = n6
+
+        self.assertEqual(problem_4_5(n4), n5, 'successor to 4 is 5')
+        self.assertEqual(problem_4_5(n6), n7, 'successor to 6 is 7')
+        self.assertEqual(problem_4_5(n1), n2, 'successor to 1 is 2')
+
+    def test_problem_4_6(self):
+        """ The tree under test is the following:
+                (1)
+               / | \
+            (2) (3) (4)
+             |   | \
+            (5) (6) (7)
+        """
+        n1 = TreeNode('1')
+        n2 = TreeNode('2')
+        n3 = TreeNode('3')
+        n4 = TreeNode('4')
+        n5 = TreeNode('5')
+        n6 = TreeNode('6')
+        n7 = TreeNode('7')
+        n1.children = [n2, n3, n4]
+        n2.children = [n5]
+        n3.children = [n6, n7]
+        n2.parent = n3.parent = n4.parent = n1
+        n5.parent = n2
+        n6.parent = n7.parent = n3
+        self.assertEqual(problem_4_6(n5, n7), n1, '1 is root for 5 and 7')
+        self.assertEqual(problem_4_6(n5, n2), n2, '2 is root for 5 and 2')
+
+    def test_problem_4_7(self):
+        n1 = BinaryTreeNode(1)
+        n2 = BinaryTreeNode(2)
+        n3 = BinaryTreeNode(3)
+        n4 = BinaryTreeNode(4)
+        n5 = BinaryTreeNode(5)
+        n6 = BinaryTreeNode(6)
+        n7 = BinaryTreeNode(7)
+        n8 = BinaryTreeNode(8)
+        n1.left = n4
+        n1.right = n7
+        n4.left = n3
+        n4.rigth = n5
+        n7.left = n6
+        n7.right = n8
+        n3.left = n2
+        self.assertTrue(problem_4_7(n1, n7), '7 is the child of 1 so a subtree')
+
+    def test_problem_4_8(self):
+        # TODO make this work!
+
     # Chapter 5: Bit Manipulation.
 
     def test_problem_5_1(self):
