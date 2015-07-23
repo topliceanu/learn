@@ -194,7 +194,32 @@ def match_substring(needle, haystack):
 
 def longest_common_subsequence(str1, str2):
     """ Find the longest scattered substrings included in both inputs. """
-    pass # TODO
+    # Recurrence:
+    # A[i][j] = min penalty of differences between the two substrings s1[:i] and s2[:j]
+    # A[i][j] = min(A[i-1][j-1] + 1, A[i-1][j] + 1, A[i][j-1] + 1)
+    # A[i][0] = i, i = 0..len(str1)
+    # A[0][j] = j, j = 0..len(str2)
+    m = len(str1)
+    n = len(str2)
+
+    A = [[0]*n for _ in range(m)]
+    for i in range(n):
+        A[0][i] = i
+    for i in range(m):
+        A[i][0] = i
+
+    for i in range(1, n):
+        for j in range(1, m):
+            missmatch = 0 if str1[j] == str2[i] else 1
+            A[j][i] = min(A[j-1][i-1] + missmatch, A[j][i-1] + 1, A[j-1][i] + 1)
+
+    print '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
+    print '\n'.join([''.join(['{:4}'.format(col) for col in row]) for row in A])
+
+    min_penalty = A[m-1][n-1]
+    common = ''
+
+    return (min_penalty, common)
 
 def maximum_monotone_sequence(s):
     """ Remove the fewest number of characters from input so that it leaves a

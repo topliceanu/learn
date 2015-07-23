@@ -1,6 +1,52 @@
 import unittest
 
-from src.binary_search_tree import BST, PARENT, KEY, LEFT, RIGHT, SIZE
+from src.binary_search_tree import BST, PARENT, KEY, LEFT, RIGHT, SIZE, \
+    BinarySearchTreeNode
+
+
+class TestBinarySearchTreeNode(unittest.TestCase):
+
+    def test_insert(self):
+        bst = BinarySearchTreeNode('x', 1)
+        bst.insert('y', 2)
+        bst.insert('u', 3)
+
+        self.assertEqual(bst.key, 'x', 'root is the correct value')
+        self.assertEqual(bst.left.key, 'u', 'right node is correct')
+        self.assertEqual(bst.right.key, 'y', 'left node is correct')
+
+        self.assertEqual(bst.parent, None, 'root has no parent')
+        self.assertEqual(bst.left.parent, bst, 'left has root as parent')
+        self.assertEqual(bst.right.parent, bst, 'right has root as parent')
+
+        self.assertEqual(bst.size, 3, 'should update correct size of a node')
+
+    def test_lookup(self):
+        bst = BinarySearchTreeNode('y', 1)
+        bst.insert('x', 2)
+        bst.insert('z', 3)
+
+        actual = bst.lookup('x')
+        expected = bst.left
+        self.assertEqual(actual, expected, 'should return the entire object')
+
+    def test_get_min(self):
+        bst = BinarySearchTreeNode('y', 1)
+        bst.insert('x', 2)
+        bst.insert('z', 3)
+
+        expected = bst.get_min()
+        actual = bst.left
+        self.assertEqual(actual, expected, 'produced correct min node')
+
+    def test_get_max(self):
+        bst = BinarySearchTreeNode('y', 1)
+        bst.insert('x', 2)
+        bst.insert('z', 3)
+
+        expected = bst.get_max()
+        actual = bst.right
+        self.assertEqual(actual, expected, 'produced correct max node')
 
 
 class TestBST(unittest.TestCase):

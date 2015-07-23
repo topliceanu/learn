@@ -7,7 +7,7 @@ from src.dynamic_programming import max_weighted_independent_set_in_path_graph, 
                 sequence_alignment, optimal_binary_search_tree, \
                 binomial_coefficient, maximum_monotone_sequence, min_coins, \
                 zig_zag, bad_neighbours, linear_partition, \
-                max_weighted_independent_set_in_tree
+                max_weighted_independent_set_in_tree, longest_common_subsequence
 
 
 class DynamicProgrammingTest(unittest.TestCase):
@@ -84,6 +84,13 @@ class DynamicProgrammingTest(unittest.TestCase):
         self.assertEqual(penalty, 10, 'completely different')
         self.assertEqual(X_mod, '-AB', 'one gap are inserted in the front')
         self.assertEqual(Y_mod, 'CAB', 'no changes')
+
+    def test_longest_common_subsequence(self):
+        str1 = 'alexandru'
+        str2 = 'topliceanu'
+        (penalty, common) = longest_common_subsequence(str1, str2)
+        expected_penalty = 12
+        print '>>>>>>>>', penalty
 
     def test_maximum_monotone_subsequence(self):
         s = '243517698'

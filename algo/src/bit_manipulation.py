@@ -54,13 +54,26 @@ def is_bit_set(a, offset):
     return a & (1 << offset) != 0
 
 def set_bit(a, order):
+    """ Set the value of a bit at index <order> to be 1. """
     return a | (1 << order)
 
 def unset_bit(a, order):
+    """ Set the value of a bit at index <order> to be 0. """
     return a & ~(1 << order)
 
 def toggle_bit(a, order):
+    """ Set the value of a bit at index <order> to be the inverse of original. """
     return a ^ (1 << order)
+
+def count_set_bits(n):
+    """ Returns the number of set bits in the input. """
+    count = 0
+    while n != 0:
+        last_bit = n & 1
+        if last_bit == 1:
+            count += 1
+        n = n >> 1
+    return count
 
 def subsets(a):
     """ Computes all the subsets of input list.

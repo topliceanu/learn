@@ -829,26 +829,415 @@ def problem_4_8(tree, value):
 # Chapter 5: Bit Manipulation
 
 def problem_5_1(n, m, i, j):
-    """ You are given two 32-bit numbers, N and M, and two bit positions, i and j. Write a
-    method to set all bits between i and j in N equal to M (e.g., M becomes a substring of
-    N located at i and starting at j).
+    """ You are given two 32-bit numbers, N and M, and two bit positions, i and
+    j. Write a method to set all bits between i and j in N equal to M (e.g., M
+    becomes a substring of  N located at i and starting at j).
 
     Example:
         Input: N = 10000000000, M = 10101, i = 2, j = 6
         Output: N = 10001010100
     """
-    all_ones = 2**33 - 1
-    left = all_ones - ((1 << (j+1)) - 1)
-    right = (1 << i) - 1
-    mask = left | right
-    output = (n & mask) ^ (m << i)
-    return output
+    x = ((2**(len(bin(n))-j)-1) << (j+1)) + (2**i - 1)
+    return n & x | m << i
 
 def problem_5_2(n):
     """ Given a (decimal - e.g. 3.72) number that is passed in as a string,
     print the binary representation. If the number can not be represented
     accurately in binary, print ERROR.
     """
+    out = ''
+
+    # Find the largest power of 2.
+    i = 0
+    while 2**i < n:
+        i += 1
+    i -= 1
+
+    # Continuously find the highest power of 2 within the value.
+    while n > 0 and i > -20:
+        if n >= 2**i:
+            out += '1'
+            n -= 2**i
+        else:
+            out += '0'
+        if i == 0:
+            out += ','
+        i -= 1
+
+    if i == -20:
+        raise Exception('Cannot be accurately represented')
+
+    return out
+
+def problem_5_3(n):
+    """ Given an integer, print the next smallest and next largest number that
+    have the same number of 1 bits in their binary representation.
+
+    Returns
+        tuple, format (smallest, largest)
+    """
+    has_no_zero_bits = (n+1) & n == 0
+    if has_no_zero_bits:
+        raise Exception('There is no smaller number with the same number of bits')
+
+    def count_set_bits(n):
+        """ Returns the number of bits set to 1 in input. """
+        count = 0
+        for i in range(len(bin(n)) - 2):
+            if (1 << i) & n != 0:
+                count += 1
+        return count
+
+    num_bits = count_set_bits(n)
+
+    # Find the next smallest number with the same number of bits.
+    next_smallest = n
+    while True:
+        next_smallest -= 1
+        if count_set_bits(next_smallest) == num_bits:
+            break
+
+    # Find the next larget number with the same number of bits.
+    next_largest = n
+    while True:
+        next_largest += 1
+        if count_set_bits(next_largest) == num_bits:
+            break
+
+    return (next_smallest, next_largest)
+
+def problem_5_4():
+    """ Explain what the following code does: ((n & (n-1)) == 0)
+    Solution: determins if n is a power of 2.
+    """
+
+def problem_5_5(a, b):
+    """ Write a function to determine the number of bits required to convert
+    integer A to integer B.
+    Input: 31, 14
+    Output: 2
+
+    Solution: compute (a XOR b) and produce the number of 1 bits in the result.
+    """
+    def num_set_bits(n):
+        count = 0
+        while n != 0:
+            last_bit = n & 1
+            if last_bit == 1:
+                count += 1
+            n = n >> 1
+        return count
+
+    return num_set_bits(a ^ b)
+
+def problem_5_6(n):
+    """ Write a program to swap odd and even bits in an integer with as few
+    instructions as possible (e.g., bit 0 and bit 1 are swapped, bit 2 and bit
+    3 are swapped, etc).
+    """
+    def is_set_bit(x, i):
+        return (x & (1 << i)) != 0
+
+    def toggle_bit(x, i):
+        return (x ^ (1 << i))
+
+    def reverse(x, i):
+        """ Reverses bit i with bit i+1 in number x. """
+        i_is_set = is_set_bit(x, i)
+        j_is_set = is_set_bit(x, i+1)
+        if (not i_is_set and j_is_set) or (i_is_set and not j_is_set):
+            x = toggle_bit(x, i)
+            x = toggle_bit(x, i+1)
+        return x
+
+    num_bits = len(bin(n)) - 2
+    for i in range(0, num_bits, 2):
+        n = reverse(n, i)
+    return n
+
+def problem_5_7(arr):
+    """ An array A[1...n] contains all the integers from 0 to n except for one
+    number which is missing. In this problem, we cannot access an entire
+    integer in A with a single operation. The elements of A are represented in
+    binary, and the only operation we can use to access them is “fetch the jth
+    bit of A[i]”, which takes constant time. Write code to find the missing
+    integer. Can you do it in O(n) time?
+
+    Solution:
+    - first sort the ints, being mostly consecutive ints, radix sort will work in O(n).
+    - second, iterate through all of them to find two number which are not consecutive.
+    """
+    def fetch_bit(arr, i, j):
+        """ Returns the bit j in the ith number in arr. """
+        return (arr[i] & (1 << j)) != 0
+
+    def radix_sort(arr):
+        """ Sorts a list of ints in-place using the radix-search method. """
+        return arr
+
+    def is_offset(arr, i):
+        """ Figures out is the position i in arr has the value i. """
+        different_bits = i ^ (i+1)
+        bit_index = 0
+        while different_bits != 0:
+            last_bit = different_bits & 1
+            if last_bit == 1:
+                if fetch_bit(arr, i, bit_index) == 1:
+                    return False
+            different_bits = different_bits << 0
+        return True
+
+    sorted_arr = radix_sort(arr)
+    for i in range(len(sorted_arr)):
+        if is_offset(sorted_arr, i):
+            return i - 1
+
+# Chapter 8: Recursion
+
+def problem_8_1(x):
+    """ Write a method to generate the nth Fibonacci number. """
+    def fib(n):
+        if n < 0:
+            raise Exception('No fibonacci number below 0')
+        if n == 0 or n == 1:
+            return 1
+        return fib(n-1) + fib(n-2)
+
+    return fib(x)
+
+def problem_8_2(n):
+    """Imagine a robot sitting on the upper left hand corner of an NxN grid.
+    The robot can only move in two directions: right and down. How many
+    possible paths are there for the robot?
+
+    FOLLOW UP
+    Imagine certain squares are “off limits”, such that the robot can not step
+    on them. Design an algorithm to get all possible paths for the robot.
+    """
+    def paths(i, j):
+        if i == 0 or j == 0:
+            return 1 # The bot just gets dumped at the begining of the track.
+        return paths(i-1, j) + paths(i, j-1)
+
+    return paths(n-1, n-1)
+
+def problem_8_2_bis(grid):
+    """ Folowup to the previous question:
+    Imagine certain squares are “off limits”, such that the robot can not step
+    on them. Design an algorithm to get all possible paths for the robot.
+    """
+    OFF_LIMITS = 1
+    def paths(grid, i, j):
+        """ Returns a list of lists of paths to get to position (i, j). """
+        if i == 0 and j == 0:
+            return [[(0, 0)]]
+
+        so_far = []
+        if j == 0 and i != 0: # On the left border.
+            if grid[i-1][j] != OFF_LIMITS:
+                so_far.extend(paths(grid, i-1, j))
+        elif j != 0 and i == 0: # On the top border.
+            if grid[i][j-1] != OFF_LIMITS:
+                so_far.extend(paths(grid, i, j-1))
+        else: # Somewhere in the middle of the screen.
+            if grid[i][j-1] != OFF_LIMITS:
+                so_far.extend(paths(grid, i, j-1))
+            if grid[i-1][j] != OFF_LIMITS:
+                so_far.extend(paths(grid, i-1, j))
+
+        for p in so_far:
+            p.append((i, j))
+        return so_far
+
+    # Compute all paths ending in the bottom-right corner.
+    n = len(grid)
+    all_paths = paths(grid, n-1, n-1)
+    return all_paths
+
+def problem_8_3(data):
+    """ Write a method that returns all subsets of a set.
+
+    Complexity: O(2^n)
+    """
+
+    def subsets(s):
+        """ Returns a list of sets given the input set. """
+        if len(s) == 0:
+            return [set()]
+
+        head = s.pop()
+        subs = subsets(s)
+        out = subs[:]
+
+        for sub in subs:
+            tmp = set(sub)
+            tmp.add(head)
+            out.append(tmp)
+
+        return out
+
+    return subsets(data)
+
+def problem_8_4(data):
+    """ Write a method to compute all permutations of a string. """
+
+    def inject(letter, s):
+        """ Inserts a given letter in evey possion of s. Complexity: O(n^2). """
+        out = []
+        for i in range(len(s)+1):
+            t = s[:i]+letter+s[i:]
+            out.append(t)
+        return out
+
+    def permutations(s):
+        """ Compute all permutation of a given string s, recursively by
+        computing the permutations of the string without the first letter,
+        then injecting the letter in evey possible locations.
+        """
+        if len(s) == 1:
+            return [s]
+
+        head = s[0]
+        tail = s[1:]
+        perms = permutations(tail)
+
+        out = []
+        for p in perms:
+            out.extend(inject(head, p))
+        return out
+
+    return permutations(data)
+
+def problem_8_5(n):
+    """ Implement an algorithm to print all valid (e.g., properly opened and
+    closed) combinations of n-pairs of parentheses.
+
+    EXAMPLE:
+    input: 3 (e.g., 3 pairs of parentheses)
+    output: ['()()()', '()(())', '(())()', '((()))']
+    """
+    def parantheses(n):
+        """ Composes n pairs of parantheses correctly.
+        Returns:
+            list, of strings
+        """
+        if n == 1:
+            return ['()']
+
+        subs = parantheses(n-1)
+        out = []
+        for s in subs:
+            out.append('()'+s)
+            out.append('('+s+')')
+            out.append(s+'()')
+        out = list(set(out))
+        return out
+
+    return parantheses(n)
+
+def problem_8_6(canvas, point, new_color):
+    """ Implement the "paint fill" function that one might see on many image
+    editing programs. That is, given a screen (represented by a 2 dimensional
+    array of Colors), a point, and a new color, fill in the surrounding area
+    until you hit a border of that color.
+
+    Solution: flood-fill algorithms (or a more efficient line-fill).
+    """
+    def fill(canvas, point, current_color, new_color):
+        (x, y) = point
+
+        if canvas[x][y] != current_color:
+            return
+        canvas[x][y] = new_color
+
+        n = len(canvas)
+        m = len(canvas[0])
+
+        if x - 1 >= 0: # up.
+            fill(canvas, (x-1, y), current_color, new_color)
+        if x + 1 < n: # down.
+            fill(canvas, (x+1, y), current_color, new_color)
+        if y - 1 >= 0: # left.
+            fill(canvas, (x, y-1), current_color, new_color)
+        if y + 1 < m: # right.
+            fill(canvas, (x, y+1), current_color, new_color)
+
+    current_color = canvas[point[0]][point[1]]
+    return fill(canvas, point, current_color, new_color)
+
+def problem_8_7(cents):
+    """ Given an infinite number of quarters (25 cents), dimes (10 cents),
+    nickels (5 cents) and pennies (1 cent), write code to calculate the number
+    of ways of representing n cents.
+    """
+    smaller_vals = {
+        25: 10,
+        10: 5,
+        5: 1
+    }
+
+    def num_combinations(change, val):
+        """ Count the number of combination of value which sum up to change.
+        Args:
+            change: int,
+            val: int, one of 25, 10, 5 or 1
+        Returns:
+            int, the number of combinations.
+        """
+        if val == 1: # Only one way to return change using only pennies.
+            return 1
+
+        # Compute the change using smaller values first.
+        smaller_val = smaller_vals[val]
+        ways = num_combinations(change, smaller_val)
+
+        # Compute change using current value and
+        times = change / val
+        for i in range(times):
+            ways += num_combinations(change - i*val, smaller_val)
+
+        return ways
+
+    return num_combinations(cents, 25)
+
+def problem_8_8(num_queens):
+    """ Write an algorithm to print all ways of arranging eight queens on a
+    chess board so that none of them share the same row, column or diagonal.
+
+    Solution: use recursive backtracking to compute all combinations.
+    """
+    def expand_solution(solution, num):
+        """ Expands the current solution by adding another queen.
+        Only produces valid partial solutions.
+        """
+        taken_columns = set([c for c in solution])
+        taken_first_diagonals = set([i+j for (i, j) in enumerate(solution)])
+        taken_second_diagonals = set([j-i for (i, j) in enumerate(solution)])
+        i = len(solution)
+
+        candidates = []
+        for j in range(num):
+            if j in taken_columns or \
+               i+j in taken_first_diagonals or \
+               j-i in taken_second_diagonals:
+                continue
+            tmp = solution[:]
+            tmp.append(j)
+            candidates.append(tmp)
+        return candidates
+
+    def recurse(partial_solution, size):
+        if len(partial_solution) == size:
+            return [partial_solution]
+
+        solutions = []
+        for candidate in expand_solution(partial_solution, size):
+            solutions.extend(recurse(candidate, size))
+        return solutions
+
+    return recurse([], num_queens) # No queen is positioned in initial solution.
+
+# Chapter 10: Mathematical
 
 def problem_10_6(points, precision=4):
     """ Given a two dimensional graph with points on it, find a line which

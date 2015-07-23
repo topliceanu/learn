@@ -44,7 +44,7 @@ class AVLTree(BST):
         """ Re-ballance the tree to maintain the AVL invariant.
 
         To keep the tree ballanced, after normal insertion we rotate the
-        inserted node up the tree until the all nodes maintain the ballance
+        inserted node up the tree until all the nodes maintain the ballance
         factor invariant. Following four cases of unballance can occur:
 
 

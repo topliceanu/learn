@@ -3,7 +3,7 @@
 import unittest
 
 from src.bit_manipulation import add, is_power_of_two, in_place_swap, is_even, \
-    min_value, max_value, is_bit_set, subsets
+    min_value, max_value, is_bit_set, toggle_bit, count_set_bits, subsets
 
 
 class BitManipulation(unittest.TestCase):
@@ -60,6 +60,13 @@ class BitManipulation(unittest.TestCase):
         a = 122 # 0b1111010
         self.assertTrue(is_bit_set(a, 3), 'third bit is 1')
         self.assertFalse(is_bit_set(a, 2), 'second bit is 0')
+
+    def test_count_set_bits(self):
+        a = int('10101010111', 2)
+        expected = 7
+        actual = count_set_bits(a)
+        self.assertEqual(actual, expected,
+            'should compute the correct number of set bits')
 
     def test_subsets(self):
         a = range(5)

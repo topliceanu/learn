@@ -243,3 +243,146 @@ def match(text, pattern):
         if is_match == True:
             return True
     return False
+
+def same_fringe(tree1, tree2):
+    """ Detect is the given two trees have the same fringe. A fringe is a list
+    of leaves sorted from left to right.
+    """
+    def is_leaf(node):
+        return len(node['children']) == 0
+
+    def in_order_traversal(node):
+        if node == None:
+            return []
+
+        if is_leaf(node):
+            return [node['key']]
+
+        leaves = []
+        for child in node['children']:
+            leaves.extend(in_order_traversal(child))
+
+        return leaves
+
+    leaves1 = in_order_traversal(tree1)
+    leaves2 = in_order_traversal(tree2)
+    return leaves1 == leaves2
+
+# Facebook Phone Interview.
+
+def is_anagram(s1, s2):
+    """ Figures out if the two strings are anagrams.
+
+    Complexity: O(n)
+
+    Args:
+        s1: str
+        s2: str
+
+    Returns:
+        boolean, True if s1 is an anagram of s2.
+    """
+    letters = {}
+    for c in s1:
+        if c in letters:
+            letters[c] += 1
+        else:
+            letters[c] = 1
+    for c in s2:
+         if c in letters:
+             letters[c] -= 1
+             if letters[c] == 0:
+                 del letters[c]
+         else:
+             return False
+
+    return len(letters) == 0
+
+def find_anagrams_slow(needle, haystack):
+    """ Finds anagrams of needle in the haystack string.
+
+    Complexity: O(n^2) , where n - length of haystack.
+
+    Args:
+        needle: str
+        haystack: str
+
+    Returns:
+        boolean, True if haystack contains anagrams of needle.
+    """
+    n = len(needle)
+    m = len(haystack)
+    for i in range(m-n+1): # O(n)
+        sub_haystack = haystack[i:n]  # O(1)
+        if is_anagram(sub_haystack, needle): # O(n)
+            return True
+    return False
+
+def delta(s1, s2):
+    """ Find the difference in characters between s1 and s2.
+
+    Complexity: O(n), n - length of s1 or s2 (they have the same length).
+
+    Returns:
+        dict, format {extra:[], missing:[]}
+            extra: list, letters in s2 but not in s1
+            missing: list, letters in s1 but not in s2
+    """
+    letters = {}
+    for c in s1:
+        if c not in letters:
+            letters[c] = 1
+        else:
+            letters[c] += 1
+
+    extra = [] # letters which are in s2 but not in s1
+    for c in s2:
+        if c not in letters:
+            extra.append(c)
+        else:
+            letters[c] -=1
+
+    missing = [] # letters which are in s1 but not in s2
+    for (letter, count) in letters.iteritems():
+        if count > 0:
+            missing.append(letter)
+
+    return {'extra': extra, 'missing': missing}
+
+def find_anagrams_fast(needle, haystack):
+    """ Finds anagrams of needle in the haystack string.
+
+    Complexity: O(n) , where n - length of haystack.
+
+    Args:
+        needle: str
+        haystack: str
+
+    Returns:
+        boolean, True if haystack contains anagrams of needle.
+    """
+    n = len(needle)
+    m = len(haystack)
+
+    #import pdb; pdb.set_trace()
+    sub_haystack = haystack[:n]
+    __ = delta(needle, sub_haystack)
+    extra = __['extra']
+    missing = __['missing']
+    if len(extra) == 0:
+        return True
+
+    for i in range(n, m):
+        j = i - n
+        if haystack[j] in extra:
+            extra.remove(haystack[j])
+        if haystack[i] in missing:
+            missing.remove(haystack[i])
+        if haystack[j] in needle:
+            missing.append(haystack[j])
+        if haystack[i] not in needle:
+            extra.append(haystack[i])
+        if len(extra) == 0:
+            return True
+
+    return False

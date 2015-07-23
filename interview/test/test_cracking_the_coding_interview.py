@@ -495,6 +495,7 @@ class CrackingTheCodeInterview(unittest.TestCase):
 
     def test_problem_4_8(self):
         # TODO make this work!
+        pass
 
     # Chapter 5: Bit Manipulation.
 
@@ -515,11 +516,201 @@ class CrackingTheCodeInterview(unittest.TestCase):
         expected = int('11111010111', 2)
         self.assertEqual(actual, expected, 'should produce the correct value')
 
-    def x_test_problem_5_2(self):
-        n = 3.17
+    def test_problem_5_2(self):
+        n = 3.75
         actual = problem_5_2(n)
-        expected = False
+        expected = '11,11'
         self.assertEqual(actual, expected, 'should return the correct value')
+
+        n = 3.17
+        self.assertRaises(Exception, problem_5_2, n,
+            'should raise because no accurate representation can be computed')
+
+    def test_problem_5_3(self):
+        n = int('111', 2)
+        self.assertRaises(Exception, problem_5_3, n, 'should detect that '+
+            'there is no smaller number but with the same number of set bits')
+
+        n = int('110', 2)
+        actual = problem_5_3(n)
+        expected = (int('101', 2), int('1001', 2))
+        self.assertEqual(actual, expected, 'should produce the correct values')
+
+    def test_problem_5_5(self):
+        a = 31
+        b = 14
+        expected = 2
+        actual = problem_5_5(a, b)
+        self.assertEqual(actual, expected, 'should compute the number of different bits')
+
+        a = 67
+        b = 143
+        expected = 4
+        actual = problem_5_5(a, b)
+        self.assertEqual(actual, expected, 'should compute the number of different bits')
+
+    def test_problem_5_6(self):
+        n = int('10', 2)
+        expected = int('01', 2)
+        actual = problem_5_6(n)
+        self.assertEqual(actual, expected, 'should swap bits correctly')
+
+        n = int('111011', 2)
+        expected = int('110111', 2)
+        actual = problem_5_6(n)
+        self.assertEqual(actual, expected, 'should swap bits correctly')
+
+        n = int('01110101', 2)
+        expected = int('10111010', 2)
+        actual = problem_5_6(n)
+        self.assertEqual(actual, expected, 'should swap bits correctly')
+
+    def x_test_problem_5_7(self):
+        arr = [1,2,4,5,6,7,8,9]
+        expected = 3
+        actual = problem_5_7(arr)
+        self.assertEqual(actual, expected, 'should detect the missing value')
+
+    # Chapter 8: Recursion
+
+    def test_problem_8_1(self):
+        self.assertEqual(problem_8_1(3), 3,
+            'should correctly compute the fib number')
+
+    def test_problem_8_2(self):
+        actual = problem_8_2(2)
+        expected = 2
+        self.assertEqual(actual, expected, 'only two ways to get from the '+
+                                        'top left to the botton right corners')
+
+        actual = problem_8_2(3)
+        expected = 6
+        self.assertEqual(actual, expected, 'only two ways to get from the '+
+                                        'top left to the botton right corners')
+
+    def test_problem_8_2_bis(self):
+        grid = [
+            [0, 0],
+            [1, 0]
+        ]
+        actual = problem_8_2_bis(grid)
+        expected = [[(0,0), (0,1), (1,1)]]
+        self.assertItemsEqual(actual, expected,
+            'should compute the correct available paths')
+
+        grid = [
+            [0, 0, 0],
+            [0, 1, 0],
+            [0, 1, 0]
+        ]
+        actual = problem_8_2_bis(grid)
+        expected = [[(0,0), (0,1), (0,2), (1,2), (2,2)]]
+        self.assertItemsEqual(actual, expected,
+            'should compute the correct available paths')
+
+        grid = [
+            [0, 0, 0],
+            [1, 1, 0],
+            [0, 0, 0]
+        ]
+        actual = problem_8_2_bis(grid)
+        expected = [[(0,0), (0,1), (0,2), (1,2), (2,2)]]
+        self.assertItemsEqual(actual, expected,
+            'should compute the correct available paths')
+
+        grid = [
+            [0, 0, 0],
+            [1, 1, 0],
+            [1, 1, 0]
+        ]
+        actual = problem_8_2_bis(grid)
+        expected = [[(0,0), (0,1), (0,2), (1,2), (2,2)]]
+        self.assertItemsEqual(actual, expected,
+            'should compute the correct available paths')
+
+        grid = [
+            [0, 0, 0],
+            [0, 1, 0],
+            [0, 0, 0]
+        ]
+        actual = problem_8_2_bis(grid)
+        expected = [[(0,0), (0,1), (0,2), (1,2), (2,2)],
+                    [(0,0), (1,0), (2,0), (2,1), (2,2)]]
+        self.assertItemsEqual(actual, expected,
+            'should compute the correct available paths')
+
+    def test_problem_8_3(self):
+        data = set([1,2,3])
+        expected = [set([1]), set([2]), set([3]), set([1,2]), set([1,3]),
+                    set([2,3]), set([1,2,3]), set([])]
+        actual = problem_8_3(data)
+        self.assertItemsEqual(actual, expected,
+            'should compute all the subsets of a set')
+
+    def test_problem_8_4(self):
+        data = 'abc'
+        expected = ['abc', 'acb', 'bac', 'bca', 'cab', 'cba']
+        actual = problem_8_4(data)
+        self.assertItemsEqual(actual, expected,
+            'should compute all permutations')
+
+    def test_problem_8_5(self):
+        expected = ['()()()', '()(())', '(())()', '((()))', '(()())']
+        actual = problem_8_5(3)
+        self.assertItemsEqual(actual, expected,
+            'should produce correct prantheses')
+
+    def test_problem_8_6(self):
+        canvas = [
+            [1, 0, 0, 1, 0],
+            [1, 0, 1, 1, 0],
+            [0, 1, 1, 1, 0],
+            [0, 1, 1, 0, 1],
+            [1, 0, 0, 0, 1]
+        ]
+        expected = [
+            [1, 0, 0, 2, 0],
+            [1, 0, 2, 2, 0],
+            [0, 2, 2, 2, 0],
+            [0, 2, 2, 0, 1],
+            [1, 0, 0, 0, 1]
+        ]
+
+        problem_8_6(canvas, (2, 2), 2)
+        self.assertItemsEqual(canvas, expected,
+            'should color only on in straight line, not diagonals')
+
+    def test_problem_8_7(self):
+        change = 3
+        expected = 1
+        actual = problem_8_7(change)
+        self.assertEqual(actual, expected,
+            'should compute the number of combinations')
+
+        change = 6
+        expected = 2
+        actual = problem_8_7(change)
+        self.assertEqual(actual, expected,
+            'should compute the number of combinations')
+
+        change = 27
+        expected = 32
+        actual = problem_8_7(change)
+        self.assertEqual(actual, expected,
+            'should compute the number of combinations')
+
+    def test_problem_8_8(self):
+        actual = problem_8_8(4)
+        expected = 2
+        self.assertEqual(len(actual), expected, 'should compute how many ways '+
+            'one can arrange 4 queens on a 4x4 table so that they do not attach each other')
+
+        actual = problem_8_8(8)
+        expected = 92
+        self.assertEqual(len(actual), expected, 'should compute how many ways '+
+            'one can arrange 8 queens on a 8x8 table so that they do not attach each other')
+
+    # Chapter 10: Mathematical
 
     def test_problem_10_6(self):
         points = [(2,3), (4,5), (6,7), (8,9), (1,1), (2,2), (3,3)]
