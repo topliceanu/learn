@@ -710,6 +710,38 @@ class CrackingTheCodeInterview(unittest.TestCase):
         self.assertEqual(len(actual), expected, 'should compute how many ways '+
             'one can arrange 8 queens on a 8x8 table so that they do not attach each other')
 
+    # Chapter 9: Searching and Sorting
+
+    def test_problem_9_1(self):
+        arr1 = [1, 2, 3, 4, None, None, None]
+        arr2 = [0, 5, 6]
+        expected = [0, 1, 2, 3, 4, 5, 6]
+        actual = problem_9_1(arr1, arr2)
+        self.assertEqual(actual, expected, 'should merge the two arrays')
+
+        arr1 = [1, 3, 5, 7, None, None, None, None]
+        arr2 = [0, 2, 4, 6]
+        expected = [0, 1, 2, 3, 4, 5, 6, 7]
+        actual = problem_9_1(arr1, arr2)
+        self.assertEqual(actual, expected, 'should merge the two arrays')
+
+        arr1 = [2, 3, 4, None, None]
+        arr2 = [0, 1]
+        expected = [0, 1, 2, 3, 4]
+        actual = problem_9_1(arr1, arr2)
+        self.assertEqual(actual, expected, 'should merge the two arrays')
+
+    def test_problem_9_2(self):
+        strings = ['cat', 'act', 'boo', 'foo', 'baz']
+        expected = ['cat', 'act', 'baz', 'boo', 'foo']
+        actual = problem_9_2(strings)
+        self.assertEquals(actual, expected,
+            'should sort the list such that anagrams are near-by')
+
+    def test_problem_9_3(self):
+        pass
+
+
     # Chapter 10: Mathematical
 
     def test_problem_10_6(self):

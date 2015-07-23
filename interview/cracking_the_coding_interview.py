@@ -1237,6 +1237,116 @@ def problem_8_8(num_queens):
 
     return recurse([], num_queens) # No queen is positioned in initial solution.
 
+# Chapter 9: Sorting and Searching
+
+def problem_9_1(arr1, arr2):
+    """ You are given two sorted arrays, A and B, and A has a large enough
+    buffer at the end to hold B. Write a method to merge B into A in sorted
+    order.
+    """
+    m = len(arr2) - 1
+    p = len(arr1) - 1
+    n = len(arr1) - len(arr2) - 1
+
+    while n >= 0 and m >= 0:
+        if arr1[n] > arr2[m]:
+            arr1[p] = arr1[n]
+            n -= 1
+        else:
+            arr1[p] = arr2[m]
+            m -= 1
+        p -= 1
+
+    if n < 0:
+        while p >= 0:
+            arr1[p] = arr2[m]
+            p -= 1
+            m -= 1
+    if m < 0:
+        while p >= 0:
+            arr1[p] = arr2[n]
+            p -= 1
+            n -= 1
+
+    return arr1
+
+def problem_9_2(arr):
+    """ Write a method to sort an array of strings so that all the anagrams
+    are next to each other.
+    """
+    def is_anagram(x, y):
+        letters = {}
+        for l in x:
+            if l in letters:
+                letters[l] += 1
+            else:
+                letters[l] = 1
+        for l in y:
+            if l not in letters:
+                return False
+            else:
+                letters[l] -= 1
+            if letters[l] == 0:
+                del letters[l]
+        return len(letters) == 0
+
+    def str_compare(x, y):
+        if is_anagram(x, y):
+            return 0
+        else:
+            return cmp(x, y)
+
+    return sorted(arr, cmp=lambda x, y: str_compare(x, y))
+
+def problem_9_3(arr):
+    """ Given a sorted array of n integers that has been rotated an unknown
+    number of times, give an O(log n) algorithm that finds an element in the
+    array. You may assume that the array was originally sorted in increasing
+    order.
+    EXAMPLE:
+    Input: find 5 in array (15 16 19 20 25 1 3 4 5 7 10 14)
+    Output: 8 (the index of 5 in the array)
+
+    Solution: divide and conquer binary search.
+    """
+
+def problem_9_4(lines):
+    """ If you have a 2 GB file with one string per line, which sorting
+    algorithm would you use to sort the file and why?
+
+    Solution: a variant of merge sort, it can be optimized to read a full chunk
+    from the disk at a time.
+    """
+
+def problem_9_5(arr):
+    """ Given a sorted array of strings which is interspersed with empty
+    strings, write a method to find the location of a given string.
+
+    Example: find “ball” in [“at”, “”, “”, “”, “ball”, “”, “”, “car”, “”, “”, “dad”, “”, “”] will return 4
+    Example: find “ballcar” in [“at”, “”, “”, “”, “”, “ball”, “car”, “”, “”, “dad”, “”, “”] will return -1
+
+    Solution: variant of binary search, whereby you ignore the empty spaces.
+    """
+
+def problem_9_6(matrix):
+    """ Given a matrix in which each row and each column is sorted, write a
+    method to find an element in it.
+
+    Solution: divide and conquer.
+    """
+
+def problem_9_7(heights, weights):
+    """ A circus is designing a tower routine consisting of people standing
+    atop one another’s shoulders. For practical and aesthetic reasons, each
+    person must be both shorter and lighter than the person below him or her.
+    Given the heights and weights of each person in the circus, write a method
+    to compute the largest possible number of people in such a tower.
+
+    EXAMPLE:
+    Input (ht, wt): (65, 100) (70, 150) (56, 90) (75, 190) (60, 95) (68, 110)
+    Output: The longest tower is length 6 and includes from top to bottom: (56, 90) (60,95) (65,100) (68,110) (70,150) (75,190)
+    """
+
 # Chapter 10: Mathematical
 
 def problem_10_6(points, precision=4):
