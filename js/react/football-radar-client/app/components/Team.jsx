@@ -2,7 +2,10 @@ var React = require('react')
 
 
 var Team = React.createClass({
+    // Stateless components which simply renders a plain js team object
+    // containing the scores.
     propTypes: {
+        position: React.PropTypes.number,
         data: React.PropTypes.shape({
             id: React.PropTypes.number,
             name: React.PropTypes.string,

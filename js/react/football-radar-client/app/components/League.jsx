@@ -4,6 +4,11 @@ var Team = require('./Team.jsx')
 
 
 var League = React.createClass({
+    // This component only renders the actual table with all the teams and their
+    // scores, sorting is handled in the parent component by it's DataModel
+    // instance.
+    // This is a stateless component, which receives all it's data from it's
+    // parent, ie. a plain js array with team objects.
     propTypes: {
         data: React.PropTypes.arrayOf(React.PropTypes.shape({
             id: React.PropTypes.number,
@@ -19,6 +24,7 @@ var League = React.createClass({
         }))
     },
 
+    // Render the table with all the teams and their scores.
     render: function () {
         return (
             <div className="table-responsive">

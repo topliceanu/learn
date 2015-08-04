@@ -4,7 +4,9 @@
   "description": "client application for football radar js task server",
   "main": "index.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "serve": "cd app; python -m SimpleHTTPServer 8888",
+    "build": "./node_modules/.bin/webpack"
   },
   "author": "alexandru topliceanu",
   "license": "MIT",

@@ -56,6 +56,7 @@
 	var content = document.getElementById('content');
 
 
+	// Fetch teams json data, bootstrap the data model and start rendering the app.
 	getTeams(conf.http.url, function (teams) {
 	    data.bootstrap(teams);
 	    React.render(React.createElement(Main, {data: data}), content);
@@ -20447,7 +20448,13 @@
 	var conf = __webpack_require__(160);
 
 
+	// Top-level component of the app UI.
+	// It handles the connection to the websocket server to update it's internal
+	// data model.
 	var Main = React.createClass({displayName: "Main",
+
+	    // Type check the part of the data model instance this component is
+	    // concerned about.
 	    propTypes: {
 	        data: React.PropTypes.shape({
 	            items: React.PropTypes.arrayOf(React.PropTypes.shape({
@@ -20465,12 +20472,17 @@
 	        })
 	    },
 
+	    // Initialize the component state from the props. It's a hack! but it
+	    // helps separate the data modeling from the data presentation.
 	    getInitialState: function () {
 	        return {items: this.props.data.items};
 	    },
 
+	    // Instance of window.WebSocket.
 	    socket: null,
 
+	    // Helper method to correctly format incomming event data from the
+	    // websocket notification server.
 	    format: function (update) {
 	        var output = JSON.parse(update);
 	        output.homeGoals = +output.homeGoals;
@@ -20478,6 +20490,18 @@
 	        return output;
 	    },
 
+	    // Initialize the WebSocket connection when the component is just mounted.
+	    // Because this is the top-level component, it will only get injected once
+	    // per application life-cycle, thus making it the perfect place to initiate
+	    // the websockets connection.
+	    //
+	    // When an update is received via WS, the data model is updated and,
+	    // consequently the component state, which triggers a re-render.
+	    //
+	    // Note! No attempt has been made to account for browser inconsistencies
+	    // with regards to WebSocket API implementations.
+	    //
+	    // TODO handle socket errors!
 	    componentWillMount: function () {
 	        var that = this;
 	        this.socket = new WebSocket(conf.ws.url);
@@ -20487,10 +20511,13 @@
 	        }
 	    },
 
+	    // Cleanup component resources when it gets unmounted, in this case, close
+	    // the socket connection.
 	    componentWillUnmount: function () {
 	        this.socket.close();
 	    },
 
+	    // Simply render the League components which is the table.
 	    render: function () {
 	        return (
 	            React.createElement(League, {data: this.state.items})
@@ -20512,6 +20539,11 @@
 
 
 	var League = React.createClass({displayName: "League",
+	    // This component only renders the actual table with all the teams and their
+	    // scores, sorting is handled in the parent component by it's DataModel
+	    // instance.
+	    // This is a stateless component, which receives all it's data from it's
+	    // parent, ie. a plain js array with team objects.
 	    propTypes: {
 	        data: React.PropTypes.arrayOf(React.PropTypes.shape({
 	            id: React.PropTypes.number,
@@ -20527,6 +20559,7 @@
 	        }))
 	    },
 
+	    // Render the table with all the teams and their scores.
 	    render: function () {
 	        return (
 	            React.createElement("div", {className: "table-responsive"}, 
@@ -20568,7 +20601,10 @@
 
 
 	var Team = React.createClass({displayName: "Team",
+	    // Stateless components which simply renders a plain js team object
+	    // containing the scores.
 	    propTypes: {
+	        position: React.PropTypes.number,
 	        data: React.PropTypes.shape({
 	            id: React.PropTypes.number,
 	            name: React.PropTypes.string,
@@ -20629,9 +20665,9 @@
 
 	// Data structure to store all application information.
 	// The data for each team is stored in an plain object. All objects are stored
-	// in an array of team, which is sorted given special rules (see .sort()). Also
-	// for fast retrieval by their id, team objects are stored in a dictionary
-	// where the keys are ids.
+	// in an array, which is sorted given special rules (see .sort()). Also
+	// for fast retrieval of a team by it's id, team objects are also linked to a
+	// dictionary where the keys are ids.
 	var DataModel = function () {
 	    // Format of this.items is:
 	    // [
@@ -20715,6 +20751,8 @@
 	// 3. maintain this.dict dictionary of references.
 	// 4. maintain the sorted order of the list.
 	//
+	// Note! This is the most important method of the application!
+	//
 	// @param {Object} news - an update object
 	// @param {String} news.date - when the update occured. Ignored!
 	// @param {Number} news.homeTeamId - id of the host team.
@@ -20772,7 +20810,7 @@
 	};
 
 
-	// Static method to build a raw team object.
+	// Helper static method to build an initial raw team object.
 	DataModel.factory = function () {
 	    return {
 	        id: null,
@@ -20796,6 +20834,13 @@
 /* 162 */
 /***/ function(module, exports) {
 
+	// This module only exports a method which calls the given url and passes the
+	// response back to the given callback.
+	//
+	// It makes no attempt to handle browser inconsistencies when it comes to ajax
+	// implementations or possible connection errors.
+	//
+	// TODO use a specialized tool like jQuery.ajax or superagent.
 	module.exports = function (url, callback) {
 	    var xhr = new XMLHttpRequest();
 	    xhr.onreadystatechange = function () {

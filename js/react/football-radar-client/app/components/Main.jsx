@@ -4,7 +4,13 @@ var League = require('./League.jsx');
 var conf = require('../conf.js');
 
 
+// Top-level component of the app UI.
+// It handles the connection to the websocket server to update it's internal
+// data model.
 var Main = React.createClass({
+
+    // Type check the part of the data model instance this component is
+    // concerned about.
     propTypes: {
         data: React.PropTypes.shape({
             items: React.PropTypes.arrayOf(React.PropTypes.shape({
@@ -22,12 +28,17 @@ var Main = React.createClass({
         })
     },
 
+    // Initialize the component state from the props. It's a hack! but it
+    // helps separate the data modeling from the data presentation.
     getInitialState: function () {
         return {items: this.props.data.items};
     },
 
+    // Instance of window.WebSocket.
     socket: null,
 
+    // Helper method to correctly format incomming event data from the
+    // websocket notification server.
     format: function (update) {
         var output = JSON.parse(update);
         output.homeGoals = +output.homeGoals;
@@ -35,6 +46,18 @@ var Main = React.createClass({
         return output;
     },
 
+    // Initialize the WebSocket connection when the component is just mounted.
+    // Because this is the top-level component, it will only get injected once
+    // per application life-cycle, thus making it the perfect place to initiate
+    // the websockets connection.
+    //
+    // When an update is received via WS, the data model is updated and,
+    // consequently the component state, which triggers a re-render.
+    //
+    // Note! No attempt has been made to account for browser inconsistencies
+    // with regards to WebSocket API implementations.
+    //
+    // TODO handle socket errors!
     componentWillMount: function () {
         var that = this;
         this.socket = new WebSocket(conf.ws.url);
@@ -44,10 +67,13 @@ var Main = React.createClass({
         }
     },
 
+    // Cleanup component resources when it gets unmounted, in this case, close
+    // the socket connection.
     componentWillUnmount: function () {
         this.socket.close();
     },
 
+    // Simply render the League components which is the table.
     render: function () {
         return (
             <League data={this.state.items} />
