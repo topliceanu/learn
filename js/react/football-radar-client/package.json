@@ -1,0 +1,22 @@
+{
+  "name": "football-radar-client",
+  "version": "0.0.1",
+  "description": "client application for football radar js task server",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "author": "alexandru topliceanu",
+  "license": "MIT",
+  "dependencies": {
+    "q": "^1.4.1",
+    "react": "0.13.3",
+    "superagent": "^1.2.0"
+  },
+  "devDependencies": {
+    "chai": "^3.2.0",
+    "jsx-loader": "0.13.2",
+    "mocha": "^2.2.5",
+    "webpack": "1.10.5"
+  }
+}
