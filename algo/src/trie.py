@@ -112,8 +112,68 @@ class Trie(object):
                     out.append((letter+word, value))
         return out
 
-
 ## TODO
 #class CompressedTrie(object):
 #    """ Implements a space efficient Trie in O(n) """
 #    pass
+
+class TrieNode(object):
+    def __init__(self, value=None):
+        self.value = value
+        self.children = {}
+
+    def insert(self, key, value):
+        """ Insert the value under the given key. """
+        if len(key) == '':
+            self.value = value
+
+        (head, tail) = self._split(key)
+        if head not in self.children:
+            self.children[head] = TrieNode()
+        self.children[head].insert(tail, value)
+
+    def lookup(self, key):
+        """ Search for the value corresponding to key. """
+        if key == '':
+            return self.value
+        (head, tail) = self._split(key)
+        if head not in self.children:
+            return None
+        return self.children[head].lookup(tail)
+
+    def lookup_prefix(self, prefix):
+        """ Returns a list of all [(key, value)] pairs where key starts with
+        prefix.
+        Two phases:
+        1. traverse the prefix
+        2. once the prefix has been traversed, return the entire subtree.
+        """
+        if prefix == '':
+            return self._traverse_subtree()
+
+        (head, tail) = self._split(prefix)
+        if head not in self.children:
+            return None
+        pairs = self.children[head].lookup_prefix(tail)
+        pairs = map(lambda p: (head+p[0], p[1]), pairs)
+        return pairs
+
+    # Helpers
+
+    def _split(self, key):
+        if len(key) == 0:
+            raise Exception('Cannot extract head and tail from empty string')
+        return (key[0], key[1:])
+
+    def _traverse_subtree(self):
+        """ Returns a list of pairs [(key, value)] for all it's children
+        including it's own value.
+        """
+        out = []
+        if self.value != None:
+            out.append(('', self.value))
+        for (letter, child) in self.children.iteritems():
+            pairs = child._traverse_subtree()
+            pairs = map(lambda p: (letter+p[0], p[1]), pairs)
+            out.extend(pairs)
+        return out

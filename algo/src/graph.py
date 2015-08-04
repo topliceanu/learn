@@ -304,3 +304,10 @@ class Graph:
                 g.add_edge((p1[0], p2[0], distance(p1, p2)))
 
         return g
+
+class GraphNode(object):
+    """ A node in a graph data structure. """
+    def __init__(self, value=None, directed=True):
+        self.value = value
+        self.inbound = {}
+        self.outbound = {}
