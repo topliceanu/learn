@@ -1,20 +1,35 @@
-React = require('react')
+var React = require('react')
 
 
 var Team = React.createClass({
+    propTypes: {
+        data: React.PropTypes.shape({
+            id: React.PropTypes.number,
+            name: React.PropTypes.string,
+            played: React.PropTypes.number,
+            won: React.PropTypes.number,
+            drawn: React.PropTypes.number,
+            lost: React.PropTypes.number,
+            goalsFor: React.PropTypes.number,
+            goalsAgainst: React.PropTypes.number,
+            goalDifference: React.PropTypes.number,
+            points: React.PropTypes.number
+        })
+    },
+
     render: function () {
         return (
             <tr>
-                <td>1</td>
-                <td>Manchester City</td>
-                <td>38</td>
-                <td>28</td>
-                <td>5</td>
-                <td>5</td>
-                <td>93</td>
-                <td>29</td>
-                <td>+64</td>
-                <td>89</td>
+                <td>{this.props.position + 1}</td>
+                <td>{this.props.data.name}</td>
+                <td>{this.props.data.played}</td>
+                <td>{this.props.data.won}</td>
+                <td>{this.props.data.drawn}</td>
+                <td>{this.props.data.lost}</td>
+                <td>{this.props.data.goalsFor}</td>
+                <td>{this.props.data.goalsAgainst}</td>
+                <td>{this.props.data.goalDifference}</td>
+                <td>{this.props.data.points}</td>
             </tr>
         );
     }

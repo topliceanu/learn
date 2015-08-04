@@ -1,6 +1,16 @@
-React = require('react');
+var React = require('react');
 
-League = require('./components/League.jsx')
+var Main = require('./components/Main.jsx');
+var DataModel = require('./lib/DataModel.js');
+var getTeams = require('./lib/getTeams.js');
+var conf = require('./conf.js');
 
 
-React.render(<League />, document.getElementById('content'));
+var data = new DataModel();
+var content = document.getElementById('content');
+
+
+getTeams(conf.http.url, function (teams) {
+    data.bootstrap(teams);
+    React.render(<Main data={data}/>, content);
+});

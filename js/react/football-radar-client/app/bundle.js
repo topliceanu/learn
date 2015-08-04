@@ -44,12 +44,22 @@
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	React = __webpack_require__(1);
+	var React = __webpack_require__(1);
 
-	League = __webpack_require__(157)
+	var Main = __webpack_require__(157);
+	var DataModel = __webpack_require__(161);
+	var getTeams = __webpack_require__(162);
+	var conf = __webpack_require__(160);
 
 
-	React.render(React.createElement(League, null), document.getElementById('content'));
+	var data = new DataModel();
+	var content = document.getElementById('content');
+
+
+	getTeams(conf.http.url, function (teams) {
+	    data.bootstrap(teams);
+	    React.render(React.createElement(Main, {data: data}), content);
+	});
 
 
 /***/ },
@@ -20431,12 +20441,92 @@
 /* 157 */
 /***/ function(module, exports, __webpack_require__) {
 
-	React = __webpack_require__(1);
+	var React = __webpack_require__(1);
 
-	Team = __webpack_require__(158)
+	var League = __webpack_require__(158);
+	var conf = __webpack_require__(160);
+
+
+	var Main = React.createClass({displayName: "Main",
+	    propTypes: {
+	        data: React.PropTypes.shape({
+	            items: React.PropTypes.arrayOf(React.PropTypes.shape({
+	                id: React.PropTypes.number,
+	                name: React.PropTypes.string,
+	                played: React.PropTypes.number,
+	                won: React.PropTypes.number,
+	                drawn: React.PropTypes.number,
+	                lost: React.PropTypes.number,
+	                goalsFor: React.PropTypes.number,
+	                goalsAgainst: React.PropTypes.number,
+	                goalDifference: React.PropTypes.number,
+	                points: React.PropTypes.number
+	            }))
+	        })
+	    },
+
+	    getInitialState: function () {
+	        return {items: this.props.data.items};
+	    },
+
+	    socket: null,
+
+	    format: function (update) {
+	        var output = JSON.parse(update);
+	        output.homeGoals = +output.homeGoals;
+	        output.awayGoals = +output.awayGoals;
+	        return output;
+	    },
+
+	    componentWillMount: function () {
+	        var that = this;
+	        this.socket = new WebSocket(conf.ws.url);
+	        this.socket.onmessage = function (event) {
+	            that.props.data.update(that.format(event.data));
+	            that.setState({items: that.props.data.items});
+	        }
+	    },
+
+	    componentWillUnmount: function () {
+	        this.socket.close();
+	    },
+
+	    render: function () {
+	        return (
+	            React.createElement(League, {data: this.state.items})
+	        );
+	    }
+	});
+
+
+	module.exports = Main;
+
+
+/***/ },
+/* 158 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(1);
+
+	var Team = __webpack_require__(159)
 
 
 	var League = React.createClass({displayName: "League",
+	    propTypes: {
+	        data: React.PropTypes.arrayOf(React.PropTypes.shape({
+	            id: React.PropTypes.number,
+	            name: React.PropTypes.string,
+	            played: React.PropTypes.number,
+	            won: React.PropTypes.number,
+	            drawn: React.PropTypes.number,
+	            lost: React.PropTypes.number,
+	            goalsFor: React.PropTypes.number,
+	            goalsAgainst: React.PropTypes.number,
+	            goalDifference: React.PropTypes.number,
+	            points: React.PropTypes.number
+	        }))
+	    },
+
 	    render: function () {
 	        return (
 	            React.createElement("div", {className: "table-responsive"}, 
@@ -20456,10 +20546,9 @@
 	                        )
 	                    ), 
 	                    React.createElement("tbody", null, 
-	                        React.createElement(Team, null), 
-	                        React.createElement(Team, null), 
-	                        React.createElement(Team, null), 
-	                        React.createElement(Team, null)
+	                        this.props.data.map(function (item, index) {
+	                            return React.createElement(Team, {key: item.id, data: item, position: index})
+	                        })
 	                    )
 	                )
 	            )
@@ -20472,26 +20561,41 @@
 
 
 /***/ },
-/* 158 */
+/* 159 */
 /***/ function(module, exports, __webpack_require__) {
 
-	React = __webpack_require__(1)
+	var React = __webpack_require__(1)
 
 
 	var Team = React.createClass({displayName: "Team",
+	    propTypes: {
+	        data: React.PropTypes.shape({
+	            id: React.PropTypes.number,
+	            name: React.PropTypes.string,
+	            played: React.PropTypes.number,
+	            won: React.PropTypes.number,
+	            drawn: React.PropTypes.number,
+	            lost: React.PropTypes.number,
+	            goalsFor: React.PropTypes.number,
+	            goalsAgainst: React.PropTypes.number,
+	            goalDifference: React.PropTypes.number,
+	            points: React.PropTypes.number
+	        })
+	    },
+
 	    render: function () {
 	        return (
 	            React.createElement("tr", null, 
-	                React.createElement("td", null, "1"), 
-	                React.createElement("td", null, "Manchester City"), 
-	                React.createElement("td", null, "38"), 
-	                React.createElement("td", null, "28"), 
-	                React.createElement("td", null, "5"), 
-	                React.createElement("td", null, "5"), 
-	                React.createElement("td", null, "93"), 
-	                React.createElement("td", null, "29"), 
-	                React.createElement("td", null, "+64"), 
-	                React.createElement("td", null, "89")
+	                React.createElement("td", null, this.props.position + 1), 
+	                React.createElement("td", null, this.props.data.name), 
+	                React.createElement("td", null, this.props.data.played), 
+	                React.createElement("td", null, this.props.data.won), 
+	                React.createElement("td", null, this.props.data.drawn), 
+	                React.createElement("td", null, this.props.data.lost), 
+	                React.createElement("td", null, this.props.data.goalsFor), 
+	                React.createElement("td", null, this.props.data.goalsAgainst), 
+	                React.createElement("td", null, this.props.data.goalDifference), 
+	                React.createElement("td", null, this.props.data.points)
 	            )
 	        );
 	    }
@@ -20499,6 +20603,209 @@
 
 
 	module.exports = Team;
+
+
+/***/ },
+/* 160 */
+/***/ function(module, exports) {
+
+	// Configuration module.
+	// PLEASE update this for your local environment.
+	module.exports = {
+	    ws: {
+	        // WebSockets endpoints to receive updates.
+	        url: 'ws://192.168.33.11:8080/games'
+	    },
+	    http: {
+	        // REST Endpoint to fetch the teams json.
+	        url: 'http://192.168.33.11:8080/teams'
+	    }
+	};
+
+
+/***/ },
+/* 161 */
+/***/ function(module, exports) {
+
+	// Data structure to store all application information.
+	// The data for each team is stored in an plain object. All objects are stored
+	// in an array of team, which is sorted given special rules (see .sort()). Also
+	// for fast retrieval by their id, team objects are stored in a dictionary
+	// where the keys are ids.
+	var DataModel = function () {
+	    // Format of this.items is:
+	    // [
+	    //      {
+	    //          id:number,
+	    //          name:string,
+	    //          played:number,
+	    //          won:number,
+	    //          drawn:number,
+	    //          lost:number,
+	    //          goalsFor:number,
+	    //          goalsAgainst:number,
+	    //          goalDifference:number,
+	    //          points:number
+	    //      }
+	    // ]
+	    this.items = [];
+	    // Stores pointers to each object in the data array indexed by team id.
+	    // Format of this.dict is: {id: teamObject}
+	    this.dict = {};
+	};
+
+
+	// Initialize the data model given a list of team names and ids.
+	//
+	// @param {Array} items
+	// @param {Number} items[k].id - id of the team.
+	// @param {String} items[k].name - name of the team.
+	DataModel.prototype.bootstrap = function (items) {
+	    var that = this;
+	    items.forEach(function (item) {
+	        var newItem = DataModel.factory();
+	        newItem.id = item.id
+	        newItem.name = item.name
+
+	        that.dict[item.id] = newItem;
+	        that.items.push(newItem);
+	    });
+	    this.sort();
+	};
+
+
+	// Sorts the encapsulated data maintaining these rules:
+	//
+	// 1. sort by points first.
+	// 2. sort by goalDifference for teams with equal points.
+	// 3. sort by goalsFor for teams with equal points and goalDifference.
+	// 4. sort by name for teams with equal points, goalDifference and goalsFor.
+	DataModel.prototype.sort = function () {
+	    var compare = function (a, b) {
+	        if (a.points > b.points)
+	            return -1
+	        if (a.points < b.points)
+	            return 1
+
+	        if (a.goalDifference > b.goalDifference)
+	            return -1
+	        if (a.goalDifference < b.goalDifference)
+	            return 1
+
+	        if (a.goalsFor > b.goalsFor)
+	            return -1
+	        if (a.goalsFor < b.goalsFor)
+	            return 1
+
+	        if (a.name > b.name)
+	            return 1
+	        if (a.name < b.name)
+	            return -1
+
+	        return 0
+	    };
+	    this.items.sort(compare);
+	};
+
+
+	// Insert a new update into the data model handling the following cases:
+	// 1. if the team is not yet in the data object, it has to be inserted with
+	//    default values
+	// 2. if the team exists in the data model, it has to be updated accordingly.
+	// 3. maintain this.dict dictionary of references.
+	// 4. maintain the sorted order of the list.
+	//
+	// @param {Object} news - an update object
+	// @param {String} news.date - when the update occured. Ignored!
+	// @param {Number} news.homeTeamId - id of the host team.
+	// @param {Number} news.awayTeamId - id of the guest team.
+	// @param {Number} news.homeGoals - number of goals scored by the host team.
+	// @param {Number} news.awayGoals - number of goals scored by the guest team.
+	//
+	DataModel.prototype.update = function (news) {
+	    var homeTeam = this.dict[news.homeTeamId];
+	    var awayTeam = this.dict[news.awayTeamId];
+
+	    if (homeTeam == null) {
+	        console.error('Update ignored because team with id '+news.homeTeamId+' is not known');
+	        return;
+	    }
+	    if (awayTeam == null) {
+	        console.error('Update ignored because team with id '+news.awayTeamId+' is not known');
+	        return;
+	    }
+
+	    // both teams played a new game.
+	    homeTeam.played += 1;
+	    awayTeam.played += 1;
+
+	    // winning team gets 3 points, losing team gets 0 points, on draw, both
+	    // teams get 1 point.
+	    if (news.homeGoals > news.awayGoals) { // home team won!
+	        homeTeam.won += 1
+	        awayTeam.lost += 1
+	        homeTeam.points += 3
+	    }
+	    else if (news.homeGoals < news.awayGoals) { // away team won!
+	        homeTeam.lost += 1
+	        awayTeam.won += 1
+	        awayTeam.points += 3
+	    }
+	    else { // draw!
+	        homeTeam.drawn += 1
+	        awayTeam.drawn += 1
+	        homeTeam.points += 1
+	        awayTeam.points += 1
+	    }
+
+	    homeTeam.goalsFor += news.homeGoals;
+	    awayTeam.goalsFor += news.awayGoals;
+
+	    homeTeam.goalsAgainst += news.awayGoals;
+	    awayTeam.goalsAgainst += news.homeGoals;
+
+	    homeTeam.goalDifference += news.homeGoals - news.awayGoals;
+	    awayTeam.goalDifference += news.awayGoals - news.homeGoals;
+
+	    // sort the data list after these updates.
+	    this.sort();
+	};
+
+
+	// Static method to build a raw team object.
+	DataModel.factory = function () {
+	    return {
+	        id: null,
+	        name: null,
+	        played: 0,
+	        won: 0,
+	        drawn: 0,
+	        lost: 0,
+	        goalsFor: 0,
+	        goalsAgainst: 0,
+	        goalDifference: 0,
+	        points: 0
+	    };
+	};
+
+
+	module.exports = DataModel;
+
+
+/***/ },
+/* 162 */
+/***/ function(module, exports) {
+
+	module.exports = function (url, callback) {
+	    var xhr = new XMLHttpRequest();
+	    xhr.onreadystatechange = function () {
+	        if (xhr.readyState == 4 && xhr.status == 200) {
+	            callback(JSON.parse(xhr.responseText));
+	        }
+	    };
+	    xhr.open('GET', url);
+	    xhr.send();
+	};
 
 
 /***/ }
