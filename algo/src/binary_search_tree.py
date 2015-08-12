@@ -34,7 +34,12 @@ class BinarySearchTreeNode(object):
     # Public API.
 
     def insert(self, key, value=None):
-        """ Insert the new value in the appropriate direction. """
+        """ Insert the new value in the appropriate direction.
+
+        Returns:
+            object, instance of src.binary_search_tree.BinarySearchTreeNode
+                    the node which was newly inserted.
+        """
         if self.key > key:
             direction = 'left'
         else:
@@ -47,12 +52,14 @@ class BinarySearchTreeNode(object):
             setattr(self, direction, node)
 
             # Recursively increment size of all parents of the newly inserted node.
-            node = node.parent
-            while node != None:
-                node.size += 1
-                node = node.parent
+            _node = node.parent
+            while _node != None:
+                _node.size += 1
+                _node = _node.parent
+
+            return node
         else:
-            child.insert(key, value)
+            return child.insert(key, value)
 
     def lookup(self, key):
         """ Find a node with the given key in the subtree rooted by the current
@@ -104,10 +111,10 @@ class BinarySearchTreeNode(object):
         # Recurse up the parent stack until a parent in the right direction is found.
         node = self
         while node.parent != None:
-            if node.parent.right == node:
+            if node.parent.left == node:
                 node = node.parent
             else:
-                return node
+                return node.parent
         return None
 
     def successor(self):
@@ -124,10 +131,10 @@ class BinarySearchTreeNode(object):
         # Recurse up the parent stack until a parent in the left direction is found.
         node = self
         while node.parent != None:
-            if node.parent.left == node:
+            if node.parent.right == node:
                 node = node.parent
             else:
-                return node
+                return node.parent
         return None
 
     def rank(self):
@@ -142,12 +149,12 @@ class BinarySearchTreeNode(object):
         if self.left != None:
             index += self.left.size
 
-        node = self.parent
-        while node != None:
+        node = self
+        while node.parent != None:
             if node.parent.right == node:
                 index += 1
                 if node.parent.left != None:
-                    index += node.parent.left.rank()
+                    index += node.parent.left.size
             node = node.parent
 
         return index
@@ -162,13 +169,17 @@ class BinarySearchTreeNode(object):
         if self.left == None:
             left = 0
         else:
-            left = self.size
+            left = self.left.size
 
-        if index == left + 1:
-            return node
-        elif index < left + 1:
+        if index == left:
+            return self
+        elif index < left:
+            if self.left == None:
+                return None
             return self.left.select(index)
         else:
+            if self.right == None:
+                return None
             return self.right.select(index - left - 1)
 
     def delete(self):
@@ -176,32 +187,39 @@ class BinarySearchTreeNode(object):
         tree invariant.
 
         Cases:
-        1. is node is leaf, then simply remove the node.
+        0. if node is the only one in the tree.
+        1. if node is leaf, then simply remove the node.
         2. if the node has one child, swap the child in place of the node.
         3. if the node has both children, compute the predecessor, swap it in
         place of the node, then call delete on the predecessor.
         """
-        direction = 'left' if self.parent.left == self else 'right'
+        if self.is_root() and self.is_leaf(): # Case 0
+            return
 
         if self.is_leaf(): # Case 1.
+            direction = 'left' if self.parent.left == self else 'right'
             setattr(self.parent, direction, None)
-            setattr(self.parent, None)
-            return self
-
-        if self.left == None or self.right == None: # Case 2
-            child_direction = 'left' if self.left != None else 'right'
-            child = getattr(self.child_direction)
-            setattr(self.parent, direction, child)
-            setattr(child, 'parent', self.parent)
-            self.parent.size -= 1
-            self.parent = None
-            setattr(self, child_direction, None)
+            setattr(self, 'parent', None)
             return self
 
         if self.left != None and self.right != None: # Case 3
             predecessor = self.predecessor()
             self.swap(predecessor)
-            self.delete()
+            return self.delete()
+
+        if self.left == None or self.right == None: # Case 2
+            # Handle child pointer.
+            child_direction = 'left' if self.left != None else 'right'
+            child = getattr(self, child_direction)
+            setattr(self, child_direction, None)
+
+            # Handle parent pointer.
+            setattr(child, 'parent', self.parent)
+            if not self.is_root():
+                direction = 'left' if self.parent.left == self else 'right'
+                setattr(self.parent, direction, child)
+            setattr(self, 'parent', None)
+            return self
 
     def in_order_traversal(self):
         """ Traverse the tree rooted in this node, in the following order:
@@ -221,9 +239,9 @@ class BinarySearchTreeNode(object):
         """
         out = [self]
         if self.left != None:
-            out.extend(self.left.in_order_traversal())
+            out.extend(self.left.pre_order_traversal())
         if self.right != None:
-            out.extend(self.right.in_order_traversal())
+            out.extend(self.right.pre_order_traversal())
         return out
 
     def post_order_traversal(self):
@@ -232,22 +250,24 @@ class BinarySearchTreeNode(object):
         """
         out = []
         if self.left != None:
-            out.extend(self.left.in_order_traversal())
+            out.extend(self.left.post_order_traversal())
         if self.right != None:
-            out.extend(self.right.in_order_traversal())
+            out.extend(self.right.post_order_traversal())
         out.append(self)
         return out
 
     def common_ancestor(self, other):
         """ Detect the first common ancestor between the current node the
-        passed other node.
+        other node.
 
-        Start by checking if other is a descendent of self, if not, move up to
-        the parent of self and see if other is found on the other child, etc.
+        Populates a list of ancestors for both self and other. Then compares
+        the two lists starting at the root and stops at the first divergent node.
+
+        Complexity: O((logn)^2) in time and O(1) in space
         """
         if self == other:
             return self
-        if self.left.lookup(other.key) == other:
+        if self.lookup(other.key) == other: # self is ancestor of other.
             return self
 
         node = self
@@ -353,31 +373,34 @@ class BinarySearchTreeNode(object):
     def swap(self, other):
         """ Interchange the current node with the other node by properly
         rewiring the pointers for parent, left and right children.
+
+        Note! This method has no intention of preserving the binary search tree
+        invariant. This burned falls on the client of this method.
         """
-        other_parent_direction = 'left' if other.parent.left == other else 'right'
-        self_parent_direction = 'left' if self.parent.left == self else 'right'
-
         # Replace parent pointers for the two nodes.
-        self.parent[self_parent_direction] = other
-        other.parent[other_parent_direction] = self
+        if not other.is_root():
+            other_parent_direction = 'left' if other.parent.left == other else 'right'
+            setattr(other.parent, other_parent_direction, self)
+        if not self.is_root():
+            self_parent_direction = 'left' if self.parent.left == self else 'right'
+            setattr(self.parent, self_parent_direction, other)
 
-        # Replace the two nodes' pointers to parents.
-        tmp = other.parent
-        other.parent = self.parent
-        self.parent = tmp
+        # Interchange the two nodes' pointers to parents.
+        parent = getattr(other, 'parent')
+        setattr(other, 'parent', self.parent)
+        setattr(self, 'parent', parent)
 
         # Replace pointers for the children of two nodes.
         for direction in ['left', 'right']:
-            tmp = getattr(self, direction)
             self_child = getattr(self, direction)
             other_child = getattr(other, direction)
             setattr(self, direction , other_child)
             setattr(other, direction, self_child)
-            other_child.parent = self
-            self_child.parent = other
+            setattr(other_child, 'parent', self) if other_child != None else None
+            setattr(self_child, 'parent', other) if self_child != None else None
 
     def rotate(self, direction):
-        """ Rotate the current node with either his left or right child given
+        """ Rotate the current node with either its left or right child given
         by the direction parameter. Returns the new node.
 
         Left Rotation Schema:
@@ -459,27 +482,10 @@ class BinarySearchTreeNode(object):
     # Statics
 
     @classmethod
-    def from_list(cls, arr):
-        """ Builds a new binary search tree by sequentially inserting each
-        element in arr.
-
-        Args:
-            arr: list of tuples, format [(key, value)]
-
-        Return:
-            object, instance of src.binary_search_tree.BinarySearchTreeNode
-        """
-        root = cls(arr[0][0], arr[0][1])
-        for (key, value) in arr[1:]:
-            root.insert(key, value)
-        return root
-
-    @classmethod
     def from_sorted_list(cls, arr):
         """ Given a previously sorted array, builds a ballanced binary search
         tree.
         """
-
         def build(arr, left, right):
             """ Builds a ballanced binary search tree given a slice of a
             sorted list.
@@ -875,7 +881,10 @@ class BST(object):
         return self.in_order_traversal()
 
     def in_order_traversal(self):
-        """ Return a list of node keys ordered LEFT, ROOT then RIGHT. """
+        """ Return a list of node keys ordered LEFT, ROOT then RIGHT.
+
+        Complexity: O(n)
+        """
         output = []
 
         def traversal(node):

@@ -8,8 +8,8 @@ class TestBinarySearchTreeNode(unittest.TestCase):
 
     def test_insert(self):
         bst = BinarySearchTreeNode('x', 1)
-        bst.insert('y', 2)
-        bst.insert('u', 3)
+        y_node = bst.insert('y', 2)
+        u_node = bst.insert('u', 3)
 
         self.assertEqual(bst.key, 'x', 'root is the correct value')
         self.assertEqual(bst.left.key, 'u', 'right node is correct')
@@ -21,6 +21,11 @@ class TestBinarySearchTreeNode(unittest.TestCase):
 
         self.assertEqual(bst.size, 3, 'should update correct size of a node')
 
+        actual = bst.insert('v', 4)
+        self.assertEqual(actual.key, 'v', 'should insert with correct key')
+        self.assertEqual(actual.value, 4, 'should insert with correct value')
+        self.assertEqual(actual.parent, u_node, 'should have the correct parent')
+
     def test_lookup(self):
         bst = BinarySearchTreeNode('y', 1)
         bst.insert('x', 2)
@@ -30,6 +35,9 @@ class TestBinarySearchTreeNode(unittest.TestCase):
         expected = bst.left
         self.assertEqual(actual, expected, 'should return the entire object')
 
+        actual = bst.lookup('t')
+        self.assertIsNone(actual, 'should not find node with key t')
+
     def test_get_min(self):
         bst = BinarySearchTreeNode('y', 1)
         bst.insert('x', 2)
@@ -38,6 +46,7 @@ class TestBinarySearchTreeNode(unittest.TestCase):
         expected = bst.get_min()
         actual = bst.left
         self.assertEqual(actual, expected, 'produced correct min node')
+        self.assertEqual(actual.key, 'x', 'produced correct min node key')
 
     def test_get_max(self):
         bst = BinarySearchTreeNode('y', 1)
@@ -47,6 +56,416 @@ class TestBinarySearchTreeNode(unittest.TestCase):
         expected = bst.get_max()
         actual = bst.right
         self.assertEqual(actual, expected, 'produced correct max node')
+        self.assertEqual(actual.key, 'z', 'produced correct max node key')
+
+    def test_predecessor(self):
+        """ Following tree structure:
+                (x)
+               /   \
+             (t)   (y)
+               \      \
+              (u)     (z)
+                \
+                (v)
+        """
+        x_node = BinarySearchTreeNode('x', 1)
+        y_node = x_node.insert('y', 2)
+        z_node = x_node.insert('z', 3)
+        t_node = x_node.insert('t', 4)
+        u_node = x_node.insert('u', 5)
+        v_node = x_node.insert('v', 6)
+
+        self.assertEqual(x_node.predecessor(), v_node, 'predecessor of x is u')
+        self.assertEqual(y_node.predecessor(), x_node, 'predecessor of y is x')
+        self.assertEqual(z_node.predecessor(), y_node, 'predecessor of z is y')
+        self.assertEqual(t_node.predecessor(), None, 't has no predecessor')
+        self.assertEqual(u_node.predecessor(), t_node, 'predecessor of u is t')
+        self.assertEqual(v_node.predecessor(), u_node, 'predecessor of v is u')
+
+    def test_successor(self):
+        """ Following tree structure:
+                (x)
+               /   \
+             (t)   (y)
+               \      \
+              (u)     (z)
+                \
+                (v)
+        """
+        x_node = BinarySearchTreeNode('x', 1)
+        y_node = x_node.insert('y', 2)
+        z_node = x_node.insert('z', 3)
+        t_node = x_node.insert('t', 4)
+        u_node = x_node.insert('u', 5)
+        v_node = x_node.insert('v', 6)
+
+        self.assertEqual(x_node.successor(), y_node, 'successor of x is y')
+        self.assertEqual(y_node.successor(), z_node, 'successor of y is z')
+        self.assertEqual(z_node.successor(), None, 'z has no successor')
+        self.assertEqual(t_node.successor(), u_node, 'successor of t is u')
+        self.assertEqual(u_node.successor(), v_node, 'successor of u is v')
+        self.assertEqual(v_node.successor(), x_node, 'successor of v is x')
+
+    def test_rank(self):
+        """ Following tree structure:
+                (x)
+               /   \
+             (t)   (y)
+            /  \      \
+          (r)  (u)    (z)
+          / \    \
+        (q) (s)  (v)
+
+        This will yield: [q, r, s, t, u, v, x, y, z]
+        """
+        x_node = BinarySearchTreeNode('x')
+        y_node = x_node.insert('y')
+        z_node = x_node.insert('z')
+        t_node = x_node.insert('t')
+        u_node = x_node.insert('u')
+        v_node = x_node.insert('v')
+        r_node = x_node.insert('r')
+        s_node = x_node.insert('s')
+        q_node = x_node.insert('q')
+
+        self.assertEqual(q_node.rank(), 0, 'q is on index 0')
+        self.assertEqual(r_node.rank(), 1, 'r is on index 1')
+        self.assertEqual(s_node.rank(), 2, 's is on index 2')
+        self.assertEqual(t_node.rank(), 3, 't is on index 3')
+        self.assertEqual(u_node.rank(), 4, 'u is on index 4')
+        self.assertEqual(v_node.rank(), 5, 'v is on index 5')
+        self.assertEqual(x_node.rank(), 6, 'x is on index 6')
+        self.assertEqual(y_node.rank(), 7, 'y is on index 7')
+        self.assertEqual(z_node.rank(), 8, 'z is on index 8')
+
+    def test_select(self):
+        """ Following tree structure:
+                (x)
+               /   \
+             (t)   (y)
+            /  \      \
+          (r)  (u)    (z)
+          / \    \
+        (q) (s)  (v)
+
+        This will yield: [q, r, s, t, u, v, x, y, z]
+        """
+        x_node = BinarySearchTreeNode('x')
+        y_node = x_node.insert('y')
+        z_node = x_node.insert('z')
+        t_node = x_node.insert('t')
+        u_node = x_node.insert('u')
+        v_node = x_node.insert('v')
+        r_node = x_node.insert('r')
+        s_node = x_node.insert('s')
+        q_node = x_node.insert('q')
+
+        self.assertEqual(x_node.select(0), q_node, 'q is on index 0')
+        self.assertEqual(x_node.select(1), r_node, 'r is on index 1')
+        self.assertEqual(x_node.select(2), s_node, 's is on index 2')
+        self.assertEqual(x_node.select(3), t_node, 't is on index 3')
+        self.assertEqual(x_node.select(4), u_node, 'u is on index 4')
+        self.assertEqual(x_node.select(5), v_node, 'v is on index 5')
+        self.assertEqual(x_node.select(6), x_node, 'x is on index 6')
+        self.assertEqual(x_node.select(7), y_node, 'y is on index 7')
+        self.assertEqual(x_node.select(8), z_node, 'z is on index 8')
+        self.assertEqual(x_node.select(10), None, 'there is no node on index 10')
+        self.assertEqual(x_node.select(-5), None, 'there is no node on index -5')
+
+    def test_delete(self):
+        """ Following tree structure:
+                (x)
+               /   \
+             (t)   (y)
+            /  \      \
+          (r)  (u)    (z)
+          / \    \
+        (q) (s)  (v)
+        """
+        x_node = BinarySearchTreeNode('x')
+        y_node = x_node.insert('y')
+        z_node = x_node.insert('z')
+        t_node = x_node.insert('t')
+        u_node = x_node.insert('u')
+        v_node = x_node.insert('v')
+        r_node = x_node.insert('r')
+        s_node = x_node.insert('s')
+        q_node = x_node.insert('q')
+
+        # Case 1: delete leaf.
+        #         (x)                   (x)
+        #        /   \                 /   \
+        #      (t)   (y)             (t)   (y)
+        #     /  \      \    =>     /  \      \
+        #   (r)  (u)    (z)       (r)  (u)    (z)
+        #   / \    \              / \
+        # (q) (s)  (v)          (q) (s)
+        v_node.delete()
+        self.assertEqual(u_node.right, None, 'node u has no left child')
+        self.assertEqual(v_node.parent, None, 'v was completely detached')
+
+        # Case 2: delete internal node with one child.
+        #         (x)                 (x)
+        #        /   \               /   \
+        #      (t)   (y)           (t)   (z)
+        #     /  \     \   =>     /  \
+        #   (r)  (u)   (z)      (r)  (u)
+        #   / \                 / \
+        # (q) (s)             (q) (s)
+        y_node.delete()
+        self.assertEqual(x_node.right, z_node, 'right child of x is now z')
+        self.assertEqual(z_node.parent, x_node, 'parent of z is now x')
+        self.assertEqual(y_node.parent, None, 'y was detached from its parent')
+        self.assertEqual(y_node.right, None, 'y was completly detached from its right child')
+
+        # Case 3, delete internal node with two children.
+        #          (x)                 (x)
+        #         /   \               /   \
+        #       (t)   (z)           (s)   (z)
+        #      /  \         =>     /  \
+        #    (r)  (u)            (r)  (u)
+        #   /  \                /
+        # (q)  (s)            (q)
+        t_node.delete()
+        self.assertEqual(t_node.parent, None, 't was detached from parent')
+        self.assertEqual(t_node.left, None, 't was detached from left child')
+        self.assertEqual(t_node.right, None, 't was detached from right child')
+        self.assertEqual(s_node.parent, x_node, 's new parent is x')
+        self.assertEqual(s_node.left, r_node, 's left child is r')
+        self.assertEqual(s_node.right, u_node, 's right child is u')
+        self.assertEqual(r_node.right, None, 's was displaced from being right child of r')
+
+        # Case 3, delete the root.
+        #          (x)                 (u)
+        #         /   \               /   \
+        #       (s)   (z)           (s)   (z)
+        #      /  \         =>     /
+        #    (r)  (u)            (r)
+        #   /                   /
+        # (q)                 (q)
+        x_node.delete()
+        self.assertEqual(x_node.parent, None, 'root x was detached')
+        self.assertEqual(x_node.left, None, 'root x was detached from left child')
+        self.assertEqual(x_node.right, None, 'root x was detached from right child')
+        self.assertEqual(u_node.parent, None, 'u is the new root')
+        self.assertEqual(u_node.left, s_node, 'left child of root u is now s')
+        self.assertEqual(u_node.right, z_node, 'right child of root us is now z')
+
+    def test_in_order_traversal(self):
+        """ Uses following tree structure:
+                (x)
+               /   \
+             (t)   (y)
+            /  \      \
+          (r)  (u)    (z)
+          / \    \
+        (q) (s)  (v)
+        """
+        x_node = BinarySearchTreeNode('x')
+        y_node = x_node.insert('y')
+        z_node = x_node.insert('z')
+        t_node = x_node.insert('t')
+        u_node = x_node.insert('u')
+        v_node = x_node.insert('v')
+        r_node = x_node.insert('r')
+        s_node = x_node.insert('s')
+        q_node = x_node.insert('q')
+
+        expected = ['q', 'r', 's', 't', 'u', 'v', 'x', 'y', 'z']
+        nodes = x_node.in_order_traversal()
+        actual = map(lambda n: n.key, nodes)
+        self.assertEqual(actual, expected, 'correct in-order traversal')
+
+    def test_pre_order_traversal(self):
+        """ Uses following tree structure:
+                (x)
+               /   \
+             (t)   (y)
+            /  \      \
+          (r)  (u)    (z)
+          / \    \
+        (q) (s)  (v)
+        """
+        x_node = BinarySearchTreeNode('x')
+        y_node = x_node.insert('y')
+        z_node = x_node.insert('z')
+        t_node = x_node.insert('t')
+        u_node = x_node.insert('u')
+        v_node = x_node.insert('v')
+        r_node = x_node.insert('r')
+        s_node = x_node.insert('s')
+        q_node = x_node.insert('q')
+
+        expected = ['x', 't', 'r', 'q', 's', 'u', 'v', 'y', 'z']
+        nodes = x_node.pre_order_traversal()
+        actual = map(lambda n: n.key, nodes)
+        self.assertEqual(actual, expected, 'correct pre-order traversal')
+
+    def test_post_order_traversal(self):
+        """ Uses following tree structure:
+                (x)
+               /   \
+             (t)   (y)
+            /  \      \
+          (r)  (u)    (z)
+          / \    \
+        (q) (s)  (v)
+        """
+        x_node = BinarySearchTreeNode('x')
+        y_node = x_node.insert('y')
+        z_node = x_node.insert('z')
+        t_node = x_node.insert('t')
+        u_node = x_node.insert('u')
+        v_node = x_node.insert('v')
+        r_node = x_node.insert('r')
+        s_node = x_node.insert('s')
+        q_node = x_node.insert('q')
+
+        expected = ['q', 's', 'r', 'v', 'u', 't', 'z', 'y', 'x']
+        nodes = x_node.post_order_traversal()
+        actual = map(lambda n: n.key, nodes)
+        self.assertEqual(actual, expected, 'correct pre-order traversal')
+
+    def test_common_ancestor(self):
+        """ Uses following tree structure:
+                (x)
+               /   \
+             (t)   (y)
+            /  \      \
+          (r)  (u)    (z)
+          / \    \
+        (q) (s)  (v)
+        """
+        x_node = BinarySearchTreeNode('x')
+        y_node = x_node.insert('y')
+        z_node = x_node.insert('z')
+        t_node = x_node.insert('t')
+        u_node = x_node.insert('u')
+        v_node = x_node.insert('v')
+        r_node = x_node.insert('r')
+        s_node = x_node.insert('s')
+        q_node = x_node.insert('q')
+
+        self.assertEqual(t_node.common_ancestor(v_node), t_node, 't is ancestor of v')
+        self.assertEqual(v_node.common_ancestor(u_node), u_node, 'u is parent of v')
+        self.assertEqual(q_node.common_ancestor(x_node), x_node, 'x is root')
+
+    # Utilities
+
+    def test_swap(self):
+        """ Following tree structure is used:
+                (x)
+               /   \
+             (t)   (y)
+            /  \     \
+          (r)  (u)   (z)
+        """
+        x_node = BinarySearchTreeNode('x')
+        y_node = x_node.insert('y')
+        z_node = x_node.insert('z')
+        t_node = x_node.insert('t')
+        r_node = x_node.insert('r')
+        u_node = x_node.insert('u')
+
+        # 1. Swap leaf and it's parent node.
+        #       (x)               (x)
+        #      /   \             /   \
+        #    (t)   (y)   =>    (r)   (y)
+        #   /  \     \        /  \     \
+        # (r)  (u)   (z)    (t)  (u)   (z)
+        r_node.swap(t_node)
+        self.assertEqual(r_node.parent, x_node, 'x is now parent of r')
+        self.assertEqual(r_node.left, t_node, 't is left child of r')
+        self.assertEqual(r_node.right, u_node, 'u is left child of r')
+        self.assertEqual(t_node.parent, r_node, 'r is now parent of t')
+        self.assertEqual(t_node.left, None, 't has no left child')
+        self.assertEqual(t_node.right, None, 't has no right child')
+
+        # 2. Swap leaf with another middle node.
+        #       (x)               (x)
+        #      /   \             /   \
+        #    (r)   (y)   =>    (r)   (u)
+        #   /  \     \        /  \     \
+        # (t)  (u)   (z)    (t)  (y)   (z)
+
+        u_node.swap(y_node)
+        self.assertEqual(u_node.parent, x_node, 'x is now parent of u')
+        self.assertEqual(u_node.left, None, 'u has no left child')
+        self.assertEqual(u_node.right, z_node, 'z is right child of u')
+        self.assertEqual(y_node.parent, r_node, 'r is now parent of y')
+        self.assertEqual(y_node.left, None, 'y has no left child')
+        self.assertEqual(y_node.right, None, 'y has no right child')
+
+        # 3. Swap leaf with another leaf.
+        #       (x)               (x)
+        #      /   \             /   \
+        #    (r)   (u)   =>    (r)   (u)
+        #   /  \     \        /  \     \
+        # (t)  (y)   (z)    (z)  (y)   (t)
+        t_node.swap(z_node) #
+        self.assertEqual(t_node.parent, u_node, 'u is now parent of t')
+        self.assertEqual(t_node.left, None, 't has no left child')
+        self.assertEqual(t_node.right, None, 't has no right child')
+        self.assertEqual(z_node.parent, r_node, 'r is now parent of z')
+        self.assertEqual(z_node.left, None, 'y has no left child')
+        self.assertEqual(z_node.right, None, 'y has no right child')
+
+        # 3. Swap leaf with root.
+        #       (x)               (z)
+        #      /   \             /   \
+        #    (r)   (u)   =>    (r)   (u)
+        #   /  \     \        /  \     \
+        # (z)  (y)   (t)    (x)  (y)   (t)
+        z_node.swap(x_node)
+        self.assertEqual(z_node.parent, None, 'z is now a root so no parent')
+        self.assertEqual(z_node.left, r_node, 'left child of z is r')
+        self.assertEqual(z_node.right, u_node, 'right child of z is u')
+        self.assertEqual(x_node.parent, r_node, 'r is now parent of x')
+        self.assertEqual(x_node.left, None, 'x has no left child')
+        self.assertEqual(x_node.right, None, 'x has no right child')
+
+    def test_rotate_left(self):
+        """ Uses following tree structure, test rotate left between nodes t and u.
+                    (x)                  (x)
+                   /   \                /   \
+                 (t)   (y)            (u)   (y)
+                /  \      \   =>     /  \      \
+              (r)  (u)    (z)      (t)  (v)    (z)
+              / \    \             /
+            (q) (s)  (v)         (r)
+                                /  \
+                              (q)  (s)
+        """
+        x_node = BinarySearchTreeNode('x')
+        y_node = x_node.insert('y')
+        z_node = x_node.insert('z')
+        t_node = x_node.insert('t')
+        u_node = x_node.insert('u')
+        v_node = x_node.insert('v')
+        r_node = x_node.insert('r')
+        s_node = x_node.insert('s')
+        q_node = x_node.insert('q')
+
+    def test_rotate_right(self):
+        """ Uses following tree structure, test rotate right between nodes r and t.
+                    (x)                  (x)
+                   /   \                /   \
+                 (t)   (y)            (t)   (y)
+                /  \      \   =>     /  \      \
+              (r)  (u)    (z)      (r)  (u)    (z)
+              / \    \             / \    \
+            (q) (s)  (v)         (q) (s)  (v)
+        """
+        x_node = BinarySearchTreeNode('x')
+        y_node = x_node.insert('y')
+        z_node = x_node.insert('z')
+        t_node = x_node.insert('t')
+        u_node = x_node.insert('u')
+        v_node = x_node.insert('v')
+        r_node = x_node.insert('r')
+        s_node = x_node.insert('s')
+        q_node = x_node.insert('q')
+        # TODO make this work
 
 
 class TestBST(unittest.TestCase):
