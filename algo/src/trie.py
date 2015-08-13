@@ -3,6 +3,108 @@
 END = 'END'
 
 
+class TrieNode(object):
+    def __init__(self, value=None):
+        self.value = value
+        self.children = {}
+
+    def insert(self, key, value):
+        """ Insert the value under the given key. """
+        if key == '':
+            self.value = value
+            return
+
+        (head, tail) = self.split(key)
+        if head not in self.children:
+            self.children[head] = TrieNode()
+        self.children[head].insert(tail, value)
+
+    def lookup(self, key):
+        """ Search for the value corresponding to key. """
+        if key == '':
+            return self.value
+        (head, tail) = self.split(key)
+        if head not in self.children:
+            return None
+        return self.children[head].lookup(tail)
+
+    def lookup_prefix(self, prefix):
+        """ Returns a list of all [(key, value)] pairs where key starts with
+        prefix.
+
+        Two phases:
+        1. traverse the prefix
+        2. once the prefix has been traversed, return the entire subtree.
+
+        Args:
+            prefix: str, the prefix to find all corresponding keys.
+        Returns:
+            list, of pairs, format [(key, value)]
+        """
+        if prefix == '':
+            return self.traverse()
+
+        (head, tail) = self.split(prefix)
+        if head not in self.children:
+            return []
+
+        pairs = self.children[head].lookup_prefix(tail)
+        pairs = map(lambda p: (head+p[0], p[1]), pairs)
+
+        return pairs
+
+    def delete(self, key):
+        """ Removes a value associated with the given key from the trie.
+
+        It will remove the node as well if it is not a prefix to other nodes.
+
+        Args:
+            key: string, the key corresponding to the value to remove.
+        """
+        if key == '': # Reached the node corresponding to the initial key.
+            if len(self.children) != 0:
+                self.value = None
+                return False # Node is a prefix to other nodes, so no removal.
+            else:
+                return True # Node is not a prefix to other nodes, ok for removal.
+
+        (head, tail) = self.split(key)
+        if head not in self.children: # The key is not present in the trie.
+            return False
+
+        # Remove child node if instructed.
+        should_remove = self.children[head].delete(tail)
+        if should_remove == True:
+            del self.children[head]
+
+        # Instruct callee to remove node only if it has no other children.
+        return len(self.children) == 0
+
+    def traverse(self):
+        """ Returns a list of key, value pairs for all it's children
+        including it's own value, sorted lexicographically by key.
+
+        Returns:
+            list, of pairs, formt [(key, value)]
+        """
+        out = []
+        if self.value != None:
+            out.append(('', self.value))
+
+        children = sorted(self.children.iteritems(), key=lambda p: p[0])
+        for (letter, child) in children:
+            pairs = child.traverse()
+            pairs = map(lambda p: (letter+p[0], p[1]), pairs)
+            out.extend(pairs)
+        return out
+
+    def split(self, key):
+        """ Splits a string into the first character and the second one. """
+        if len(key) == 0:
+            raise Exception('Cannot extract head and tail from empty string')
+        return (key[0], key[1:])
+
+
 class Trie(object):
     """ Also known as prefix trees.
 
@@ -112,68 +214,4 @@ class Trie(object):
                     out.append((letter+word, value))
         return out
 
-## TODO
-#class CompressedTrie(object):
-#    """ Implements a space efficient Trie in O(n) """
-#    pass
-
-class TrieNode(object):
-    def __init__(self, value=None):
-        self.value = value
-        self.children = {}
-
-    def insert(self, key, value):
-        """ Insert the value under the given key. """
-        if len(key) == '':
-            self.value = value
-
-        (head, tail) = self._split(key)
-        if head not in self.children:
-            self.children[head] = TrieNode()
-        self.children[head].insert(tail, value)
-
-    def lookup(self, key):
-        """ Search for the value corresponding to key. """
-        if key == '':
-            return self.value
-        (head, tail) = self._split(key)
-        if head not in self.children:
-            return None
-        return self.children[head].lookup(tail)
-
-    def lookup_prefix(self, prefix):
-        """ Returns a list of all [(key, value)] pairs where key starts with
-        prefix.
-        Two phases:
-        1. traverse the prefix
-        2. once the prefix has been traversed, return the entire subtree.
-        """
-        if prefix == '':
-            return self._traverse_subtree()
-
-        (head, tail) = self._split(prefix)
-        if head not in self.children:
-            return None
-        pairs = self.children[head].lookup_prefix(tail)
-        pairs = map(lambda p: (head+p[0], p[1]), pairs)
-        return pairs
-
-    # Helpers
-
-    def _split(self, key):
-        if len(key) == 0:
-            raise Exception('Cannot extract head and tail from empty string')
-        return (key[0], key[1:])
-
-    def _traverse_subtree(self):
-        """ Returns a list of pairs [(key, value)] for all it's children
-        including it's own value.
-        """
-        out = []
-        if self.value != None:
-            out.append(('', self.value))
-        for (letter, child) in self.children.iteritems():
-            pairs = child._traverse_subtree()
-            pairs = map(lambda p: (letter+p[0], p[1]), pairs)
-            out.extend(pairs)
-        return out
+# TODO Implement a space efficient Trie in O(n).

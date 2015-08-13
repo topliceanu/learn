@@ -2,10 +2,104 @@
 
 import unittest
 
-from src.trie import Trie, END
+from src.trie import Trie, END, TrieNode
 
 
-class TrieTest(unittest.TestCase):
+class TestTrieNode(unittest.TestCase):
+
+    def test_insert(self):
+        """ Build the following trie:
+                    ()
+                   a|
+                   ()
+                  b|
+                  ()
+                c/  \d
+               (1)  (2)
+        """
+        root = TrieNode()
+        root.insert('abc', 1)
+        root.insert('abd', 2)
+
+        self.assertIsNone(root.value, 'root has no value')
+        self.assertItemsEqual(root.children.keys(), ['a'], 'only one child')
+        self.assertIsNone(root.children['a'].value, 'first node has no value')
+        self.assertItemsEqual(root.children['a'].children.keys(), ['b'], 'only one child')
+        self.assertIsNone(root.children['a'].children['b'].value, 'second node has no value')
+        self.assertItemsEqual(root.children['a'].children['b'].children.keys(), ['c', 'd'], 'two children')
+        self.assertEqual(root.children['a'].children['b'].children['c'].value, 1, 'correct value is stored')
+        self.assertEqual(root.children['a'].children['b'].children['d'].value, 2, 'correct value is stored')
+
+    def test_lookup(self):
+        root = TrieNode()
+        root.insert('abc', 1)
+        root.insert('abd', 2)
+
+        self.assertEqual(root.lookup('abc'), 1, 'should return the correct value')
+        self.assertIsNone(root.lookup('abe'), 'should not find the corresponding value')
+
+    def test_lookup_prefix(self):
+        root = TrieNode()
+        root.insert('abc', 1)
+        root.insert('abd', 2)
+        root.insert('acd', 3)
+        root.insert('bcd', 4)
+        root.insert('bc', 5)
+
+        actual = root.lookup_prefix('ab')
+        expected = [('abc', 1), ('abd', 2)]
+        self.assertItemsEqual(actual, expected,
+            'should return all key, value pairs with keys beginning with prefix')
+
+        actual = root.lookup_prefix('a')
+        expected = [('abc', 1), ('abd', 2), ('acd', 3)]
+        self.assertItemsEqual(actual, expected,
+            'should return all key, value pairs with keys beginning with prefix')
+
+        actual = root.lookup_prefix('')
+        expected = [('abc', 1), ('abd', 2), ('acd', 3), ('bcd', 4), ('bc', 5)]
+        self.assertItemsEqual(actual, expected, 'found all pairs in the trie')
+
+        actual = root.lookup_prefix('c')
+        expected = []
+        self.assertItemsEqual(actual, expected, 'found no keys matching prefix')
+
+    def test_delete(self):
+        root = TrieNode()
+        root.insert('abc', 1)
+        root.insert('abd', 2)
+        root.insert('acd', 3)
+        root.insert('bc', 4)
+        root.insert('bcd', 5)
+
+        root.delete('acd')
+        self.assertIsNotNone(root.lookup('abc'), 'should still access abc')
+        self.assertIsNotNone(root.lookup('abd'), 'should still access abc')
+
+        root.delete('ab') # Key holds no value.
+        self.assertIsNotNone(root.lookup('abc'), 'nothing is deleted')
+        self.assertIsNotNone(root.lookup('abd'), 'nothing is deleted')
+
+        root.delete('bc') # Key hods a value but has children.
+        self.assertIsNone(root.lookup('bc'), 'value has been removed')
+        self.assertIsNotNone(root.lookup('bcd'),
+            'key with bc prefix are still accessible')
+
+    def test_traverse(self):
+        root = TrieNode()
+        root.insert('acd', 3)
+        root.insert('bc', 4)
+        root.insert('abd', 2)
+        root.insert('bcd', 5)
+        root.insert('abc', 1)
+
+        actual = root.traverse()
+        expected = [('abc', 1), ('abd', 2), ('acd', 3), ('bc', 4), ('bcd', 5)]
+        self.assertEqual(actual, expected,
+            'should product the pairs sorted by key')
+
+
+class TestTrie(unittest.TestCase):
 
     def test_insert(self):
         t = Trie()
