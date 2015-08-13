@@ -279,31 +279,38 @@ class BinarySearchTreeNode(object):
             node = node.parent
         return None
 
-    def is_subtree(self, other):
-        """ Check if the given other node is a subtree of the tree rooted in
-        the current node.
-        """
-        if other == None:
-            return False
-        if self.key == other.key:
-            return self.is_identical(other)
-        is_left_subtree = self.left.is_subtree(other) if self.left != None else True
-        is_right_subtree = self.right.is_subtree(other) if self.right != None else True
-        return is_left_subtree and is_right_subtree
-
     def is_identical(self, other):
         """ Checks if two nodes have the same subtree keys. """
         if other == None:
             return False
-        if self.key != other.key:
-            return False
-        if self.is_leaf() and other.is_leaf():
-            return self.key == other.key
-        if (self.is_leaf() and not other.is_leaf()) or (not self.is_leaf() and other.is_leaf()):
+        if self.key != other.key or self.value != other.value:
             return False
 
-        return self.left.is_identical(other.left) and \
-               self.right.is_identical(other.right)
+        left_identical = False
+        if self.left == None and other.left == None:
+            left_identical = True
+        elif self.left != None and other.left != None:
+            left_identical = self.left.is_identical(other.left)
+
+        right_identical = False
+        if self.right == None and other.right == None:
+            right_identical = True
+        elif self.right != None and other.right != None:
+            right_identical = self.right.is_identical(other.right)
+
+        return left_identical and right_identical
+
+    def is_subtree_of(self, other):
+        """ Check if self is a subtree of tree rooted in other."""
+        if other == None:
+            return False
+        if self.key == other.key and self.value == other.value:
+            if self.is_identical(other):
+                return True
+
+        is_left_subtree = self.is_subtree_of(other.left) if other.left != None else False
+        is_right_subtree = self.is_subtree_of(other.right) if other.right != None else False
+        return is_left_subtree or is_right_subtree
 
     def is_leaf(self):
         """ Returns True if the node has no children. """
@@ -322,11 +329,11 @@ class BinarySearchTreeNode(object):
         - the diameter of the right subtree
         - the height of the left subtree plus the height of the right subtree
         """
-        height_left = self.left.height() if self.left != None else 0
-        height_right = self.right.height() if self.right != None else 0
         diameter_left = self.left.diameter() if self.left != None else 0
         diameter_right = self.right.diameter() if self.right != None else 0
-        return max([height_left + height_right, diameter_left, diameter_right])
+        height_left = self.left.height() + 1 if self.left != None else 0
+        height_right = self.right.height() + 1 if self.right != None else 0
+        return max(1 + height_left + height_right, diameter_left, diameter_right)
 
     def is_ballanced(self):
         """ Checks if the tree rooted in the current node is ballanced.
@@ -335,14 +342,14 @@ class BinarySearchTreeNode(object):
         except of the last one, ie. the depths of all leaves are not more than
         one unit of difference.
         """
-        return self.max_depth() - self.min_depth() <= 1
+        return (self.max_depth()[1] - self.min_depth()[1]) <= 1
 
     def merge(self, other):
         """ Merges the given binary tree into the current one. The result is a
         new data structure. This does not modify the current tree.
         """
-        self_data = self.in_order_traversal()
-        other_data = other.in_order_traversal()
+        self_data = map(lambda n: (n.key, n.value), self.in_order_traversal())
+        other_data = map(lambda n: (n.key, n.value), other.in_order_traversal())
 
         def merge(arr1, arr2):
             m = len(arr1)
@@ -351,12 +358,12 @@ class BinarySearchTreeNode(object):
             out = []
 
             while i < m and j < n:
-                if arr1[i] < arr2[j]:
-                    i += 1
+                if arr1[i][0] < arr2[j][0]:
                     out.append(arr1[i])
+                    i += 1
                 else:
-                    j += 1
                     out.append(arr2[j])
+                    j += 1
 
             if i == m:
                 out.extend(arr2[j:])
@@ -365,7 +372,7 @@ class BinarySearchTreeNode(object):
 
             return out
 
-        composed_data = merge(self_daata, other_data)
+        composed_data = merge(self_data, other_data)
         return BinarySearchTreeNode.from_sorted_list(composed_data)
 
     # Utilities
@@ -408,76 +415,102 @@ class BinarySearchTreeNode(object):
                  |                         |
                 (x)           =>          (y)
                /   \                     /   \
-             ...   (y)                 (x)   ...
+             (b)   (y)                 (x)   (c)
                   /   \               /   \
-                (a)   ...           ...   (a)
+                (a)   (c)           (b)   (a)
 
         Right Rotation Schema:
                 (p)                       (p)
                  |                         |
                 (x)           =>          (y)
                /   \                     /   \
-             (y)   ...                ...   (x)
+             (y)   (b)                 (c)   (x)
             /   \                           /   \
-          ...   (a)                       (a)   ...
+          (c)   (a)                       (a)   (b)
         """
-        parent_direction = 'left' if self.parent.left == self else 'right'
+        # Define directions.
+        if direction not in ['left', 'right']:
+            raise Exception('Direction must be either left or right')
         other_direction = 'left' if direction == 'right' else 'right'
 
+        # Extract nodes.
         x = self
         y = getattr(self, other_direction)
         a = getattr(y, direction)
+        b = getattr(x, direction)
+        c = getattr(y, other_direction)
 
-        # Handle parent pointers.
+        # Handle parent pointer.
         y.parent = x.parent
         if y.parent != None:
+            parent_direction = 'left' if self.parent.left == self else 'right'
             setattr(y.parent, parent_direction, y)
 
         # Handle exchange between x and y.
         setattr(y, direction, x)
         x.parent = y
 
-        # Handle rewire pointer for a node.
+        # Update the sizes of the two nodes implicated in the rotation.
+        x.size = 1 + (b.size if b != None else 0) + (a.size if a != None else 0)
+        y.size = 1 + (c.size if c != None else 0) + x.size
+
+        # Handle rewire pointer for node a.
         setattr(x, other_direction, a)
-        a.parent = x
+        if a != None:
+            a.parent = x
 
     def depth(self):
-        """ Compute the number nodes exist between current node and root. """
+        """ Compute the number nodes that exist between self and root. The root
+        has depth 0.
+        """
         if self.is_root():
             return 0
         return 1 + self.parent.depth()
 
     def height(self):
-        """ Compute the number of node between current node and the furthest leaf.
+        """ Compute the number of node between self and the furthest leaf.
+        Leaves have height 0.
         """
         if self.is_leaf():
-            return 1
-        heights = []
-        if self.left != None:
-            heights.append(self.left.height())
-        if self.right != None:
-            heights.append(self.right.height())
-        return 1 + max(depths)
+            return 0
+        height_left = self.left.height() if self.left != None else 0
+        height_right = self.right.height() if self.right != None else 0
+        return 1 + max(height_left, height_right)
 
     def min_depth(self):
         """ Find the leaf in the subtree rooted the current node with the
         minimum depth.
+
+        Returns:
+            pair, format (leaf, max_depth)
         """
         if self.is_leaf():
-            return 1
-        min_left_depth = float('inf') if self.left == None else self.left.min_depth()
-        min_right_depth = float('inf') if self.right == None else self.right.min_depth()
-        return 1 + min([min_left_depth, min_right_depth])
+            return (self, 0)
+
+        MAX = (None, float('inf'))
+        left = self.left.min_depth() if self.left != None else MAX
+        right = self.right.min_depth() if self.right != None else MAX
+
+        (min_node, min_depth) = min([left, right], key=lambda p: p[1])
+        return (min_node, 1 + min_depth)
 
     def max_depth(self):
         """ Find the leaf in the subtree rooted at the current node with the
-        maximum depth.
+        maximum depth. Alias for .height().
+
+        Returns:
+            pair, format (leaf, max_depth)
         """
         if self.is_leaf():
-            return 1
-        max_left_depth = float('-inf') if self.left == None else self.left.max_depth()
-        max_right_depth = float('-inf') if self.right == None else self.right.max_depth()
-        return 1 + min([min_left_depth, min_right_depth])
+            return (self, 0)
+
+        MIN = (None, float('-inf'))
+        left = self.left.max_depth() if self.left != None else MIN
+        right = self.right.max_depth() if self.right != None else MIN
+
+        (max_node, max_depth) = max([left, right], key=lambda p: p[1])
+        return (max_node, 1 + max_depth)
+
 
     # Statics
 
@@ -485,6 +518,12 @@ class BinarySearchTreeNode(object):
     def from_sorted_list(cls, arr):
         """ Given a previously sorted array, builds a ballanced binary search
         tree.
+
+        Args:
+            arr: list, of tuples, format [(key, value)]
+
+        Returns:
+            object, instance of src.binary_search_tree.BinarySearchTreeNode
         """
         def build(arr, left, right):
             """ Builds a ballanced binary search tree given a slice of a
@@ -494,13 +533,14 @@ class BinarySearchTreeNode(object):
                 return None
 
             middle = (right + left) / 2
-            root = cls(arr[middle])
+            (key, value) = arr[middle]
+            root = cls(key, value)
             root.size = len(arr[left:middle])
             root.left = build(arr, left, middle-1)
             root.right = build(arr, middle+1, right)
             return root
 
-        return build(arr, 0, len(arr))
+        return build(arr, 0, len(arr)-1)
 
 
 class BST(object):

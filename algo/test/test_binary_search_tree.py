@@ -350,6 +350,169 @@ class TestBinarySearchTreeNode(unittest.TestCase):
         self.assertEqual(v_node.common_ancestor(u_node), u_node, 'u is parent of v')
         self.assertEqual(q_node.common_ancestor(x_node), x_node, 'x is root')
 
+    def test_is_identical(self):
+        """ Using the following tree structure and two test candidates:
+                (x)                (x)               (x)
+               /   \              /   \             /   \
+             (t)   (y)          (t)   (y)         (t)   (y)
+            /  \      \        /  \      \       /  \      \
+          (r)  (u)    (z)    (r)  (u)    (z)   (r)  (u)    (z)
+          / \    \           / \    \          / \
+        (q) (s)  (v)       (q) (s)  (v)      (q) (s)
+             (root)            (subject1)        (subject2)
+        """
+        root = BinarySearchTreeNode('x')
+        root.insert('y')
+        root.insert('z')
+        root.insert('t')
+        root.insert('u')
+        root.insert('v')
+        root.insert('r')
+        root.insert('s')
+        root.insert('q')
+
+        subject1 = BinarySearchTreeNode('x')
+        subject1.insert('y')
+        subject1.insert('z')
+        subject1.insert('t')
+        subject1.insert('u')
+        subject1.insert('v')
+        subject1.insert('r')
+        subject1.insert('s')
+        subject1.insert('q')
+
+        self.assertTrue(root.is_identical(subject1), 'should detect identical trees')
+
+        subject2 = BinarySearchTreeNode('x')
+        subject2.insert('y')
+        subject2.insert('z')
+        subject2.insert('t')
+        subject2.insert('u')
+        subject2.insert('r')
+        subject2.insert('s')
+        subject2.insert('q')
+
+        self.assertFalse(root.is_identical(subject2), 'should detect non-identical trees')
+
+    def test_is_subtree_of(self):
+        """ Using the following tree structure and two test candidates:
+                (x)
+               /   \                    (u)
+             (t)   (y)         (r)        \
+            /  \      \       /  \        (v)
+          (r)  (u)    (z)   (q)  (s)        \
+          / \    \                          (w)
+        (q) (s)  (v)
+             (root)        (subject1)  (subject2)
+        """
+        root = BinarySearchTreeNode('x')
+        root.insert('y')
+        root.insert('z')
+        root.insert('t')
+        root.insert('u')
+        root.insert('v')
+        root.insert('r')
+        root.insert('s')
+        root.insert('q')
+
+        subject1 = BinarySearchTreeNode('r')
+        subject1 = BinarySearchTreeNode('q')
+        subject1 = BinarySearchTreeNode('s')
+
+        self.assertTrue(subject1.is_subtree_of(root), 'should find the subtree')
+
+        subject2 = BinarySearchTreeNode('u')
+        subject2 = BinarySearchTreeNode('v')
+        subject2 = BinarySearchTreeNode('w')
+
+        self.assertFalse(subject2.is_subtree_of(root), 'should not find the subtree')
+
+    def test_diameter(self):
+        """ Using the following tree structure:
+                (x)
+               /   \
+             (t)   (y)
+            /  \      \
+          (r)  (u)    (z)
+          / \    \
+        (q) (s)  (v)
+                   \
+                   (w)
+        """
+        root = BinarySearchTreeNode('x')
+        y_node = root.insert('y')
+        z_node = root.insert('z')
+        t_node = root.insert('t')
+        u_node = root.insert('u')
+        v_node = root.insert('v')
+        w_node = root.insert('w')
+        r_node = root.insert('r')
+        s_node = root.insert('s')
+        q_node = root.insert('q')
+        self.assertEqual(root.diameter(), 7, 'max diameter of this tree is 6')
+
+    def test_is_ballanced(self):
+        """ Using the following tree structure:
+                (x)                  (x)
+               /   \                /   \
+             (t)   (y)            (t)   (y)
+            /  \      \          /  \      \
+          (r)  (u)    (z)      (r)  (u)    (z)
+          / \    \
+        (q) (s)  (v)
+                   \
+                   (w)
+            (unballanced)         (ballanced)
+        """
+        unballanced = BinarySearchTreeNode('x')
+        unballanced.insert('y')
+        unballanced.insert('z')
+        unballanced.insert('t')
+        unballanced.insert('u')
+        unballanced.insert('v')
+        unballanced.insert('w')
+        unballanced.insert('r')
+        unballanced.insert('s')
+        unballanced.insert('q')
+        self.assertFalse(unballanced.is_ballanced(),
+            'subject tree is not ballanced')
+
+        ballanced = BinarySearchTreeNode('x')
+        ballanced.insert('y')
+        ballanced.insert('z')
+        ballanced.insert('t')
+        ballanced.insert('u')
+        ballanced.insert('r')
+        self.assertTrue(ballanced.is_ballanced(),
+            'subject tree is ballanced')
+
+    def test_merge(self):
+        """ Given two binary search trees check if they are correctly merged:
+
+                (y)       (a)               (c)
+               /   \         \             /   \
+             (x)   (z)  +    (b)    =   (a)    (y)
+                                \         \    / \
+                                (c)      (b) (x) (z)
+              (first)     (second)        (result)
+        """
+        first = BinarySearchTreeNode('y')
+        first.insert('x')
+        first.insert('z')
+
+        second = BinarySearchTreeNode('a')
+        second.insert('b')
+        second.insert('c')
+
+        result = first.merge(second)
+
+        self.assertEqual(result.key, 'c', 'root is c')
+        self.assertEqual(result.left.key, 'a', 'left child of c is a')
+        self.assertEqual(result.right.key, 'y', 'right child of c is y')
+        self.assertEqual(result.left.right.key, 'b', 'right child of a is b')
+        self.assertEqual(result.right.left.key, 'x', 'left child of y is x')
+        self.assertEqual(result.right.right.key, 'z', 'right child of y is z')
+
     # Utilities
 
     def test_swap(self):
@@ -425,7 +588,8 @@ class TestBinarySearchTreeNode(unittest.TestCase):
         self.assertEqual(x_node.right, None, 'x has no right child')
 
     def test_rotate_left(self):
-        """ Uses following tree structure, test rotate left between nodes t and u.
+        """ Uses following tree structure, test rotate left between
+        nodes t and u:
                     (x)                  (x)
                    /   \                /   \
                  (t)   (y)            (u)   (y)
@@ -446,15 +610,34 @@ class TestBinarySearchTreeNode(unittest.TestCase):
         s_node = x_node.insert('s')
         q_node = x_node.insert('q')
 
+        t_node.rotate('left')
+
+        self.assertEqual(u_node.parent, x_node, 'parent of u is now x')
+        self.assertEqual(x_node.left, u_node, 'left child of x is u')
+        self.assertEqual(u_node.left, t_node, 'left node of u is t')
+        self.assertEqual(t_node.parent, u_node, 'parent of t is u')
+        self.assertEqual(u_node.right, v_node, 'right node of u if v')
+        self.assertEqual(v_node.parent, u_node, 'parent of v is u')
+        self.assertEqual(t_node.parent, u_node, 'parent of t is u')
+        self.assertEqual(t_node.left, r_node, 'left child of t is r')
+        self.assertEqual(r_node.parent, t_node, 'parent node of r is t')
+
+        # Test sizes of the newly rotated nodes
+        self.assertEqual(t_node.size, 4, 't can now reach 4 nodes')
+        self.assertEqual(u_node.size, 6, 'u can now reach 6 nodes')
+
     def test_rotate_right(self):
-        """ Uses following tree structure, test rotate right between nodes r and t.
+        """ Uses following tree structure, test rotate right between
+        nodes r and t.
                     (x)                  (x)
                    /   \                /   \
-                 (t)   (y)            (t)   (y)
+                 (t)   (y)            (r)   (y)
                 /  \      \   =>     /  \      \
-              (r)  (u)    (z)      (r)  (u)    (z)
-              / \    \             / \    \
-            (q) (s)  (v)         (q) (s)  (v)
+              (r)  (u)    (z)      (q)  (t)    (z)
+              / \    \                 /  \
+            (q) (s)  (v)             (s)  (u)
+                                            \
+                                            (v)
         """
         x_node = BinarySearchTreeNode('x')
         y_node = x_node.insert('y')
@@ -465,7 +648,138 @@ class TestBinarySearchTreeNode(unittest.TestCase):
         r_node = x_node.insert('r')
         s_node = x_node.insert('s')
         q_node = x_node.insert('q')
-        # TODO make this work
+
+        t_node.rotate('right')
+
+        self.assertEqual(r_node.parent, x_node, 'x is parent of r')
+        self.assertEqual(x_node.left, r_node, 'left child of x is r')
+        self.assertEqual(r_node.left, q_node, 'q is left child of r')
+        self.assertEqual(q_node.parent, r_node, 'parent of q is r')
+        self.assertEqual(r_node.right, t_node, 'x is right child of r')
+        self.assertEqual(t_node.parent, r_node, 'parent of r is t')
+        self.assertEqual(t_node.left, s_node, 'left child of t is s')
+        self.assertEqual(s_node.parent, t_node, 'new parent of s is t')
+        self.assertEqual(u_node.parent, t_node, 'no change in the parent of u')
+
+        # Test sizes of the newly rotated nodes
+        self.assertEqual(t_node.size, 4, 't can now reach 4 nodes')
+        self.assertEqual(r_node.size, 6, 'u can now reach 6 nodes')
+
+    def test_depth(self):
+        """ Using the following tree:
+                    (x)
+                   /   \
+                 (t)   (y)
+                /  \      \
+              (r)  (u)    (z)
+              / \    \
+            (q) (s)  (v)
+        """
+        x_node = BinarySearchTreeNode('x')
+        y_node = x_node.insert('y')
+        z_node = x_node.insert('z')
+        t_node = x_node.insert('t')
+        u_node = x_node.insert('u')
+        v_node = x_node.insert('v')
+        r_node = x_node.insert('r')
+        s_node = x_node.insert('s')
+        q_node = x_node.insert('q')
+
+        self.assertEqual(x_node.depth(), 0, 'x is root so its depth is 0')
+        self.assertEqual(v_node.depth(), 3, 'v is leaf with depth 3')
+
+    def test_height(self):
+        """ Using the following tree:
+                    (x)
+                   /   \
+                 (t)   (y)
+                /  \      \
+              (r)  (u)    (z)
+              / \    \
+            (q) (s)  (v)
+        """
+        x_node = BinarySearchTreeNode('x')
+        y_node = x_node.insert('y')
+        z_node = x_node.insert('z')
+        t_node = x_node.insert('t')
+        u_node = x_node.insert('u')
+        v_node = x_node.insert('v')
+        r_node = x_node.insert('r')
+        s_node = x_node.insert('s')
+        q_node = x_node.insert('q')
+
+        self.assertEqual(x_node.height(), 3, 'x is root so its height is 3')
+        self.assertEqual(t_node.height(), 2, 'height of t is 2')
+        self.assertEqual(v_node.height(), 0, 'height of leaf v is 0')
+        self.assertEqual(r_node.height(), 1, 'x is root so its height is 3')
+        self.assertEqual(t_node.height(), 2, 'x is root so its height is 3')
+
+    def test_min_depth(self):
+        """ Using the following tree:
+                    (x)
+                   /   \
+                 (t)   (y)
+                /  \      \
+              (r)  (u)    (z)
+              / \    \
+            (q) (s)  (v)
+        """
+        x_node = BinarySearchTreeNode('x')
+        y_node = x_node.insert('y')
+        z_node = x_node.insert('z')
+        t_node = x_node.insert('t')
+        u_node = x_node.insert('u')
+        v_node = x_node.insert('v')
+        r_node = x_node.insert('r')
+        s_node = x_node.insert('s')
+        q_node = x_node.insert('q')
+
+        self.assertEqual(x_node.min_depth(), (z_node, 2),
+            'z node is the leaf with minimum depth of 2')
+
+    def test_max_depth(self):
+        """ Using the following tree:
+                    (x)
+                   /   \
+                 (t)   (y)
+                /  \      \
+              (r)  (u)    (z)
+              / \    \
+            (q) (s)  (v)
+        """
+        x_node = BinarySearchTreeNode('x')
+        y_node = x_node.insert('y')
+        z_node = x_node.insert('z')
+        t_node = x_node.insert('t')
+        u_node = x_node.insert('u')
+        v_node = x_node.insert('v')
+        r_node = x_node.insert('r')
+        s_node = x_node.insert('s')
+        q_node = x_node.insert('q')
+
+        self.assertEqual(x_node.max_depth(), (q_node, 3),
+            'q node is the first leaf with maximum depth of 3')
+
+    # Statics
+
+    def test_from_sorted_list(self):
+        """ Build the following tree:
+                    (d)
+                   /   \
+                 (b)   (f)
+                /  \   /  \
+              (a) (c) (e) (g)
+        """
+        arr = [('a',1), ('b',2), ('c',3), ('d',4), ('e',5), ('f',6), ('g',7)]
+        root = BinarySearchTreeNode.from_sorted_list(arr)
+
+        self.assertEqual(root.key, 'd', 'd is root')
+        self.assertEqual(root.left.key, 'b',  'left child of d is b')
+        self.assertEqual(root.right.key, 'f', 'right child of d is f')
+        self.assertEqual(root.left.left.key, 'a', 'left child of b is a')
+        self.assertEqual(root.left.right.key, 'c', 'left child of b is c')
+        self.assertEqual(root.right.left.key, 'e', 'left child of f is e')
+        self.assertEqual(root.right.right.key, 'g', 'left child of f is e')
 
 
 class TestBST(unittest.TestCase):
