@@ -1,0 +1,22 @@
+{
+  "name": "crawler",
+  "version": "0.0.1",
+  "description": "crawler for GoCardless",
+  "main": "index.js",
+  "scripts": {
+    "test": "./node_modules/.bin/mocha"
+  },
+  "author": "alexandru topliceanu <alexandru.topliceanu@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "q": "1.4.1",
+    "request": "2.60.0",
+    "underscore": "1.8.3"
+  },
+  "devDependencies": {
+    "chai": "3.2.0",
+    "express": "4.13.3",
+    "mocha": "2.2.5",
+    "supertest": "1.0.1"
+  }
+}
