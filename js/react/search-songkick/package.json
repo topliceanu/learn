@@ -1,0 +1,24 @@
+{
+  "name": "songkick-search",
+  "version": "0.0.1",
+  "description": "client application for songkick artist search api",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha",
+    "serve": "cd app; python -m SimpleHTTPServer 8888",
+    "build": "./node_modules/.bin/webpack"
+  },
+  "author": "alexandru topliceanu",
+  "license": "MIT",
+  "dependencies": {
+    "baconjs": "^0.7.71",
+    "jquery": "^2.1.4",
+    "react": "0.13.3"
+  },
+  "devDependencies": {
+    "chai": "3.2.0",
+    "jsx-loader": "0.13.2",
+    "mocha": "2.2.5",
+    "webpack": "1.10.5"
+  }
+}
