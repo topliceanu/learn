@@ -2,6 +2,7 @@ React = require('react');
 
 
 var TourDates = React.createClass({
+    /** Renders the list of shows the artist is perfoming during current tour */
     propTypes: {
         artistId: React.PropTypes.string.required
     },
@@ -11,6 +12,7 @@ var TourDates = React.createClass({
         };
     },
     componentWillMount: function () {
+        /** When components will render, fetch the shows data for the current tour */
         if (!this.props.artistId) {
             return;
         }

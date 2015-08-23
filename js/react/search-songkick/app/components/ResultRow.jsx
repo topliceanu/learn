@@ -5,6 +5,15 @@ TourDates = require('./TourDates.jsx');
 
 
 var ResultRow = React.createClass({
+    /** Handles the display of a result row containing data about a single
+     * artist that matches the input field value.
+     *
+     * This component can have multiple rendered results, depending on two variables:
+     * - whether the artist is currently touring
+     * - if the user has expended the tour dates, which will initiate a
+     *   separate ajax request to get the show dates and inject a specialized
+     *   component to render them.
+     */
     propTypes: {
         artist: React.PropTypes.shape({
             id: React.PropTypes.string.required,

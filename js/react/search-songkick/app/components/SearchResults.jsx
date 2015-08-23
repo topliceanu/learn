@@ -4,6 +4,7 @@ var ResultRow = require('./ResultRow.jsx');
 
 
 var SearchResults = React.createClass({
+    /** Component renders the list of the results received in props. */
     propTypes: {
         artists: React.PropTypes.arrayOf(React.PropTypes.shape({
             id: React.PropTypes.string.id,

@@ -6,8 +6,17 @@ var SearchStream = require('../lib/SearchStream.js');
 
 
 var Main = React.createClass({
+    /** Main React component. It handles the fetching of query results for the
+     * artists that match. Delegates rendering of results to SearchResults and
+     * handling the input to SearchBox components.
+     */
     searchStream: new SearchStream(),
     updateQueryString: function (query) {
+        /** Wheever the user updates the value of the input field, the
+         * searchStream gets an update. This will trigger an ajax request, whose
+         * response is directed to the output stream.
+         * @see .componentWillMount()
+         */
         this.searchStream.input.push(query);
     },
     getInitialState: function () {
@@ -16,6 +25,9 @@ var Main = React.createClass({
         };
     },
     componentWillMount: function () {
+        /** Method reacts to responses from the ajax endpoints by updating
+         * the state of the component with the appropriate results
+         */
         var that = this;
         this.searchStream.output.onValue(function (results) {
             that.setState({artists: results});

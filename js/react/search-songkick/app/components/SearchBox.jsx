@@ -2,6 +2,9 @@ var React = require('react');
 
 
 var SearchBox = React.createClass({
+    /** Component captures the value of the text input field and passes it to
+     * the parent component.
+     */
     propTypes: {
         updateQueryString: React.PropTypes.func.required
     },
