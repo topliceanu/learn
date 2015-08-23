@@ -14,8 +14,8 @@ var SearchBox = React.createClass({
         };
     },
     handleChange: function (event) {
+        this.props.updateQueryString(event.target.value);
         this.setState({value: event.target.value});
-        this.props.updateQueryString(this.state.value);
     },
     render: function () {
         return (
