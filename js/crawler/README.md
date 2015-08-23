@@ -1,5 +1,15 @@
 # Crawler
 
+Web cralwer for GoCardless
+
+
+## Usage
+```bash
+$ npm install
+$ npm test
+$ node index.js https://gocardless.com >> output.txt
+```
+
 ## Specs
 
 - should only parse a single domain, ie. ignore outgoing links.
@@ -9,6 +19,41 @@
 - prevent infinite loops, make sure you don't crawl pages you already crawled
 - focus on the speed of the crawler
 - handle the case when the same page has different urls.
+
+
+## Features, Issues and TODOs
+1. `Extracting assets from a page` is difficult because there are a lot of
+types of static assets which would ammount to a complicated and hard to maintain
+RegExp object. The alternative would be to use a DOM implementation (Eg jsdom)
+and use that to consistenly fetch all assets. This is much more resiliant than
+RegExp but it is also significantly slower and, since the key requirement of
+the tool was speed, I dropped this solution. To simplify further, I'm only looking
+for `<script>`, `<link>` and `<img>` tags. This can and should be expanded to
+get a larger set of static dependencies from an html page.
+
+2. `Extracting links from a page` is equally difficult, for the same above reason,
+I only looked for `<a>` tags and extracted their `href` value.
+
+3. A nice feature of my implementation is that it builds a Graph of pages, which
+can be usefull in many other ways, from which the sitemap tree is extracted. The
+sitemap, however, is just a plain object, so it's not very pretty to look at and it is large.
+This solution could easily be extended to include a better render, eg. npm uses
+[archy](https://www.npmjs.com/package/archy) to pretty print module dependency trees.
+
+4. A test suite exists the `/test` folder, it covers the core functionality and
+the most delicate methods in the code base. My intention was not to provide full
+test coverage, but to aid me in developing the solution. For a production app, 100%
+test coverage would be very usefull.
+
+5. Errors produced by the parser are logged but muffled, ie. no bespoke action is taken.
+In production, error aggregation and monitoring are crucial for extending the
+effictiveness of the crawler.
+
+6. Another nice feature is that you can control the number of pages to be fetched in parallel
+using the configuration module. This could be used to determine empirically what is the
+best performance for a specific env: crawled website, hardware performance,
+available bandwith, etc.
+
 
 ## Architecture
 
@@ -27,9 +72,9 @@ in parallel.
       +----| crawler |<---+
       |    +---------+    |
       v                   v
-  +-------+           +---------+
-  | Queue |<----------| SiteMap |
-  +-------+           +---------+
+  +-------+         +-----------+
+  | Queue |<--------| SiteGraph |
+  +-------+         +-----------+
                            ^
                            |
                        +------+
@@ -37,14 +82,42 @@ in parallel.
                        +------+
 ```
 
+## Components
+
+- init
+    - extract (domain, path) from the input seed url.
+    - Build the first Page object and insert it into the Queue.
+    - start the cralwer.
+    - when the crawler finishes, print the site map.
+- crawler
+    - retrieve a batch of Pages from the queue.
+    - instruct the net module to retrieve contents for a batch of Pages.
+    - extract static assets from the html of each page.
+    - extract links from the html of each page.
+    - for each link, check with SiteMap data structure if the page was already processed.
+        - if not, create new Page objects for these links and push them into the queue.
+    - push all populated pages into the SiteMap.
+    - stop when the list of unprocessed queue is empty.
+- net
+    - to speed up DNS lookup, resolve hostname once for the entire website and use the IP to fetch pages.
+    - fetch configurable number of Page objects from the Queue.
+    - initiate GET requests in parallel for each one of these Pages, then populate the html field.
+        - all errored pages, push them into an ErroredPagesQueue.
+    - return all the successully fetched pages to the parser.
+- SiteGraph
+    - data structure to create and store all Page instances.
+    - ability to build a tree representation of the SiteGraph starting with a root page.
+        - it should handle cicles and it should only output each page's path, assets and children.
+
+
 ## Data Structures
 - Page - contains all information about a page
 ```
 {
-    parentUrl:String, // contains only the path and query string portions of the url.
-    parent:Page, // reference to the parent page
-    domain:String, // contains the domain of the url
-    url:String, // contains only the path and query string portions of the url.
+    href:String, // initial url
+    host:Page, // hostname and port
+    path:String, // pathname and query string
+    protocol:String // either http: or https:
     asserts:{
         js:[String],
         css:[String],
@@ -60,13 +133,7 @@ in parallel.
 - SiteMap - a tree structure holding all the Page objects, the root is the Page corresponding to the seed.
 ```
 {
-    root: Page,
-    byUrl: { // Page index, usefull for retrieving a page by their URL.
-        url: Page
-    },
-    byChecksum: { // Page index, usefull for retrieving pages by checksum of their HTML.
-        checksum: Page
-    }
+    pages: {path: Page} // an set of Page instances indexed by their path.
 }
 ```
 
@@ -74,56 +141,6 @@ in parallel.
 ```
 [Page]
 ```
-
-## Components
-
-- init
-    - extract (domain, path) from the input seed url.
-    - Build the first Page object and insert it into the Queue.
-    - start the parser.
-    - when the parser finished, print the SiteMap
-- Parser
-    - retrieve a batch of Pages from the queue.
-    - instruct the fetcher to retrieve contents for a batch of Pages.
-    - extract static assets from the html of each page.
-    - extract links from the html of each page.
-    - for each page, populate checksum and check with SiteMap for a possible already-parsed alias page, if so populate alias field.
-    - for each link, check with SiteMap data structure if the page was already processed.
-        - if not, create new Page objects for these links and push them into the queue.
-    - push all populated pages into the SiteMap.
-    - stop when
-- Fetcher
-    - to speed up DNS lookup, resolve hostname once for the entire website and use the IP to fetch pages.
-    - fetch configurable number of Page objects from the Queue.
-    - initiate GET requests in parallel for each one of these Pages, then populate the html field.
-        - all errored pages, push them into an ErroredPagesQueue.
-    - return all the successully fetched pages to the parser.
-
-## Code
-- a function which splits the domain from path&query from the url. Should ignore the hash fragment.
-
-1. A tree data structure which holds the results.
-    - Each page is a node
-        - each node contains a list of all static assets in a page
-    - the seed page is the root.
-    - are we interested in circular links?
-2. A hash table which holds the hashed contents of each page as key and a list
-   of alias urls to that page as value.
-2. A stack data structure which contains pages that have not yet been parsed.
-3. A parser component, ie. a collection of functions:
-    - a function which extracts all the links to other pages
-    - a filter function which filters out all the links belonging to other domains.
-    - a function which returns all the js/img/css static file urls given a page.
-4. A set containing all the urls that have been parsed so far.
-5. A system to fetch a group of pages in parallel, ie. amortize the wait on
-   http requests to return a response.
-    - use Q and request
-6. A function which splits the domain name and the url.
-    - strip out all the hash parts.
-
-## Dependencies
-- Q, for promises
-- requst, for easy http request.
 
 ## References
 1. [Design and Implementation of a High Performance Distributed Web-Crawler](http://cis.poly.edu/suel/papers/crawl.pdf)
