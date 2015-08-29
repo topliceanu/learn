@@ -19,6 +19,11 @@ toLowerCase s = [if elem c ['A'..'Z'] then chr ((ord c) + 32) else c | c <- s]
 toUpperCase :: [Char] -> [Char]
 toUpperCase s = [if elem c ['a'..'z'] then chr ((ord c) - 32) else c | c <- s]
 
+-- mimics the length function
+length' :: [a] -> Int
+length' [] = 0
+length' (x:xs) = 1 + length' xs
+
 -- extracting data from triples:
 first :: (a, b, c) -> a
 first (x, _, _) = x
@@ -66,7 +71,7 @@ maximum' ([]) = error "No maximum in empty list"
 maximum' (x:[]) = x
 maximum' (x:xs) = max x (maximum' xs)
 
--- my own version of replicate
+-- my own version of replicate, ie. produces a list by repeating the input int.
 replicate' :: Int -> a -> [a]
 replicate' n x
     | n <= 0 = []
@@ -79,7 +84,7 @@ take' n _
 take' n [] = []
 take' n (x:xs) = x:take' (n-1) xs
 
--- my own reverse version
+-- my own reverse version, takes an array and reverses it.
 reverse' :: [a] -> [a]
 reverse' [] = []
 reverse' (x:[]) = [x]
@@ -94,7 +99,7 @@ zip' [] _ = []
 zip' _ [] = []
 zip' (x:xs) (y:ys) = (x, y):zip' xs ys
 
--- my own version of elem
+-- my own version of elem, checks if an element is in a list of elements.
 elem' :: (Eq a) => a -> [a] -> Bool
 elem' _ [] = False
 elem' x (y:ys)
@@ -102,7 +107,7 @@ elem' x (y:ys)
     | otherwise = elem' x ys
 
 -- naive implementation of quick sort, ie:
--- it's not performed inplace, no side effects, remember?!
+-- it's not performed inplace, no side effects, remember !?!
 -- it does two passes through the input array to position the pivot
 quickSort :: (Ord a) => [a] -> [a]
 quickSort [] = []
@@ -151,7 +156,7 @@ signum' n
 (|>) :: Int -> Int -> Int
 x |> y = x + y
 
--- safer versions of tail which don't throw errors when applied to empyt lists.
+-- safer version of tail which doesn't throw error when applied to an empty list.
 safeTail :: [a] -> [a]
 safeTail [] = []
 safeTail (x:xs) = xs
@@ -183,3 +188,55 @@ foldr1' f (x:xs) = foldr' f x xs
 foldl1' :: (a -> a -> a) -> [a] -> a
 foldl1' _ [] = error "Input list must have at least one element"
 foldl1' f (x:xs) = foldl' f x xs
+
+-- given a list of lists concatenate these lists.
+flatten :: [[a]] -> [a]
+flatten xss = [x | xs <- xss, x <- xs]
+
+-- extracts the factors of a given number.
+factors :: Int -> [Int]
+factors n = [x | x <- [1..n], n `mod` x == 0]
+
+-- figure out if the input is prime.
+prime :: Int -> Bool
+prime 1 = True
+prime n = (factors n) == [1, n]
+
+-- given an input number return a list with all prime numbers up to the input.
+primes :: Int -> [Int]
+primes n = [x | x <- [2..n], prime x]
+
+-- compute pairs of adjacent elements from a list
+pairs :: [Int] -> [(Int, Int)]
+pairs xs = zip (init xs) (tail xs)
+
+-- check if a list is sorted
+isSorted :: [Int] -> Bool
+isSorted xs = and [x <= y | (x, y) <- pairs xs]
+
+-- prints a list of all numbers which are pythagoriec when coupled with the input.
+pyths :: Int -> [(Int, Int, Int)]
+pyths n = [(x, y, n) | x <- [1..n], y <- [1..n], x^2 + y^2 == n^2]
+
+-- prints the list of first n pythagoreic integers.
+pyths' :: Int -> [(Int, Int, Int)]
+pyths' n = [(x, y, i) | i <- [1..n], x <- [1..i], y <- [1..i], x^2 + y^2 == i^2]
+
+-- return a list of perfect numbers less than the input, ie. numbers whose
+-- sum of factors equal the number itself.
+perfects :: Int -> [Int]
+perfects n = [x | x <- [1..n], x == (sum $ init $ factors x)]
+
+newton-raphson method for computing a square root of a number.
+sqrt' :: Float -> Int -> Float
+sqrt' n eps = next n eps
+    where next n x = (x + n / x) / 2
+
+-- merge two sorted arrays
+merge' :: (Ord a) => [a] -> [a] -> [a]
+merge' [] [] = []
+merge' xs [] = xs
+merge' [] ys = ys
+merge' (x:xs) (y:ys)
+    | x < y = x:(merge' xs (y:ys))
+    | otherwise = y:(merge' (x:xs) ys)
