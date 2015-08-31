@@ -24,6 +24,12 @@ length' :: [a] -> Int
 length' [] = 0
 length' (x:xs) = 1 + length' xs
 
+length'' :: [a] -> Int
+length'' = foldr (\_ x -> 1 + x) 0
+
+length''' :: [a] -> Int
+length''' = sum . map (\x -> 1)
+
 -- extracting data from triples:
 first :: (a, b, c) -> a
 first (x, _, _) = x
@@ -171,11 +177,14 @@ safeTail'' l
         where x:xs = l
 
 -- my own versions of foldr, foldl, foldr1 and foldl1
+-- foldr traverses a list from left to right.
 foldr' :: (a -> b -> b) -> b -> [a] -> b
 foldr' _ acc [] = acc
 foldr' f acc (x:xs) = f x rightAcc
     where rightAcc = foldr' f acc xs
 
+-- foldl traverses a list from right to left, note that this prevents the
+-- compiler from lazy evaluating the expression.
 foldl' :: (a -> b -> a) -> a -> [b] -> a
 foldl' _ acc [] = acc
 foldl' f acc (x:xs) = foldl' f leftAcc xs
@@ -192,6 +201,10 @@ foldl1' f (x:xs) = foldl' f x xs
 -- given a list of lists concatenate these lists.
 flatten :: [[a]] -> [a]
 flatten xss = [x | xs <- xss, x <- xs]
+
+-- given two lists, concatenate them.
+concat' :: [a] -> [a] -> [a]
+concat' = foldr (:)
 
 -- extracts the factors of a given number.
 factors :: Int -> [Int]
@@ -227,10 +240,7 @@ pyths' n = [(x, y, i) | i <- [1..n], x <- [1..i], y <- [1..i], x^2 + y^2 == i^2]
 perfects :: Int -> [Int]
 perfects n = [x | x <- [1..n], x == (sum $ init $ factors x)]
 
-newton-raphson method for computing a square root of a number.
-sqrt' :: Float -> Int -> Float
-sqrt' n eps = next n eps
-    where next n x = (x + n / x) / 2
+-- TODO newton-raphson method for computing a square root of a number.
 
 -- merge two sorted arrays
 merge' :: (Ord a) => [a] -> [a] -> [a]
@@ -240,3 +250,35 @@ merge' [] ys = ys
 merge' (x:xs) (y:ys)
     | x < y = x:(merge' xs (y:ys))
     | otherwise = y:(merge' (x:xs) ys)
+
+-- drops the first n elements of a list
+drop' :: Int -> [a] -> [a]
+drop' 0 xs = xs
+drop' n [] = []
+drop' n (x:xs)
+  | n < 0 = error "Cannot drop a negative number of elements from input arr"
+  | otherwise = drop' (n-1) xs
+
+-- selects an element in a list at a given possition.
+elementAt' :: Int -> [a] -> a
+elementAt' n [] = error "cannot retrieve an element from an empty list"
+elementAt' 0 (x:xs) = x
+elementAt' n (x:xs)
+  | n < 0 = error "cannot retrieve a negative position in a list"
+  | otherwise = elementAt' (n-1) xs
+
+
+applyTwice' :: (a -> a) -> (a -> a)
+applyTwice' f = f . f
+
+-- Checks if an Int is odd or not.
+odd' :: Integer -> Bool
+odd' = not . even
+
+-- Returns a list with elements in input which pass the predicate until the
+-- first element which does not pass the predicate anymore.
+takeWhile' :: (a -> Bool) -> [a] -> [a]
+takeWhile' p [] = []
+takeWhile' p (x:xs)
+  | p x == True = x:(takeWhile' p xs)
+  | otherwise = []
