@@ -3,6 +3,9 @@ module Shapes
 ,   Shape(Circle, Rectangle, Triangle)
 ,   surface
 ,   nudge
+,   baseCircle
+,   baseRectangle
+,   baseTriangle
 ) where
 
 -- Define a point type in 2d.
@@ -33,3 +36,15 @@ nudge (Rectangle (Point x1 y1) (Point x2 y2)) a b =
     Rectangle (Point (x1+a) (y1+b)) (Point (x2+a) (y2+b))
 nudge (Triangle (Point x1 y1) (Point x2 y2) (Point x3 y3)) a b =
     Triangle (Point (x1+a) (y1+b)) (Point (x2+a) (y2+b)) (Point (x3+a) (y3+b))
+
+-- create base Circle centered in (0,0) with a given radius.
+baseCircle :: Float -> Shape
+baseCircle r = Circle (Point 0 0) r
+
+-- create base Rectangle with one corner in (0,0) and with the the given width and height.
+baseRectangle :: Float -> Float -> Shape
+baseRectangle width height = Rectangle (Point 0 0) (Point width height)
+
+-- create base Triangle with edges of 1 centered in input x and y.
+baseTriangle :: Float -> Float -> Shape
+baseTriangle x y = Triangle (Point x y) (Point 1 0) (Point 0 1)
