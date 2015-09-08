@@ -60,3 +60,8 @@ data List a = Empty | Cons a (List a) deriving (Show, Read, Eq, Ord)
 (.++) :: List a -> List a -> List a
 Empty .++ ys = ys
 (Cons x xs) .++ ys = Cons x (xs .++ ys)
+
+{- -- duplicate instance of Functor for Data.Map.Map type.
+instance Functor (Map.Map k) where
+    fmap = Map.fromList . (map (\(k,v) -> (k, fmap v))) $ Map.toList
+-}

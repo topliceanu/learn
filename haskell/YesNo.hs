@@ -1,3 +1,10 @@
+module YesNo (
+    YesNo,
+    yesnoIf,
+    yesno
+) where
+
+
 class YesNo a where
     yesno :: a -> Bool
 
