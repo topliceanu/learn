@@ -1,15 +1,17 @@
--- program to add / remove todos from a text file
-module Todos (
-    addTodo,
-    removeTodo
-) where
+-- program to list / add / remove todos from a text file.
+-- usage:
+--  $ runghc todo.hs <action> <path> <args>, where <action> = add|view|remove
+--                                         <path> - path to the todos list
 
-import System.IO (FilePath, writeFile, readFile, appendFile)
+import Data.List (delete)
+import System.Directory (removeFile, renameFile)
+import System.Environment (getArgs, getProgName)
+import System.IO (FilePath, openFile, readFile, readFile, appendFile,
+                  IOMode(..), hGetContents, hClose, hPutStr, openTempFile)
 
 
 todosFilePath :: FilePath
 todosFilePath = "/tmp/todos.txt"
-
 
 append' :: String -> [String] -> [String]
 append' new existing = existing ++ [new]
@@ -22,12 +24,41 @@ remove' index (x:xs)
     | otherwise = remove' (index-1) xs
         where size = 1 + length xs
 
-addTodo :: String -> IO ()
-addTodo newTodo = do
-    appendFile todosFilePath newTodo
+add :: [String] -> IO ()
+add [filePath, todo] = appendFile filePath $ todo ++ ("\n")
 
-removeTodo :: Int -> IO ()
-removeTodo pos = do
-    contents <- readFile todosFilePath
-    let newContents = unlines $ remove' pos $ lines contents
-    writeFile todosFilePath newContents
+view :: [String] -> IO ()
+view [filePath] = do
+    contents <- readFile filePath
+    let todos = lines contents
+        indexedTodos = zipWith (\num line -> (show num)++" - "++line ) [1..] todos
+    putStr $ unlines indexedTodos
+
+-- removes an item from a list by creating a temporary file, copying over all
+-- items that should not be removed to it, then deleting the original file,
+-- then renaming the temp file to the original file.
+remove :: [String] -> IO ()
+remove [filePath, indexString] = do
+    fileHandle <- openFile filePath ReadMode
+    (tempPath, tempHandle) <- openTempFile "." "temp"
+    fileContents <-hGetContents tempHandle
+    let index = read indexString :: Int
+        todos = lines fileContents
+        leftTodos = delete (todos !! index) todos
+    hPutStr tempHandle $ unlines leftTodos
+    hClose fileHandle
+    hClose tempHandle
+    removeFile filePath
+    renameFile tempPath filePath
+
+dispatch :: [(String, [String] -> IO ())]
+dispatch = [ ("add", add)
+           , ("view", view)
+           , ("remove", remove)
+           ]
+
+main = do
+    (command:args) <- getArgs
+    putStrLn command
+    let (Just action) = lookup command dispatch
+    action args
