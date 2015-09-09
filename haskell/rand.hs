@@ -1,4 +1,6 @@
-import System.Random (RandomGen, Random, random, StdGen)
+import Control.Monad (when)
+import System.Random (RandomGen, Random, random, StdGen, randomR, randomRs,
+                      newStdGen, getStdGen, mkStdGen)
 
 
 -- generator of a list of random variables
@@ -22,3 +24,19 @@ finiteRandoms n gen =
     let (r, gen') = random gen
         (rs, gen'') = finiteRandoms (n-1) gen'
     in (r:rs, gen'')
+
+-- function asks the user to guess a random number between 1 and 3.
+guess :: IO ()
+guess = do
+    gen <- getStdGen
+    let (value, _) = randomR (1, 3) gen :: (Int, StdGen)
+    putStrLn "Which number between 1 and 3 am I thinking of? Press ENTER to exit"
+    guessedValueStr <- getLine
+    when (not $ null guessedValueStr) $ do
+        let guessedValue = read guessedValueStr :: Int
+        if guessedValue == value then
+            putStrLn "Great! You guessed correctly!"
+        else
+            putStrLn "Sorry! You guessed wrong!"
+        newStdGen
+        guess
