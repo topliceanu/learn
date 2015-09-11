@@ -13,9 +13,13 @@ module ReversePolish (
     solve
 ) where
 
-solve :: (Num a, Read a) => String -> a
+solve :: String -> Float
 solve = head . foldl compute [] . words
     where compute (x:x':xs) "*" = (x*x'):xs
           compute (x:x':xs) "+" = (x+x'):xs
-          compute (x:x':xs) "-" = (x-x'):xs
+          compute (x:x':xs) "-" = (x'-x):xs
+          compute (x:x':xs) "/" = (x'/x):xs
+          compute (x:x':xs) "^" = (x' ** x):xs
+          compute (x:xs) "ln" = (log x):xs
+          compute xs "sum" = [sum xs]
           compute xs num = (read num) : xs
