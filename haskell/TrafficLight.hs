@@ -1,3 +1,6 @@
+import YesNo
+
+
 data TrafficLight = Red | Yellow | Green
 
 
@@ -11,3 +14,8 @@ instance Show TrafficLight where
   show Red = "Red Light"
   show Yellow = "Yellow Light"
   show Green = "Green Light"
+
+instance YesNo TrafficLight where
+    yesno Red = False
+    yesno Yellow = False
+    yesno Green = True

@@ -11,4 +11,10 @@
 --  - rounds 7-9 force at least 3 rolls, etc.
 --  - every other dice combination is counted as points.
 --  - doubles are worth twice, Eg. 6,6 means (6 + 6) * 2
---
+
+
+module Main where
+
+
+
+main :: IO ()

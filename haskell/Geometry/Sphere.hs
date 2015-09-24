@@ -1,4 +1,7 @@
-module Geometry.Sphere (volume, area) where
+module Geometry.Sphere (
+    volume,
+    area
+) where
 
 
 volume :: Float -> Float
