@@ -739,10 +739,78 @@ class CrackingTheCodeInterview(unittest.TestCase):
             'should sort the list such that anagrams are near-by')
 
     def test_problem_9_3(self):
-        pass
+        arr = [15, 16, 19, 20, 25, 1, 3, 4, 5, 7, 10, 14]
+        actual = problem_9_3(arr, 5)
+        expected = 8 # index of 5 in arr.
+        self.assertEqual(actual, expected, 'should compute the correct index')
 
+        arr = [8, 9, 1, 2, 3, 4, 5, 6, 7]
+        actual = problem_9_3(arr, 5)
+        expected = 6 # index of 5 in arr.
+        self.assertEqual(actual, expected, 'should compute the correct index')
+
+        arr = [3, 4, 5, 6, 7, 8, 9, 1, 2]
+        actual = problem_9_3(arr, 5)
+        expected = 2 # index of 5 in arr.
+        self.assertEqual(actual, expected, 'should compute the correct index')
+
+    def test_problem_9_5(self):
+        arr = ["at", "", "", "", "ball", "", "", "car", "", "", "dad", "", ""]
+        actual = problem_9_5(arr, 'ball')
+        expected = 4
+        self.assertEqual(actual, expected, 'should find the correct position of the word')
+
+        arr = ["at", "", "", "", "", "ball", "car", "", "", "dad", "", ""]
+        actual = problem_9_5(arr, 'ballcar')
+        expected = -1
+        self.assertEqual(actual, expected, 'should find the correct position of the word')
+
+    def test_problem_9_6(self):
+        mat = [
+            [1,2,3,4,5],
+            [6,7,8,9,10],
+            [11,12,13,14,15],
+            [16,17,18,19,20],
+            [21,22,23,24,25]
+        ]
+        self.assertTrue(problem_9_6(mat, 15), 'should find the element 15')
+        self.assertTrue(problem_9_6(mat, 9), 'should find the element 9')
+        self.assertTrue(problem_9_6(mat, 22), 'should find the element 22')
+        self.assertFalse(problem_9_6(mat, 35), 'should not find element 35')
+        self.assertFalse(problem_9_6(mat, -5), 'should not find element -5')
+
+    def x_test_problem_9_7(self):
+        data = [(75, 190), (70, 150), (68, 110), (65, 100), (60, 95), (56, 90)]
+        expected = [(56, 90) (60,95) (65,100) (68,110) (70,150) (75,190)]
+        actual = problem_9_7(data)
+        self.assertItemsEqual(actual, expected, 'should compute the highest tower')
+
+        data = [(75, 190), (70, 150), (58, 140), (65, 100), (60, 95), (56, 90)]
+        expected = [(75, 190), (70, 150), (65, 100), (60, 95), (56, 90)]
+        actual = problem_9_7(data)
+        self.assertItemsEqual(actual, expected, 'should compute the highest tower')
 
     # Chapter 10: Mathematical
+
+    def test_problem_10_4(self):
+        actual = problem_10_4('+', 10, 20)
+        self.assertEqual(actual, 30, 'should produce the sum of the operands')
+
+        actual = problem_10_4('-', 20, 10)
+        self.assertEqual(actual, 10, 'should produce the diff of the operands')
+
+        actual = problem_10_4('*', 4, 5)
+        self.assertEqual(actual, 20, 'should produce the multiplication of the operands')
+
+        actual = problem_10_4('/', 5, 4)
+        self.assertEqual(actual, 1, 'should produce the div of the operands')
+
+    def test_problem_10_5(self):
+        expected = (0, 1)
+        actual = problem_10_5(({'x': 1, 'y': 1}, {'x': 2, 'y': 1}),
+                              ({'x': 3, 'y': 1}, {'x': 4, 'y': 1}))
+        self.assertEqual(actual, expected,
+            'should correctly compute the line between the two centers')
 
     def test_problem_10_6(self):
         points = [(2,3), (4,5), (6,7), (8,9), (1,1), (2,2), (3,3)]
@@ -786,3 +854,92 @@ class CrackingTheCodeInterview(unittest.TestCase):
         self.assertEqual(problem_10_7_bis(13), 3*3*5*5*5*7, 'should have worked')
         self.assertEqual(problem_10_7_bis(14), 3*3*3*3*3*5*7, 'should have worked')
         self.assertEqual(problem_10_7_bis(15), 3*3*5*5*7*7, 'should have worked')
+
+    # Chapter 19. Additional Review Problems: Moderate
+
+    def test_problem_19_1(self):
+        a = 1
+        b = 2
+        (a, b) = problem_19_1(a, b)
+        self.assertEqual(a, 2, 'replace value of a with value of b')
+        self.assertEqual(b, 1, 'replace value of b with value of a')
+
+    def test_problem_19_2(self):
+        table = [
+            [1, 0, 1],
+            [1, 0, 0],
+            [0, 1, 0]
+        ]
+        self.assertIsNone(problem_19_2(table), 'no one wins this game')
+
+        table = [
+            [1, 1, 1],
+            [1, 0, 0],
+            [0, 1, 0]
+        ]
+        self.assertTrue(problem_19_2(table), '1 wins the game')
+
+        table = [
+            [0, 1, 1],
+            [1, 0, 0],
+            [0, 1, 0]
+        ]
+        self.assertFalse(problem_19_2(table), '0 wins the game')
+
+    def test_problem_19_3(self):
+        self.assertEqual(problem_19_3(6), 1, '6! has only 1 trailing zeros')
+        self.assertEqual(problem_19_3(10), 2, '10! has only 2 trailing zeros')
+        self.assertEqual(problem_19_3(26), 6, '26! has 6 trailing zeros')
+        self.assertEqual(problem_19_3(100), 24, '10! has 24 trailing zeros')
+
+    def test_problem_19_4(self):
+        self.assertEqual(problem_19_4(10, 5), 10, 'should find max to be 10')
+        self.assertEqual(problem_19_4(5, 6), 6, 'should find max to be 6')
+        self.assertEqual(problem_19_4(20, 20), 20, 'numbers are equal')
+
+    def test_problem_19_5(self):
+        actual = problem_19_5('RGGB', 'YRGB')
+        expected = (2, 1)
+        self.assertEqual(actual, expected,
+            'should return the accurate hits and pseudo-hits')
+
+    def test_problem_19_6(self):
+        num = 12
+        expected = 'Twelve'
+        actual = problem_19_6(num)
+        self.assertEqual(actual, expected, 'should print the number in letters')
+
+        num = 67
+        expected = 'Sixty Seven'
+        actual = problem_19_6(num)
+        self.assertEqual(actual, expected, 'should print the number in letters')
+
+        num = 1000
+        expected = 'One Thousand'
+        actual = problem_19_6(num)
+        self.assertEqual(actual, expected, 'should print the number in letters')
+
+        num = 1001
+        expected = 'One Thousand, One'
+        actual = problem_19_6(num)
+        self.assertEqual(actual, expected, 'should print the number in letters')
+
+        num = 123
+        expected = 'One Hundred and Twenty Three'
+        actual = problem_19_6(num)
+        self.assertEqual(actual, expected, 'should print the number in letters')
+
+        num = 99909
+        expected = 'Ninty Nine Thousands, Nine Hundreds and Nine'
+        actual = problem_19_6(num)
+        self.assertEqual(actual, expected, 'should print the number in letters')
+
+        num = 999999
+        expected = 'Nine Hundreds and Ninty Nine Thousands, Nine Hundreds and Ninty Nine'
+        actual = problem_19_6(num)
+        self.assertEqual(actual, expected, 'should print the number in letters')
+
+        num = 1234
+        expected = 'One Thousand, Two Hundreds and Thirty Four'
+        actual = problem_19_6(num)
+        self.assertEqual(actual, expected, 'should print the number in letters')

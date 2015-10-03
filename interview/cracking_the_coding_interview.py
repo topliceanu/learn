@@ -1298,17 +1298,49 @@ def problem_9_2(arr):
 
     return sorted(arr, cmp=lambda x, y: str_compare(x, y))
 
-def problem_9_3(arr):
+def problem_9_3(arr, key):
     """ Given a sorted array of n integers that has been rotated an unknown
     number of times, give an O(log n) algorithm that finds an element in the
     array. You may assume that the array was originally sorted in increasing
     order.
-    EXAMPLE:
+
+    Example:
     Input: find 5 in array (15 16 19 20 25 1 3 4 5 7 10 14)
     Output: 8 (the index of 5 in the array)
 
-    Solution: divide and conquer binary search.
+    Solution: There are two rotation cases:
+    i.  [8,9,1,2,3,4,5,6,7] - inflexion point is before middle.
+    ii. [3,4,5,6,7,8,9,1,2] - inflexion point is after middle.
+
+    Use modified divide and conquer binary search. There are 8 cases
+    defined by comparing the key with left, right and middle positions. Thus
+    identify the rotation case and recurse on the appropriate array.
     """
+    def modified_binary_search(arr, key, left, right):
+        if left > right:
+            return None
+
+        middle = (left + right) / 2
+
+        if arr[middle] == key:
+            return middle
+
+        if arr[left] <= arr[middle]:
+            if key > arr[middle]:
+                return modified_binary_search(arr, key, middle+1, right)
+            elif key >= arr[left]:
+                return modified_binary_search(arr, key, left, middle-1)
+            else:
+                return modified_binary_search(arr, key, middle+1, right)
+        elif key < arr[middle]:
+            return modified_binary_search(arr, key, left, middle-1)
+        elif key <= arr[right]:
+            return modified_binary_search(arr, key, middle+1, right)
+        else:
+            return modified_binary_search(arr, key, left, middle-1)
+        return None
+
+    return modified_binary_search(arr, key, 0, len(arr) - 1)
 
 def problem_9_4(lines):
     """ If you have a 2 GB file with one string per line, which sorting
@@ -1318,7 +1350,7 @@ def problem_9_4(lines):
     from the disk at a time.
     """
 
-def problem_9_5(arr):
+def problem_9_5(words, word):
     """ Given a sorted array of strings which is interspersed with empty
     strings, write a method to find the location of a given string.
 
@@ -1327,15 +1359,53 @@ def problem_9_5(arr):
 
     Solution: variant of binary search, whereby you ignore the empty spaces.
     """
+    # TODO understand how this one works!
 
-def problem_9_6(matrix):
+    def modified_binary_search(arr, key, left, right):
+        if left > right:
+            return -1
+
+        # Discover a middle index whose value is not an empty string, first we
+        # go left, then right in this search.
+        middle = (left + right) / 2
+        if arr[middle] == '':
+            while arr[middle] == '' and left <= middle:
+                middle -= 1
+            while arr[middle] == '' and middle <= right:
+                middle +=1
+
+        if arr[middle] == key:
+            return middle
+        if arr[middle] < key:
+            return modified_binary_search(arr, key, left, middle-1)
+        else:
+            return modified_binary_search(arr, key, middle+1, right)
+
+    return modified_binary_search(words, word, 0, len(words)-1)
+
+def problem_9_6(matrix, key):
     """ Given a matrix in which each row and each column is sorted, write a
-    method to find an element in it.
+    method to find an element in it. Matrix is size M*N such that each row is
+    sorted left to right and each column is sorted top to bottom.
 
     Solution: divide and conquer.
     """
+    m = len(matrix)
+    n = len(matrix[0])
+    i = 0 # traversed rows.
+    j = n - 1 # traverses columns.
 
-def problem_9_7(heights, weights):
+    while i < m and j >= 0:
+        if key == matrix[i][j]:
+            return True
+        elif key < matrix[i][j]: # key will be smaller then matrix[..][j]
+            j -= 1
+        else: # key will larger than matrix[i][...]
+            i += 1
+
+    return False
+
+def problem_9_7(pairs):
     """ A circus is designing a tower routine consisting of people standing
     atop one another’s shoulders. For practical and aesthetic reasons, each
     person must be both shorter and lighter than the person below him or her.
@@ -1344,14 +1414,85 @@ def problem_9_7(heights, weights):
 
     EXAMPLE:
     Input (ht, wt): (65, 100) (70, 150) (56, 90) (75, 190) (60, 95) (68, 110)
-    Output: The longest tower is length 6 and includes from top to bottom: (56, 90) (60,95) (65,100) (68,110) (70,150) (75,190)
+    Output: The longest tower is length 6 and includes from top to bottom:
+        (56, 90) (60,95) (65,100) (68,110) (70,150) (75,190)
     """
+    # TODO implement this one!
+
 
 # Chapter 10: Mathematical
+
+def problem_10_4(operator, operand1, operand2):
+    """ Write a method to implement *, - , / operations.
+    You should use only the + operator
+    """
+    def multiply(x, y):
+        """ Implement x * y using only +. """
+        i = 0
+        out = 0
+        while i < y:
+            i += 1
+            out += x
+        return out
+
+    def subtract(x, y):
+        """ Implement x - y using only +. """
+        i = 0
+        while i + y < x:
+            i += 1
+        return i
+
+    def divide(x, y):
+        """ Implement x / y using only +. """
+        s = y
+        out = 0
+        while s < x:
+            s += y
+            out += 1
+        return out
+
+    if operator == '*':
+        return multiply(operand1, operand2)
+    elif operator == '-':
+        return subtract(operand1, operand2)
+    elif operator == '/':
+        return divide(operand1, operand2)
+    elif operator == '+':
+        return operand1 + operand2
+
+def problem_10_5(square1, square2):
+    """ Given two squares on a two dimensional plane, find a line that would
+    cut these two squares in half.
+
+    Solution: Compute the ecuation of the line passing through the center of
+    the two squares.
+
+    Args:
+        square1: tuple, of dicts, format ({x, y}, {x, y})
+        square2: tuple, of dicts, format ({x, y}, {x, y})
+
+    Returns:
+        tuple, format (sloape, intercept)
+    """
+    (p1, p2) = square1
+    (p3, p4) = square2
+
+    c1 = {'x': float(p1['x'] + p2['x']) / 2, 'y': float(p1['y'] + p2['y']) / 2}
+    c2 = {'x': float(p3['x'] + p4['x']) / 2, 'y': float(p3['y'] + p4['y']) / 2}
+
+    slope = float(c2['y'] - c1['y']) / (c2['x'] - c1['x'])
+    intercept = float(p1['y'] * p2['x'] - p1['x'] * p2['y']) / (p2['x'] - p1['x'])
+
+    return (slope, intercept)
 
 def problem_10_6(points, precision=4):
     """ Given a two dimensional graph with points on it, find a line which
     passes the most number of points.
+
+    Solution: compute the line params (sloape, intercept) for all pairs of
+    points in the set. Then aggregate all points that share the same line.
+
+    Complexity: O(n^2)
 
     Params:
         points: list of points, format [(x, y)]
@@ -1386,14 +1527,14 @@ def problem_10_7(k):
     """ Design an algorithm to find the kth number such that the only prime
     factors are 3, 5, and 7.
 
-    NOTE: THIS IS INCORRECT!
-
     Params:
         k: int, the index of the number to add.
 
     Returns:
         int
     """
+    # TODO fix this!
+
     if k < 0:
         return 0
 
@@ -1439,3 +1580,256 @@ def problem_10_7_bis(k):
         q7.append(number*7)
 
     return number
+
+# Chapter 19. Additional Review Problems: Moderate
+
+def problem_19_1(x, y):
+    """ Write a function to swap a number in place without temporary variables. """
+    # Bit-wise operations.
+    #x = x ^ y
+    #y = x ^ y
+    #x = x ^ y
+    #return (x, y)
+
+    # Arithmetic operations.
+    x = x - y
+    y = y + x
+    x = y - x
+    return (x, y)
+
+def problem_19_2(table):
+    """ Design an algorithm to figure out if someone has won in a game of
+    tic-tac-toe.
+
+    Complexity: O(n^2)
+    Args:
+        table: list of list, dimentions NxN, filled with 1s and 0s
+    Returns:
+        boolean, True if 1 wins or False if 0 wins.
+    """
+    n = len(table)
+    sum_cols = [0] * n
+    sum_rows = [0] * n
+    sum_diag = [0] * 2
+
+    for row in range(n):
+        for col in range(n):
+            sum_rows[row] += table[row][col]
+            sum_cols[col] += table[row][col]
+            if row == col:
+                sum_diag[0] += table[row][col]
+            if row == n - col:
+                sum_diag[1] += table[row][col]
+
+    for sum_col in sum_cols:
+        if sum_col == n:
+            return True
+        elif sum_col == 0:
+            return False
+
+    for sum_row in sum_rows:
+        if sum_row == n:
+            return True
+        elif sum_row == 0:
+            return False
+
+    for i in range(2):
+        if sum_diag[i] == n:
+            return True
+        elif sum_diag[i] == 0:
+            return False
+
+    return None
+
+def problem_19_3(n):
+    """ Write an algorithm which computes the number of trailing zeros in
+    n factorial.
+
+    Solution: It's enough to count the power of 5 in the factoring of n!
+    That is the number of trailing zeros.
+    """
+    cache = {}
+
+    def get_pow_5(n):
+        if n % 5 != 0:
+            return 0
+        if n in cache:
+            return cache[n]
+        pow_5 = 1 + get_pow_5(n/5)
+        cache[n] = pow_5
+        return pow_5
+
+    # Trailing zeroes are composed of multiples of 2 and 5.
+    count_pow_5 = 0
+    for i in range(2, n+1):
+        pow_5 = get_pow_5(i)
+        count_pow_5 += pow_5
+
+    return count_pow_5
+
+def problem_19_4(a, b):
+    """ Write a method which finds the maximum of two numbers. You should not
+    use if-else or any other comparison operator.
+
+    Example: input: 5, 10; output: 10
+
+    Solution: identify the first bit which is different in the two numbers. The
+    number which has that bit set to 1 is larger.
+    """
+    bin_a = bin(a)[2:]
+    bin_b = bin(b)[2:]
+    bin_len = max(len(bin_a), len(bin_b))
+    bin_a = '0'*(bin_len-len(bin_a))+bin_a
+    bin_b = '0'*(bin_len-len(bin_b))+bin_b
+
+    for i in range(bin_len):
+        if bin_a > bin_b:
+            return a
+        elif bin_b > bin_a:
+            return b
+    return a # Drawn.
+
+def problem_19_5(solution, guess):
+    """ The Game of Master Mind is played as follows:
+
+    The computer has four slots containing balls that are red (R), yellow (Y),
+    green (G) or blue (B). For example, the computer might have RGGB (e.g.,
+    Slot #1 is red, Slots #2 and #3 are green, Slot #4 is blue).
+
+    You, the user, are trying to guess the solution. You might, for example,
+    guess YRGB. When you guess the correct color for the correct slot, you get
+    a “hit”. If you guess a color that exists but is in the wrong slot, you get
+    a “pseudo-hit”. For example, the guess YRGB has 2 hits and one pseudo hit.
+
+    For each guess, you are told the number of hits and pseudo-hits.
+
+    Write a method that, given a guess and a solution, returns the number of
+    hits and pseudo hits.
+
+    Complexity: O(n)
+
+    Returns:
+        tuple, format (hits, pseudo_hits)
+    """
+    if len(solution) != len(guess):
+        raise Exception('Inputs are wrong')
+
+    hits = 0
+    pseudo_hits = 0
+    missed = {
+        'solution': {},
+        'guess': {}
+    }
+
+    for i in range(len(solution)):
+        a = solution[i]
+        b = guess[i]
+        if a == b:
+            hits += 1
+        else:
+            if a not in missed['solution']:
+                missed['solution'][a] = 1
+            else:
+                missed['solution'][a] += 1
+            if b not in missed['guess']:
+                missed['guess'][b] = 1
+            else:
+                missed['guess'][b] += 1
+
+    for (char, count) in missed['solution'].iteritems():
+        if char in missed['guess']:
+            pseudo_hits += min(missed['solution'][char], missed['guess'][char])
+
+    return (hits, pseudo_hits)
+
+def problem_19_6(n):
+    """ Given an integer between 0 and 999,999, print an English phrase that
+    describes the integer (eg, “One Thousand, Two Hundred and Thirty Four”).
+    """
+    words = {
+        0:    'Zero',
+        1:    'One',
+        2:    'Two',
+        3:    'Three',
+        4:    'Four',
+        5:    'Five',
+        6:    'Six',
+        7:    'Seven',
+        8:    'Eight',
+        9:    'Nine',
+        10:   'Ten',
+        11:   'Eleven',
+        12:   'Twelve',
+        13:   'Thirteen',
+        14:   'Fourteen',
+        15:   'Fifteen',
+        16:   'Sixteen',
+        17:   'Seventeen',
+        18:   'Eighteen',
+        19:   'Nineteen',
+        20:   'Twenty',
+        30:   'Thirty',
+        40:   'Fourty',
+        50:   'Fifty',
+        60:   'Sixty',
+        70:   'Seventy',
+        80:   'Eighty',
+        90:   'Ninty',
+        100:  'Hundred',
+        1000: 'Thousand'
+    }
+
+    def digits(n):
+        if n == 0:
+            return ''
+        return words[n]
+
+    def tens(n):
+        if n < 10:
+            return digits(n)
+        if n in words:
+            return words[n]
+
+        first = n / 10
+        return words[first*10] + ' ' + digits(n % 10)
+
+    def hundreds(n):
+        if n < 100:
+            return tens(n)
+        first = n / 100
+
+        if first == 0:
+            return tens(n % 100)
+        else:
+            word = 'Hundred' if first == 1 else 'Hundreds'
+            out = words[first] + ' ' + word
+            rest = tens(n % 100)
+            if rest != '':
+                out += ' and ' + rest
+            return out
+
+    def thousands(n):
+        if n > 999999:
+            raise Exception('Input number is too large')
+        if n < 1000:
+            return hundreds(n)
+
+        word = 'Thousands' if n > 1999 else 'Thousand'
+        out = hundreds(n / 1000) + ' ' + word
+
+        rest = hundreds(n % 1000)
+        if rest != '':
+            out += ', ' + rest
+        return out
+
+
+    return thousands(n)
+
+def problem_16_7(arr):
+    """ You are given an array of integers (both positive and negative). Find the continuous sequence with the largest sum. Return the sum.
+    Example:
+    Input: {2, -8, 3, -2, 4, -10}
+    Output: 5 (i.e., {3, -2, 4} )
+
+    Solution: dynamic programming.
+    """
