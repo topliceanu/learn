@@ -61,3 +61,5 @@ bower_components
 
 # Node debug log.
 npm-debug.log
+
+Gemfile.lock

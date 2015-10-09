@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title></title>
+  </head>
+  <body>
+    <script>
+      (function () {
+        var ws = new WebSocket("ws://192.168.33.11:9090");
+
+        ws.onopen = function (ev) {
+          ws.send('{"subscribe": "test"}');
+        };
+
+        ws.onmessage = function (ev) {
+          var msg = JSON.parse(ev.data);
+          console.log(msg);
+        };
+      })();
+    </script>
+  </body>
+</html>
