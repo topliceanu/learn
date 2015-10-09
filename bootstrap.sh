@@ -23,3 +23,6 @@ apt-get install -y gdc
 sudo apt-get install -y python-pip python-dev
 sudo pip install virtualenv
 sudo pip install virtualenvwrapper
+
+# Install rbenv and multiple rubies
+# TODO
