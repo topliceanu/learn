@@ -10,7 +10,7 @@
 ```bash
 cd learn/algo
 python -m unittest discover test # to run all tests.
-python -m unittest discover test -p test_graph.py # to run a specific test case.
+python -m unittest discover test -p `test_graph.py` # to run a specific test case.
 ```
 
 ## Primitives
@@ -74,7 +74,7 @@ python -m unittest discover test -p test_graph.py # to run a specific test case.
 ## Todo
 
 ### Part 1
-0. [ ] refactor trees to support custom data in the nodes..
+0. [X] refactor trees to support custom data in the nodes..
 0. [ ] implement btree
 1. [X] implement avl tree
 1. [ ] implement lsm tree.
@@ -99,7 +99,7 @@ python -m unittest discover test -p test_graph.py # to run a specific test case.
 10. [ ] dynamic programming - longest common subsequence of two strings.
 11. [ ] dynamic programming - linear partition - solution reconstruction does not work.
 12. [ ] dynamic programming - flower garden problem!
-13. [ ] substring matching - implement knut-morris-pratt, boyer-moore, rabin-karp algorithms. See single_pattern_string_matching.py
+13. [ ] substring matching - implement knut-morris-pratt, boyer-moore, rabin-karp algorithms. See `single_pattern_string_matching.py`.
 14. [ ] knapsack - use dynamic programming to solve the two knapsack problem. (generalize to m different knapsacks!)
         - Add another dimension to the array to keep track of the residual capacity of the second knapsack, this increases the running time by a factor of at most W.
 15. [ ] bellman-ford - optimize memory consumption on the algorithm.
@@ -137,18 +137,18 @@ python -m unittest discover test -p test_graph.py # to run a specific test case.
 
 ## Wikipedia Links
 
-http://en.wikipedia.org/wiki/Robert_C._Prim
-http://en.wikipedia.org/wiki/Vojt%C4%9Bch_Jarn%C3%ADk
-http://en.wikipedia.org/wiki/Joseph_Kruskal
-http://en.wikipedia.org/wiki/Huffman_coding#Applications
-http://en.wikipedia.org/wiki/Bellman%E2%80%93Ford_algorithm
-http://en.wikipedia.org/wiki/Richard_E._Bellman
-http://en.wikipedia.org/wiki/L._R._Ford,_Jr.
-http://en.wikipedia.org/wiki/Robert_W._Floyd
-http://en.wikipedia.org/wiki/Bernard_Roy
-http://en.wikipedia.org/wiki/Stephen_Warshall
-http://en.wikipedia.org/wiki/Christos_Papadimitriou
-http://en.wikipedia.org/wiki/Lloyd_Shapley
-http://en.wikipedia.org/wiki/David_Gale
-http://en.wikipedia.org/wiki/Donald_B._Johnson
-http://en.wikipedia.org/wiki/George_Dantzig
+- `http://en.wikipedia.org/wiki/Robert_C._Prim`
+- `http://en.wikipedia.org/wiki/Vojt%C4%9Bch_Jarn%C3%ADk`
+- `http://en.wikipedia.org/wiki/Joseph_Kruskal`
+- `http://en.wikipedia.org/wiki/Huffman_coding#Applications`
+- `http://en.wikipedia.org/wiki/Bellman%E2%80%93Ford_algorithm`
+- `http://en.wikipedia.org/wiki/Richard_E._Bellman`
+- `http://en.wikipedia.org/wiki/L._R._Ford,_Jr.`
+- `http://en.wikipedia.org/wiki/Robert_W._Floyd`
+- `http://en.wikipedia.org/wiki/Bernard_Roy`
+- `http://en.wikipedia.org/wiki/Stephen_Warshall`
+- `http://en.wikipedia.org/wiki/Christos_Papadimitriou`
+- `http://en.wikipedia.org/wiki/Lloyd_Shapley`
+- `http://en.wikipedia.org/wiki/David_Gale`
+- `http://en.wikipedia.org/wiki/Donald_B._Johnson`
+- `http://en.wikipedia.org/wiki/George_Dantzig`
