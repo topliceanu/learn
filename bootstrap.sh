@@ -23,3 +23,26 @@ apt-get install -y gdc
 sudo apt-get install -y python-pip python-dev
 sudo pip install virtualenv
 sudo pip install virtualenvwrapper
+
+# Install rbenv and rubies.
+su - vagrant -c <<SCRIPT
+sudo apt-get -y purge ruby
+sudo apt-get -y autoremove
+sudo apt-get install -y libssl-dev zlib1g-dev libreadline-dev
+if [ ! -d ~/.rbenv ]; then
+  git clone git://github.com/sstephenson/rbenv.git ~/.rbenv
+  git clone git://github.com/sstephenson/ruby-build.git ~/.rbenv/plugins/ruby-build
+fi
+echo 'export PATH="/home/vagrant/.rbenv/bin:$PATH"' > ~/.bash_profile
+echo 'eval "$(rbenv init -)"' >> ~/.bash_profile
+source ~/.bash_profile
+
+[ -d ~/.rbenv/versions/2.2.2 ] || rbenv install 2.2.3
+rbenv rehash
+SCRIPT
+
+# Install redis
+add-apt-repository -y ppa:rwky/redis
+apt-get update
+apt-get install -yq redis-server
+
