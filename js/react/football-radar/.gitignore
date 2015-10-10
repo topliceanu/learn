@@ -1,0 +1,7 @@
+# DEPENDENCIES
+node_modules
+
+# LOGS/TEMPFILES
+npm-debug.log
+.DS_Store
+._*

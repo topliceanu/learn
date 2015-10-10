@@ -1,0 +1,18 @@
+{
+  "name": "fr-realtime-league-table",
+  "version": "1.0.0",
+  "description": "Realtime league table (JS task)",
+  "private": true,
+  "main": "lib/server.js",
+  "scripts": {
+    "start": "./bin/serve",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:footballradar/js-task.git"
+  },
+  "dependencies": {
+    "ws": "^0.5.0"
+  }
+}
