@@ -7,6 +7,10 @@ and' :: Bool -> Bool -> Bool
 and' True b = b
 and' False _ = False
 
+or' :: Bool -> Bool -> Bool
+or' True _ = True
+or' False b = b
+
 -- computes xor of two boolean values.
 xor :: Bool -> Bool -> Bool
 xor a b = not (a == b)
@@ -19,10 +23,10 @@ toLowerCase s = [if elem c ['A'..'Z'] then chr ((ord c) + 32) else c | c <- s]
 toUpperCase :: [Char] -> [Char]
 toUpperCase s = [if elem c ['a'..'z'] then chr ((ord c) - 32) else c | c <- s]
 
--- mimics the length function
+-- mimics the length function ; length' [4,5,6] = 1 + (length' [5,6]) = 1 + (1 + (length' [6])) = 1 + (1 + (1 + length' []))
 length' :: [a] -> Int
 length' [] = 0
-length' (x:xs) = 1 + length' xs
+length' (_:xs) = 1 + length' xs
 
 length'' :: [a] -> Int
 length'' = foldr (\_ x -> 1 + x) 0
@@ -30,15 +34,15 @@ length'' = foldr (\_ x -> 1 + x) 0
 length''' :: [a] -> Int
 length''' = sum . map (\x -> 1)
 
--- extracting data from triples:
-first :: (a, b, c) -> a
-first (x, _, _) = x
+-- extracting data from triples.
+first' :: (a, b, c) -> a
+first' (x, _, _) = x
 
-second :: (a, b, c) -> b
-second (_, y, _) = y
+second' :: (a, b, c) -> b
+second' (_, y, _) = y
 
-third :: (a, b, c) -> c
-third (_, _, z) = z
+third' :: (a, b, c) -> c
+third' (_, _, z) = z
 
 -- capitalizes the first letter of a given word
 capitalize :: [Char] -> [Char]
@@ -46,6 +50,7 @@ capitalize [] = []
 capitalize (x:xs) = (toUpperCase [x]) ++ xs
 
 -- takes all words in a string and capitalizes them.
+-- eg: "alex topli" -> ["alex", "topli"] -> ["Alex", "Topli"] -> "Alex Topli"
 titleize :: [Char] -> [Char]
 titleize [] = []
 titleize s = unwords . map capitalize $ words s
