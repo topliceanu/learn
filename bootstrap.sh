@@ -45,4 +45,3 @@ SCRIPT
 add-apt-repository -y ppa:rwky/redis
 apt-get update
 apt-get install -yq redis-server
-

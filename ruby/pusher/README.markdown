@@ -16,6 +16,7 @@
 - command: `curl -XPOST http://192.168.33.11:8080/events/test -H 'Content-type: application/json' -d '{"works": 1}'`
 
 ## TODO
+- [ ] use forman gem to start processes
 - [ ] support messages comming from clients as well, ie publish client-side.
 - [ ] introduce webhooks so clients can receive updates
 - [ ] use event machine in the api code as well
