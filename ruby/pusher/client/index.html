@@ -2,22 +2,33 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8">
-    <title></title>
   </head>
   <body>
+    <button id="publish">Send Frame 0</button>
+    <div id="output"></div>
+
+    <script src="./pusher.js"></script>
     <script>
-      (function () {
-        var ws = new WebSocket("ws://192.168.33.11:9090");
+      var publish = document.getElementById('publish'),
+          output = document.getElementById('output'),
+          channel = 'test',
+          url = "ws://192.168.33.11:9090",
+          counter = 0;
 
-        ws.onopen = function (ev) {
-          ws.send('{"subscribe": "test"}');
-        };
+      var pusher = new Pusher(url);
 
-        ws.onmessage = function (ev) {
-          var msg = JSON.parse(ev.data);
-          console.log(msg);
-        };
-      })();
+      pusher.subscribe(channel, function (data) {
+        publish.innerHTML = publish.innerHTML + '\n' + data
+        console.log('Received', data);
+      });
+
+      publish.addEventListener('click', function (ev) {
+        counter += 1
+        publish.innerHTML = "Send Frame "+counter;
+        var data = {'frame': counter}
+        console.log('Sending', data);
+        pusher.publish(channel, data);
+      });
     </script>
   </body>
 </html>

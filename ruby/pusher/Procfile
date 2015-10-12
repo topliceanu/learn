@@ -1,0 +1,4 @@
+api: bundle exec ruby api/server.rb
+client: cd client; python -m SimpleHTTPServer 8000
+ws: bundle exec ruby ws/server.rb
+webhook: bundle exec ruby webhook/server.rb
