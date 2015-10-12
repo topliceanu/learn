@@ -11,8 +11,11 @@ curl -vv -XPOST http://192.168.33.11:8080/events/test -H 'Content-type: applicat
 - [x] introduce `foreman` as a proc manager
 - [x] use event machine in the api code as well
 - [x] use em-hiredis to publish from the api code to redis
-- [ ] extend client lib: allow full pub-sub interface, ie. publish client-side.
-- [ ] add logging to the processes
-- [ ] introduce webhooks, so clients can receive updates, using beanstalkd workers
+- [x] extend client lib: allow full pub-sub interface, ie. publish client-side.
+- [ ] introduce unsubscribe to a specific channel
+- [x] introduce webhooks, so clients can receive updates, using beanstalkd workers
 - [ ] shard redis by channel
 - [ ] add multiple api servers by introducing a load ballancer in front.
+- [ ] _refactor_ introduce the concept of a channel as a container class.
+- [ ] make the processes more resilient by handling errors
+- [ ] add logging to the processes
