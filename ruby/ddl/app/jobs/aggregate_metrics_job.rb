@@ -2,6 +2,6 @@ class AggregateMetricsJob < ActiveJob::Base
   queue_as :default
 
   def perform(*args)
-    # Do something later
+    puts "Worker at #{Time.now}"
   end
 end
