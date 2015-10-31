@@ -53,4 +53,18 @@ Rails.application.routes.draw do
   #     # (app/controllers/admin/products_controller.rb)
   #     resources :products
   #   end
+
+  # Metrics and Datapoints API.
+
+  post '/metrics', {to: 'metrics#create', as: 'create_metric'}
+  patch '/metrics/:metric_id', {to: 'metrics#update', as: 'update_metric'}
+  delete '/metrics/:metric_id', {to: 'metrics#remove', as: 'remove_metric'}
+
+  post '/metrics/:metric_id/datapoints', {to: 'metrics#add_datapoint', as: 'add_datapoint'}
+  get '/metrics/:metric_id/datapoints', {to: 'metrics#read_datapoints', as: 'read_datapoints'}
+
+  # Chart API.
+
+  resource :charts
+
 end

@@ -33,10 +33,9 @@ ActiveRecord::Schema.define(version: 20151024172101) do
     t.integer "metric_id"
   end
 
-  add_index "datapoints", ["ts", "metric_id"], name: "index_datapoints_on_ts_and_metric_id", unique: true
-
   create_table "metrics", force: :cascade do |t|
     t.string   "name",       limit: 100, null: false
+    t.string   "desc",       limit: 255, null: false
     t.datetime "created_at",             null: false
     t.integer  "account_id"
   end

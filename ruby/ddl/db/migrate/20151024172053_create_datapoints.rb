@@ -5,6 +5,6 @@ class CreateDatapoints < ActiveRecord::Migration
       t.integer :ts, null: false
       t.belongs_to :metric
     end
-    add_index :datapoints, [:metric_id, :ts], :unique => true
+    #add_index :datapoints, [:metric_id, :ts], :unique => true
   end
 end
