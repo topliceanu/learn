@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151024172101) do
+ActiveRecord::Schema.define(version: 20151101175239) do
 
   create_table "accounts", force: :cascade do |t|
     t.string   "email",      limit: 100, null: false
@@ -32,6 +32,8 @@ ActiveRecord::Schema.define(version: 20151024172101) do
     t.integer "ts",        null: false
     t.integer "metric_id"
   end
+
+  add_index "datapoints", ["metric_id", "ts"], name: "index_datapoints_on_metric_id_and_ts", unique: true
 
   create_table "metrics", force: :cascade do |t|
     t.string   "name",       limit: 100, null: false

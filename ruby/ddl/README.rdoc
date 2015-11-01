@@ -1,4 +1,12 @@
-== README
+## TODO
+
+- [ ] bootstrap the app: api, edit chart, embeded charts.
+- [ ] deploy on heroku
+- [ ] add authentication to the api.
+- [ ] build a splash page
+
+
+## README
 
 This README would normally document whatever steps are necessary to get the
 application up and running.

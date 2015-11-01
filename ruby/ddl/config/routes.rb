@@ -54,17 +54,19 @@ Rails.application.routes.draw do
   #     resources :products
   #   end
 
-  # Metrics and Datapoints API.
+  scope '/accounts/:account_id' do
 
-  post '/metrics', {to: 'metrics#create', as: 'create_metric'}
-  patch '/metrics/:metric_id', {to: 'metrics#update', as: 'update_metric'}
-  delete '/metrics/:metric_id', {to: 'metrics#remove', as: 'remove_metric'}
+    # Metrics and Datapoints API.
+    post '/metrics', {to: 'metric#create', as: 'create_metric', format: 'json'}
+    patch '/metrics/:metric_id', {to: 'metric#update', as: 'update_metric', format: 'json'}
+    delete '/metrics/:metric_id', {to: 'metric#remove', as: 'remove_metric', format: 'json'}
 
-  post '/metrics/:metric_id/datapoints', {to: 'metrics#add_datapoint', as: 'add_datapoint'}
-  get '/metrics/:metric_id/datapoints', {to: 'metrics#read_datapoints', as: 'read_datapoints'}
+    post '/metrics/:metric_id/datapoints', {to: 'metric#add_datapoint', as: 'add_datapoint'}
+    get '/metrics/:metric_id/datapoints', {to: 'metric#read_datapoints', as: 'read_datapoints'}
 
-  # Chart API.
+    # Chart API.
+    resource :charts
 
-  resource :charts
+  end
 
 end

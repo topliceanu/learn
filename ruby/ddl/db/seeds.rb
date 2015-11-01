@@ -6,5 +6,9 @@
 #   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
 #   Mayor.create(name: 'Emanuel', city: cities.first)
 
-a = Account.create({email: 'me@ddl.io', pass: 'superduper'})
+a = Account.create!({email: 'me@ddl.io', pass: 'superduper'})
 
+m = a.metrics.create!({name: 'my.metric', desc: 'simple metric to monitor'})
+
+datapoints = (1..20).map { |i| {ts: Time.now.to_i - i * 10, value: Random.rand(20)} }
+m.datapoints.create!(datapoints);
