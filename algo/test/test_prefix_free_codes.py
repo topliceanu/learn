@@ -2,7 +2,7 @@
 
 import unittest
 
-from src.prefix_free_codes import HuffmanCode, LEFT, RIGHT, SYMBOL, PARENT
+from src.prefix_free_codes import Huffman
 
 
 class PrefixFreeTest(unittest.TestCase):
@@ -15,31 +15,27 @@ class PrefixFreeTest(unittest.TestCase):
             'D': 6,
             'E': 5
         }
-        hc = HuffmanCode(symbol_table)
-        self.assertIsNone(hc.tree[SYMBOL], 'root has no symbol')
-        self.assertEqual(hc.tree[LEFT][SYMBOL], 'A')
-        self.assertEqual(hc.tree[LEFT][PARENT], hc.tree,
+        hc = Huffman(symbol_table)
+        self.assertEqual(hc.root.left.symbol, 'A')
+        self.assertEqual(hc.root.left.parent, hc.root,
             'should have the correct parent wired')
-        self.assertIsNone(hc.tree[RIGHT][SYMBOL], 'node has no symbol')
-        self.assertEqual(hc.tree[RIGHT][PARENT], hc.tree,
+        self.assertEqual(hc.root.right.parent, hc.root,
             'should have the correct parent wired')
-        self.assertIsNone(hc.tree[RIGHT][LEFT][SYMBOL], 'node has no symbol')
-        self.assertEqual(hc.tree[RIGHT][LEFT][PARENT], hc.tree[RIGHT],
+        self.assertEqual(hc.root.right.left.parent, hc.root.right,
             'should have the correct parent wired')
-        self.assertEqual(hc.tree[RIGHT][LEFT][LEFT][SYMBOL], 'E')
-        self.assertEqual(hc.tree[RIGHT][LEFT][LEFT][PARENT], hc.tree[RIGHT][LEFT],
+        self.assertEqual(hc.root.right.left.left.symbol, 'E')
+        self.assertEqual(hc.root.right.left.left.parent, hc.root.right.left,
             'should have the correct parent wired')
-        self.assertEqual(hc.tree[RIGHT][LEFT][RIGHT][SYMBOL], 'C')
-        self.assertEqual(hc.tree[RIGHT][LEFT][RIGHT][PARENT], hc.tree[RIGHT][LEFT],
+        self.assertEqual(hc.root.right.left.right.symbol, 'C')
+        self.assertEqual(hc.root.right.left.right.parent, hc.root.right.left,
             'should have the correct parent wired')
-        self.assertIsNone(hc.tree[RIGHT][RIGHT][SYMBOL], 'node has no symbol')
-        self.assertEqual(hc.tree[RIGHT][RIGHT][PARENT], hc.tree[RIGHT],
+        self.assertEqual(hc.root.right.right.parent, hc.root.right,
             'should have the correct parent wired')
-        self.assertEqual(hc.tree[RIGHT][RIGHT][LEFT][SYMBOL], 'D')
-        self.assertEqual(hc.tree[RIGHT][RIGHT][LEFT][PARENT], hc.tree[RIGHT][RIGHT],
+        self.assertEqual(hc.root.right.right.left.symbol, 'D')
+        self.assertEqual(hc.root.right.right.left.parent, hc.root.right.right,
             'should have the correct parent wired')
-        self.assertEqual(hc.tree[RIGHT][RIGHT][RIGHT][SYMBOL], 'B')
-        self.assertEqual(hc.tree[RIGHT][RIGHT][LEFT][PARENT], hc.tree[RIGHT][RIGHT],
+        self.assertEqual(hc.root.right.right.right.symbol, 'B')
+        self.assertEqual(hc.root.right.right.left.parent, hc.root.right.right,
             'should have the correct parent wired')
 
     def test_huffman_encode(self):
@@ -49,7 +45,7 @@ class PrefixFreeTest(unittest.TestCase):
             'C': 0.10,
             'D': 0.05
         }
-        hc = HuffmanCode(symbol_table)
+        hc = Huffman(symbol_table)
         original = 'ABCD'
         expected = '010110111'
         actual = hc.encode(original)
@@ -62,7 +58,7 @@ class PrefixFreeTest(unittest.TestCase):
             'C': 0.10,
             'D': 0.05
         }
-        hc = HuffmanCode(symbol_table)
+        hc = Huffman(symbol_table)
         encoded = '0110111'
         expected = 'ACD'
         actual = hc.decode(encoded)
@@ -76,8 +72,8 @@ class PrefixFreeTest(unittest.TestCase):
             '(the store) and finally onto the view. The view can then restart '\
             'the flow by calling other actions in response to user input.'\
 
-        encoded = HuffmanCode.encode_text(text)
-        symbol_table = HuffmanCode.extract_frequencies(text)
-        decoded = HuffmanCode.decode_text(symbol_table, encoded)
+        encoded = Huffman.encode_text(text)
+        symbol_table = Huffman.extract_frequencies(text)
+        decoded = Huffman.decode_text(symbol_table, encoded)
         self.assertEqual(text, decoded,
             'should encode and decode to the same text')
