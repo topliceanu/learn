@@ -1,0 +1,30 @@
+{
+  "name": "diffsync",
+  "version": "0.0.1",
+  "description": "differential synchronization mechanism",
+  "main": "index.js",
+  "directories": {
+    "start": "node ./peer/index.js",
+    "test": "test"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:topliceanu/diffsync.git"
+  },
+  "keywords": [
+    "synchronization"
+  ],
+  "author": "alexandru.topliceanu@gmail.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/topliceanu/diffsync/issues"
+  },
+  "homepage": "https://github.com/topliceanu/diffsync",
+  "dependencies": {},
+  "devDependencies": {
+    "mocha": ""
+  }
+}
