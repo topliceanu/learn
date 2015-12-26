@@ -1,0 +1,24 @@
+{
+  "name": "two-phase-commit",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "mocha",
+    "thrift": "thrift -out lib/thrift --gen js:node -v tpc.thrift"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "thrift": "0.9.3",
+    "uuid": "2.0.1"
+  },
+  "devDependencies": {
+    "chai": "3.4.1",
+    "mocha": "2.3.4",
+    "sinon": "1.17.2"
+  }
+}
