@@ -1,0 +1,14 @@
+{
+  "name": "learn-app-script",
+  "version": "0.0.1",
+  "description": "learn app script",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "node-google-apps-script": "^1.1.4"
+  }
+}
