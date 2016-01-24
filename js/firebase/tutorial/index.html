@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Firebase</title>
+  </head>
+  <body>
+    <!-- Content -->
+    <div id='messagesDiv'></div>
+    <input id="nameInput" type="text" placeholder="Name">
+    <input id="messageInput" type="text" placeholder="Message">
+
+    <!-- JS -->
+    <script src='js/jquery.min.js'></script>
+    <script src='js/firebase.js'></script>
+    <script>
+      'use strict';
+      {
+        const displayChatMessage = (name, text) => {
+          $('<div />')
+            .text(text)
+            .prepend($('<em />').text(name+':'))
+            .appendTo($('#messagesDiv'));
+          $('#messagesDiv')[0].scrollTop = $('#messagesDiv')[0].scrollHeight;
+        };
+
+        const ref = new Firebase('https://tmtyxnzbbpp.firebaseio-demo.com/');
+        $('#messageInput').keypress((e) => {
+          if (e.keyCode == 13) {
+            const name = $('#nameInput').val();
+            const text = $('#messageInput').val();
+            ref.push({name: name, text: text});
+            $('#messageInput').val('');
+          }
+        });
+
+        ref.on('child_added', (snapshot) => {
+          const message = snapshot.val()
+          displayChatMessage(message.name, message.text);
+        });
+      };
+    </script>
+  </body>
+</html>
