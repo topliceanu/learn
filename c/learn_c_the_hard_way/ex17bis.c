@@ -1,3 +1,5 @@
+// Same as ex17.c but with the conn instance being globally shared.
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>

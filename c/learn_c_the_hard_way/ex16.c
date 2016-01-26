@@ -45,10 +45,10 @@ int main(int argc, char *argv[]) {
   struct Person *joe = Person_create("Joe Nash", 32, 64, 140);
   struct Person *frank = Person_create("Frank Blank", 20, 72, 180);
 
-  printf("Jeo is at memory location %p:\n", joe);
+  printf("Jeo is at memory location %p, with size %lu.\n", joe, sizeof(*joe));
   Person_print(joe);
 
-  printf("Frank is at memory location %p:\n", frank);
+  printf("Frank is at memory location %p, with size %lu.\n", frank, sizeof(*frank));
   Person_print(frank);
 
   joe->age += 20;
