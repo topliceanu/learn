@@ -14,9 +14,10 @@ void die(const char *message) {
   exit(1);
 }
 
-// Create a new type, in this case a function pointer.
+// Creates a new type, in this case a function pointer.
 typedef int (*compare_cb)(int a, int b);
 
+// Creates a new type, a function pointer that sorts an array.
 typedef int *(*sort_method)(int *numbers, int count, compare_cb cmp);
 
 // Three implementations of the compare_cb function pointer type.
