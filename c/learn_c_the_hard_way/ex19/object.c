@@ -6,6 +6,7 @@
 #include "object.h"
 
 void Object_destroy(void *self) {
+  assert(self != NULL);
   Object *obj = self;
   if (obj) {
     if (obj->description) {
@@ -16,6 +17,7 @@ void Object_destroy(void *self) {
 }
 
 void Object_describe(void *self) {
+  assert(self != NULL);
   Object *obj = self;
   printf("%s.\n", obj->description);
 }
@@ -23,20 +25,24 @@ void Object_describe(void *self) {
 // An interface of the initialization function.
 // Should return >0 if the initialization is successfull, 0 if it failed.
 int Object_init(void *self) {
+  assert(self != NULL);
   return 1;
 }
 
 void *Object_move(void *self, Direction direction) {
+  assert(self != NULL);
   printf("You can't go that direction.\n");
   return NULL;
 }
 
 int Object_attack(void *self, int damage) {
+  assert(self != NULL);
   printf("You can't attack that.\n");
   return 0;
 }
 
 void *Object_new(size_t size, Object proto, char *description) {
+  assert(description != NULL);
   if (!proto.init) {
     proto.init = Object_init;
   }
@@ -56,10 +62,12 @@ void *Object_new(size_t size, Object proto, char *description) {
   // Create a pointer to a memory location with the size of the prototype.
   // Then store a pointer index of the prototype int he pointer.
   Object *el = calloc(1, size);
+  assert(el != NULL);
   *el = proto;
 
   // Copy over the description.
   el->description = strdup(description);
+  assert(el->description != NULL);
 
   // Initialize it with whatever init we were given.
   if (!el->init(el)) {

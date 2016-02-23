@@ -6,6 +6,7 @@ typedef enum {
   NORTH, SOUTH, EAST, WEST
 } Direction;
 
+// define an anonymous struct and name it Object.
 typedef struct {
   char *description;
   int (*init)(void *self);
@@ -24,6 +25,7 @@ void *Object_new(size_t size, Object proto, char *description);
 
 // Macro: Syntactic sugar, let you call the familiar NEW to create a new object
 // from a prototype object.
+// T##Proto means add "Proto" to the back of the name T.
 #define NEW(T, N) Object_new(sizeof(T), T##Proto, N)
 
 // Macro: Syntactic sugar, let's you write `obj->proto.blah` as

@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <stdio.h>
 #include <errno.h>
 #include <stdlib.h>
@@ -8,7 +9,10 @@
 
 
 int Monster_attack(void *self, int damage) {
+  assert(self != NULL);
+  // Cast the pointer self to type (Monster *).
   Monster *monster = self;
+  // printf("You attach %s!\n", monster->proto.description());
   printf("You attack %s!\n", monster->_(description));
 
   monster->hit_points -= damage;
@@ -24,6 +28,7 @@ int Monster_attack(void *self, int damage) {
 }
 
 int Monster_init(void *self) {
+  assert(self != NULL);
   Monster *monster = self;
   monster->hit_points = 10;
   return 1;
@@ -35,6 +40,7 @@ Object MonsterProto = {
 };
 
 void *Room_move(void *self, Direction direction) {
+  assert(self != NULL);
   Room *room = self;
   Room *next = NULL;
 
@@ -56,16 +62,20 @@ void *Room_move(void *self, Direction direction) {
   }
 
   if (next) {
+    // next->proto.describe(next);
     next->_(describe)(next);
   }
   return next;
 }
 
 int Room_attack(void *self, int damage) {
+  assert(self != NULL);
+  // Cast self variable into type (Room *).
   Room *room = self;
   Monster *monster = room->bad_guy;
 
   if (monster) {
+    // monster->proto.attack(monster, damage);
     monster->_(attack)(monster, damage);
     return 1;
   }
@@ -81,11 +91,13 @@ Object RoomProto = {
 };
 
 void *Map_move(void *self, Direction direction) {
+  assert(self != NULL);
   Map *map = self;
   Room *location = map->location;
   Room *next = NULL;
 
-  next = location -> _(move)(location, direction);
+  // next = location->proto.move(location, direction);
+  next = location->_(move)(location, direction);
 
   if (next) {
     map->location = next;
@@ -94,22 +106,30 @@ void *Map_move(void *self, Direction direction) {
 }
 
 int Map_attack(void *self, int damage) {
+  assert(self != NULL);
   Map *map = self;
   Room *location = map->location;
 
+  // return location->proto.attack(location, damage);
   return location->_(attack)(location, damage);
 }
 
 int Map_init(void *self) {
+  assert(self != NULL);
   Map *map = self;
 
   // Create the amp.
+  // Room *hall = Object_new(sizeof(Room), RoomProto, "The great Hall");
   Room *hall = NEW(Room, "The great Hall");
+  // Room *throne = Object_new(sizeof(Room), RoomProto, "The throne room");
   Room *throne = NEW(Room, "The throne room");
+  // Room *arena = Object_new(sizeof(Room), RoomProto, "The throne room");
   Room *arena = NEW(Room, "The arena, with the minotaur");
+  // Room *kitchen = Object_new(sizeof(Room), RoomProto, "The throne room");
   Room *kitchen = NEW(Room, "Kitchen, you have a knife now");
 
   // Puth the bad guy in the arena.
+  // arena->bad_guy = Object_new(sizeof(Monster), MonsterProto, "The evil minotaur");
   arena->bad_guy = NEW(Monster, "The evil minotaur");
 
   // Setup the map rooms.
@@ -134,9 +154,12 @@ Object MapProto = {
 };
 
 int process_input (Map *game) {
+  assert(game != NULL);
   printf("\n> ");
 
+  // Each the ENTER typed after the command character above.
   char ch = getchar();
+  assert(ch != EOF);
   getchar();
 
   int damage = rand() % 4;
@@ -146,19 +169,32 @@ int process_input (Map *game) {
       printf("Givin up? You suck.\n");
       return 0;
       break;
+    case 'h':
+      printf("l - prints which directions are available\n");
+      printf("n - move to the north room\n");
+      printf("s - move to the south room\n");
+      printf("e - move to the east room\n");
+      printf("w - move to the west room\n");
+      printf("a - attack whoeven is in the current root\n");
+      break;
     case 'n':
+      // game->proto.move(game, NORTH);
       game->_(move)(game, NORTH);
       break;
     case 's':
+      // game->proto.move(game, SOUTH);
       game->_(move)(game, SOUTH);
       break;
     case 'e':
+      // game->proto.move(game, EAST);
       game->_(move)(game, EAST);
       break;
     case 'w':
+      // game->proto.move(game, WEST);
       game->_(move)(game, WEST);
       break;
     case 'a':
+      // game->proto.attack(game, damage);
       game->_(attack)(game, damage);
       break;
     case 'l':
@@ -185,9 +221,11 @@ int process_input (Map *game) {
 int main(int argc, char *argv[]) {
   srand(time(NULL));
 
+  // Map *game = Object_new(sizeof(Map), MapProto, "The Hall of the Minotaur");
   Map *game = NEW(Map, "The Hall of the Minotaur.");
 
   printf("You enter the ");
+  // game->location->proto.describe(game->location);
   game->location->_(describe)(game->location);
 
   while(process_input(game)) {

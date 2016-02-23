@@ -4,16 +4,17 @@
 
 #include "object.h"
 
-struct Monster {
+// Create an anonymous struct and rename it to Monster.
+typedef struct {
   Object proto;
   int hit_points;
-};
-
-typedef struct Monster Monster;
+} Monster;
 
 int Monster_attack(void *self, int damage);
 int Monster_init(void *self);
 
+// I don't use the "typedef struct {..} <name>" syntax here because I need
+// to declare pointers to the same type inside the type.
 struct Room {
   Object proto;
   Monster *bad_guy;
