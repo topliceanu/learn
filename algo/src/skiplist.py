@@ -7,7 +7,7 @@ class Node(object):
     """ An node in a skip list.
 
     Attrs:
-        next: list, references to the next element each level of the skip list.
+        next: list, holds references to the next elements on each level.
         value: int, the key to store.
     """
     def __init__(self, value, levels):

@@ -70,6 +70,7 @@ python -m unittest discover test -p `test_graph.py` # to run a specific test cas
 9. skiplist
 10. splay tree
 11. trie
+12. hash array mapped trie
 
 ## Todo
 

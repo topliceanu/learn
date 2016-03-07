@@ -13,7 +13,7 @@ SIZE = 4
 class BinarySearchTreeNode(object):
     """ A node in a binary search tree.
 
-    Implements all binary search tree algorithms recursively.
+    Implements all functions of a binary search tree algorithms recursively.
 
     Attrs:
         key: any, used to sort the tree.

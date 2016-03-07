@@ -60,8 +60,8 @@ class OrderedListTimer(Timer):
         self.last_timer_id = 0
 
     def start_timer(self, timeout, callback):
-        timer = {'timeout': timeout, 'callback': callback}
+        absolute_timeout = int(time.time()) + timeout
+        timer = {'timeout': absolute_timeout, 'callback': callback}
         self.inserted_timers[self.last_timer_id] = timer
-
 
         return self.last_timer_id
