@@ -31,11 +31,11 @@ class TestReversePolishNotation(unittest.TestCase):
     actual = reverse_polish_notation(expression)
     self.assertEqual(actual, expected)
 
-  #def test_complicated_expression(self):
-  #  expression = "5 + ((1 + 2) * 4) − 3".split()
-  #  expected = "5 1 2 + 4 * + 3 -".split()
-  #  actual = reverse_polish_notation(expression)
-  #  self.assertEqual(actual, expected)
+  def test_complicated_expression(self):
+    expression = "5 + ( ( 1 + 2 ) * 4 ) - 3".split()
+    expected = "5 1 2 + 4 * + 3 -".split()
+    actual = reverse_polish_notation(expression)
+    self.assertEqual(actual, expected)
 
   def test_even_more_complicated_expression(self):
     expression = "3 + 4 * 2 / ( 1 - 5 ) ^ 2 ^ 3".split()
@@ -43,8 +43,14 @@ class TestReversePolishNotation(unittest.TestCase):
     actual = reverse_polish_notation(expression)
     self.assertEqual(actual, expected)
 
-  #def test_expression_with_functions(self):
-  #  expression = "sin ( max ( 2 , 3 ) / 3 * 3 )".split()
-  #  expected = "2 3 max 3 / 3 * sin".split()
-  #  actual = reverse_polish_notation(expression)
-  #  self.assertEqual(actual, expected)
+  def test_simple_function_expression(self):
+    expression = "max ( 2 , 3 )".split()
+    expected = "2 3 max".split()
+    actual = reverse_polish_notation(expression)
+    self.assertEqual(actual, expected)
+
+  def test_expression_with_functions(self):
+    expression = "sin ( max ( 2 , 3 ) / 3 * 3 )".split()
+    expected = "2 3 max 3 / 3 * sin".split()
+    actual = reverse_polish_notation(expression)
+    self.assertEqual(actual, expected)

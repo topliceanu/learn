@@ -12,6 +12,9 @@ def reverse_polish_notation(tokens):
 
     Handles functions and paranthesis.
 
+    Obs: operator precendence from infix notation translates into operator
+    order into postfix notation.
+
     Args:
         tokens: list, of strings with input tokens in infix notation.
         operators: list, format [[operator, precedence, associativity]].
@@ -30,8 +33,10 @@ def reverse_polish_notation(tokens):
         elif is_function(token):
             operator_stack.append(token)
         elif token == ',':
-            while operator_stack[-1] != LEFT_PARANTHESES:
+            while len(operator_stack) > 0 and operator_stack[-1] != LEFT_PARANTHESES:
                 output_queue.append(operator_stack.pop())
+            if len(operator_stack) == 0:
+                raise Error('Misplaced separator or missmatch parantheses')
         elif is_operator(token):
             while len(operator_stack) > 0 and \
               is_operator(operator_stack[-1]) and \
@@ -48,12 +53,11 @@ def reverse_polish_notation(tokens):
                 raise Error('Mismatch parantheses')
             left_parantheses = operator_stack.pop()
             if len(operator_stack) > 0 and is_function(operator_stack[-1]):
-                output_queue.append(operator_stack[-1])
+                output_queue.append(operator_stack.pop())
 
     while len(operator_stack) != 0:
         if operator_stack[-1] in [LEFT_PARANTHESES, RIGHT_PARANTHESES]:
             raise Error('Missmatch parantheses')
-
         output_queue.append(operator_stack.pop())
 
     return output_queue
