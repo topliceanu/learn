@@ -6,21 +6,22 @@ COMA = ','
 LEFT_PARANTHESES = '('
 RIGHT_PARANTHESES = ')'
 
-def reverse_polish_notation(tokens):
+def reverse_polish_notation(tokens, operators, functions=[]):
     """ Implements Dijkstra's Shunting Yard algorithm for converting an infix
     expression into a postfix expression.
 
     Handles functions and paranthesis.
 
-    Obs: operator precendence from infix notation translates into operator
+    Obs: operator precedence from infix notation translates into operator
     order into postfix notation.
 
     Args:
         tokens: list, of strings with input tokens in infix notation.
-        operators: list, format [[operator, precedence, associativity]].
+        operators: dict, format {operator: {operator, precedence, associativity}}
             operator: character
             precedence: number, 1 to 10, conveys the order in which operators are evaluated.
             associativity: number, either LEFT or RIGHT
+        functions: list, of name strings.
     Returns:
         output: list of string token in postfix notation.
     """
@@ -28,20 +29,20 @@ def reverse_polish_notation(tokens):
     operator_stack = []
 
     for token in tokens:
-        if is_operand(token):
+        if is_operand(token, operators, functions):
             output_queue.append(token)
-        elif is_function(token):
+        elif is_function(token, functions):
             operator_stack.append(token)
         elif token == ',':
             while len(operator_stack) > 0 and operator_stack[-1] != LEFT_PARANTHESES:
                 output_queue.append(operator_stack.pop())
             if len(operator_stack) == 0:
                 raise Error('Misplaced separator or missmatch parantheses')
-        elif is_operator(token):
+        elif is_operator(token, operators):
             while len(operator_stack) > 0 and \
-              is_operator(operator_stack[-1]) and \
-              ((associativity(token) == LEFT and precedence(token) <= precedence(operator_stack[-1])) or \
-               (associativity(token) == RIGHT and precedence(token) < precedence(operator_stack[-1]))):
+              is_operator(operator_stack[-1], operators) and \
+              ((associativity(token, operators) == LEFT and precedence(token, operators) <= precedence(operator_stack[-1], operators)) or \
+               (associativity(token, operators) == RIGHT and precedence(token, operators) < precedence(operator_stack[-1], operators))):
                 output_queue.append(operator_stack.pop())
             operator_stack.append(token)
         elif token == LEFT_PARANTHESES:
@@ -52,7 +53,7 @@ def reverse_polish_notation(tokens):
             if len(operator_stack) == 0:
                 raise Error('Mismatch parantheses')
             left_parantheses = operator_stack.pop()
-            if len(operator_stack) > 0 and is_function(operator_stack[-1]):
+            if len(operator_stack) > 0 and is_function(operator_stack[-1], functions):
                 output_queue.append(operator_stack.pop())
 
     while len(operator_stack) != 0:
@@ -64,26 +65,20 @@ def reverse_polish_notation(tokens):
 
 # Utils
 
-def is_operand(token):
-    return token in ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
+def is_operand(token, operators, functions):
+    return (not is_function(token, functions)) and \
+           (not is_operator(token, operators)) and \
+           (token not in [',', LEFT_PARANTHESES, RIGHT_PARANTHESES])
 
-def is_function(token):
-    return token in ['sin', 'cos', 'max', 'min']
 
-def is_operator(token):
-    return token in ['+', '-', '*', '/', '^']
+def is_function(token, functions):
+    return token in functions
 
-def associativity(operator):
-    if operator in ['+', '-', '/', '*']:
-        return LEFT
-    return RIGHT
+def is_operator(token, operators):
+    return token in operators.keys()
 
-def precedence(operator):
-    levels = {
-        '+': 2,
-        '-': 2,
-        '*': 3,
-        '/': 3,
-        '^': 4
-    }
-    return levels[operator]
+def associativity(operator, operators):
+    return operators[operator]['associativity']
+
+def precedence(operator, operators):
+    return operators[operator]['precedence']
