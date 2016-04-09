@@ -25,6 +25,7 @@ def count_digits(initial):
 
     previous = current
 
+# Read from/Write into files.
 num_tests = 0
 tests = []
 
