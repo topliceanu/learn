@@ -1,3 +1,6 @@
 # DiffSync
 
 Differential Synchronization
+
+
+## Resources
