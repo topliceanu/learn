@@ -12,9 +12,7 @@ let CartItem = React.createClass({
             count: React.PropTypes.number,
             value: React.PropTypes.number,
             desc: React.PropTypes.string
-        }),
-        inc: React.PropTypes.func.isRequired,
-        dec: React.PropTypes.func.isRequired
+        })
     },
     getDefaultProps () {
         return {
@@ -27,8 +25,8 @@ let CartItem = React.createClass({
     },
     render () {
         return (<div>
-                    <CartItemDescription ref="itemDesc" desc={this.props.item.desc}/>
-                    <CartItemCount ref="itemCount" count={this.props.item.count} itemId={this.props.item.id} inc={this.props.inc} dec={this.props.dec}/>
+                    <CartItemDescription ref="itemDesc" desc={this.props.item.subView(['desc'])}/>
+                    <CartItemCount ref="itemCount" count={this.props.item.subView(['count'])} itemId={this.props.item.id} inc={this.props.inc} dec={this.props.dec}/>
                     <CartItemTotal ref="itemTotal" value={this.props.item.value} count={this.props.item.count}/>
                 </div>);
     }
