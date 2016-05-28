@@ -1,4 +1,3 @@
-
 // Adds trigger functions to the current sheet for open and edit.
 // [todo] Trebuie rulat de fiecare data ca sa apara meniurile! Acum putem folosi direct onInstall(e)/onOpen(e);
 function triggers() {
