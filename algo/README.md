@@ -115,6 +115,7 @@ python -m unittest discover test -p `test_graph.py` # to run a specific test cas
 23  [ ] fix tests for the convex hull implementation.
 24. [ ] learn linear programming
 25. [ ] learn semi-definite programming
+26. [ ] implement Miller-Rabin primality test. See http://rosettacode.org/wiki/Miller%E2%80%93Rabin_primality_test#Python:_Probably_correct_answers
 
 ## List of Computer Scientists
 
