@@ -19,9 +19,16 @@ class Transaction {
   }
 
   receive (command) {
+    const commandsToStates = {
+      'query': 'voting',
+      'commit': 'success',
+      'rollback': 'failure'
+    };
+    const newState = commandsToStates[command];
+
     return new Promise((resolve, reject) => {
-      const stateChanged = this.stateMachine.changeState(command);
-      if (stateMachine == false) {
+      const stateChanged = this.stateMachine.changeState(newState);
+      if (stateChanged == false) {
         return reject(new Error(`cannot process command ${command}`));
       }
       resolve(true);
