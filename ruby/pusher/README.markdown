@@ -19,3 +19,4 @@ curl -vv -XPOST http://192.168.33.11:8080/events/test -H 'Content-type: applicat
 - [ ] _refactor_ introduce the concept of a channel as a container class.
 - [ ] make the processes more resilient by handling errors
 - [ ] add logging to the processes
+- [ ] introduce presence channels (Check: how are they implemented into Pusher)
