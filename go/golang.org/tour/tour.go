@@ -1,14 +1,17 @@
 package main
 
 import (
-  "fmt"
-  "time"
-	"math/rand"
+	"fmt"
+	"io"
 	"math"
 	"math/cmplx"
-	"strings"
+	"math/rand"
+	"os"
 	"strconv"
-	"io"
+	"strings"
+	"image"
+	"image/color"
+	"time"
 )
 
 func swap(a, b string) (string, string) {
@@ -36,8 +39,8 @@ func Sqrt(x float64) (numIter int32, t float64, e error) {
 
 	var z float64 = 1.0
 	for {
-		t = z - (z*z - x) / (2 * z)
-		if x - t*t < 0.001 && x - t*t > -0.001 {
+		t = z - (z*z-x)/(2*z)
+		if x-t*t < 0.001 && x-t*t > -0.001 {
 			return numIter, t, nil
 		} else {
 			numIter += 1
@@ -71,10 +74,10 @@ func printSlice(s []int) {
 
 func generatePic(dx, dy int) (result [][]uint8) {
 	result = make([][]uint8, dx)
-	for i := range(result) {
+	for i := range result {
 		result[i] = make([]uint8, dy)
-		for j := range(result[i]) {
-			result[i][j] = uint8((i*j))
+		for j := range result[i] {
+			result[i][j] = uint8((i * j))
 		}
 	}
 	return result
@@ -93,7 +96,7 @@ func WordCount(s string) map[string]int {
 	return counts
 }
 
-func adder() func (int) int {
+func adder() func(int) int {
 	sum := 0
 	return func(x int) int {
 		sum += x
@@ -111,7 +114,21 @@ func fibonacci() func() int {
 	}
 }
 
-func describe (i interface {}) {
+// Publishes the fibonacci numbers on a output channel.
+func fibonacciRoutine(c, quit chan int) {
+	a, b := 0, 1
+	for {
+		select {
+		case c <- a:
+			a, b = b, a+b
+		case <-quit:
+			fmt.Println("Quit Fibonacci Routine")
+			return
+		}
+	}
+}
+
+func describe(i interface{}) {
 	fmt.Println("(%v, %t)\n", i, i)
 }
 
@@ -133,7 +150,7 @@ func (t *T) M() {
 
 type Person struct {
 	Name string
-	Age int
+	Age  int
 }
 
 func (p Person) String() string {
@@ -167,6 +184,80 @@ func (r MyReader) Read(out []byte) (int, error) {
 	return 1, nil
 }
 
+type rot13Reader struct {
+	r io.Reader
+}
+
+func (r rot13Reader) Read(p []byte) (n int, err error) {
+	n, err = r.r.Read(p)
+	for i := 0; i < len(p); i++ {
+		if (p[i] >= 'A' && p[i] < 'N') || (p[i] >= 'a' && p[i] < 'n') {
+			p[i] += 13
+		} else if (p[i] > 'M' && p[i] <= 'Z') || (p[i] > 'm' && p[i] <= 'z') {
+			p[i] -= 13
+		}
+	}
+	return n, err
+}
+
+type Image struct{
+	Width, Height int
+	colr uint8
+}
+
+func (r Image) Bounds() image.Rectangle {
+	return image.Rect(0, 0, r.Width, r.Height)
+}
+
+func (r Image) ColorModel() color.Model {
+	return color.RGBAModel
+}
+
+func (r Image) At(x, y int) color.Color {
+	return color.RGBA{r.colr+uint8(x), r.colr+uint8(y), 255, 255}
+}
+
+func say(s string) {
+	for i := 0; i < 10; i++ {
+		time.Sleep(100 * time.Millisecond)
+		fmt.Println(s)
+	}
+}
+
+func computeSum(s []int, c chan int) {
+	total := 0
+	for _, v := range s {
+		total += v
+	}
+	c <- total
+}
+
+func distSum(s []int) int {
+	c := make(chan int)
+	go computeSum(s[:len(s)/2], c)
+	go computeSum(s[len(s)/2:], c)
+	first, second := <-c, <-c
+	return first + second
+}
+
+func clockRoutine() {
+	tick := time.Tick(100 * time.Millisecond)
+	boom := time.After(500 * time.Millisecond)
+
+	for {
+		select {
+		case <-tick:
+			fmt.Println("tick.")
+		case <-boom:
+			fmt.Println("Boom!")
+			return
+		default:
+			fmt.Println("  .  ")
+			time.Sleep(50 * time.Millisecond)
+		}
+	}
+}
+
 func main() {
 	fmt.Println("Welcome to the playground!")
 	fmt.Println("The time is", time.Now())
@@ -178,9 +269,9 @@ func main() {
 	fmt.Println(c, java, python)
 
 	var (
-		ToBe bool = false
-		MaxInt uint64 = 1 << 64 - 1
-		z complex128 = cmplx.Sqrt(-5 + 2i)
+		ToBe   bool       = false
+		MaxInt uint64     = 1<<64 - 1
+		z      complex128 = cmplx.Sqrt(-5 + 2i)
 	)
 	const f = "%T(%v)\n"
 	fmt.Printf(f, ToBe, ToBe)
@@ -188,10 +279,10 @@ func main() {
 	fmt.Printf(f, z, z)
 
 	var (
-		i int
+		i  int
 		f1 float64
-		b bool
-		s string
+		b  bool
+		s  string
 	)
 	fmt.Printf("%v %v %v %q\n", i, f1, b, s)
 
@@ -211,7 +302,7 @@ func main() {
 	*p = 12
 	fmt.Println("values are", i, j)
 
-	v := Vertex{1, 2,}
+	v := Vertex{1, 2}
 	q := &v
 	q.X = 1e9
 	fmt.Printf("Pointer: %v\n", q)
@@ -235,7 +326,7 @@ func main() {
 
 	var m = map[string]Vertex{
 		"Bell Labs": Vertex{40, -74},
-		"Google": Vertex{37, -122},
+		"Google":    Vertex{37, -122},
 	}
 	fmt.Println(m)
 
@@ -284,4 +375,27 @@ func main() {
 	}
 
 	stringToStream("Hello Alexandru Topliceanu")
+
+	src := strings.NewReader("Lbh penpxrq gur pbqr!")
+	dest := rot13Reader{src}
+	io.Copy(os.Stdout, &dest)
+
+	go say("World!")
+	say("hello")
+
+	items:= []int{1,2,3,4,5,6,7,8, 9}
+	total := distSum(items)
+	fmt.Printf("the sum of %v is %d\n", items, total)
+
+	fibChan := make(chan int, 10)
+	quitFibChan := make(chan int, 10)
+	go func() {
+		for i := 0; i < 30; i++ {
+			fmt.Println(<-fibChan)
+		}
+		quitFibChan <- 0
+	}()
+	fibonacciRoutine(fibChan, quitFibChan)
+
+	go clockRoutine()
 }
