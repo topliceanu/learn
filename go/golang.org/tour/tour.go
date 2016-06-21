@@ -11,8 +11,32 @@ import (
 	"strings"
 	"image"
 	"image/color"
+	"sort"
 	"time"
 )
+
+type ByteSize float64
+
+const (
+	_ = iota
+	KB ByteSize = 1 << (10 * iota)
+	MB
+	GB
+	TB
+	PB
+	EB
+	ZB
+	YB
+)
+
+// The new type.
+type ByteSlice []byte
+
+func (p *ByteSize) Write(data []byte) (n int,	err error) {
+	slice := *p
+	*p = slice
+	return len(data), nil
+}
 
 func swap(a, b string) (string, string) {
 	return b, a
@@ -258,7 +282,37 @@ func clockRoutine() {
 	}
 }
 
+func Min(a ...int) int {
+	min := int(^uint(0) >> 1)
+	for i := range a {
+		if min > i {
+			min = i
+		}
+	}
+	return min
+}
+
+type Writer interface {
+	Write(p []byte) (n int, err error)
+}
+
+type Reader interface {
+	Read(p []byte) (n int, err error)
+}
+
+// Interface embedding.
+type ReaderWriter interface {
+	Writer
+	Reader
+}
+
+func SortInGoroutine(a []int, res chan []int) {
+	sort.Sort(a)
+	res <- a
+}
+
 func main() {
+	fmt.Println(KB, MB, GB, TB)
 	fmt.Println("Welcome to the playground!")
 	fmt.Println("The time is", time.Now())
 	fmt.Println("My favourite number is", rand.Intn(10))
@@ -398,4 +452,6 @@ func main() {
 	fibonacciRoutine(fibChan, quitFibChan)
 
 	go clockRoutine()
+
+	fmt.Println("Min value of ", Min(1,2,3,4,5,6,7,8))
 }
