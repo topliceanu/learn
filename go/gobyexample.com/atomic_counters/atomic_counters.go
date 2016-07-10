@@ -4,8 +4,8 @@ package main
 import (
 	"fmt"
 	"runtime"
-	"time"
 	"sync/atomic"
+	"time"
 )
 
 func main() {

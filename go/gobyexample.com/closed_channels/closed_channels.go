@@ -10,7 +10,7 @@ func worker(jobs <-chan int, done chan<- bool) {
 		if more {
 			fmt.Printf("Processing job %d\n", job)
 		} else {
-			done<-true
+			done <- true
 			return
 		}
 	}

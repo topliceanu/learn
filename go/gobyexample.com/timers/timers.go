@@ -16,7 +16,7 @@ func main() {
 		<-stopper.C
 		fmt.Println("Stop the timer")
 		timer.Stop()
-		done<- true
+		done <- true
 	}()
 
 	<-done

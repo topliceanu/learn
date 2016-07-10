@@ -10,7 +10,7 @@ func pinger(pongs <-chan bool, pings chan<- bool) {
 		<-pongs
 		fmt.Println("Received pong!")
 		time.Sleep(1000)
-		pings<- true
+		pings <- true
 	}
 }
 
@@ -19,7 +19,7 @@ func ponger(pings <-chan bool, pongs chan<- bool) {
 		<-pings
 		fmt.Println("Received ping!")
 		time.Sleep(1000)
-		pongs<- true
+		pongs <- true
 	}
 }
 
@@ -30,7 +30,7 @@ func main() {
 	go pinger(pongs, pings)
 	go ponger(pings, pongs)
 
-	pings<-true
+	pings <- true
 
 	var input string
 	fmt.Scanln(&input)

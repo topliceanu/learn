@@ -8,7 +8,7 @@ import (
 func printer(seconds int64, out chan<- bool) {
 	for {
 		time.Sleep(time.Second * time.Duration(seconds))
-		out<- true
+		out <- true
 	}
 }
 

@@ -54,4 +54,8 @@ func main() {
 	time.Sleep(time.Second)
 	numOpsSnapshot := atomic.LoadUint64(&numOps)
 	fmt.Printf("Number of ops %d and total sum %d\n", numOpsSnapshot, sum)
+
+	mutex.Lock()
+	fmt.Printf("Data %+v\n", data)
+	mutex.Unlock()
 }

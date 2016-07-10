@@ -9,7 +9,7 @@ import (
 func main() {
 	requests := make(chan int, 5)
 	for i := 1; i <= 5; i += 1 {
-		requests<- i
+		requests <- i
 	}
 	close(requests)
 
@@ -22,18 +22,18 @@ func main() {
 	// build a limiter which supports bursting.
 	burstyLimiter := make(chan time.Time, 3)
 	for i := 1; i <= 3; i += 1 {
-		burstyLimiter<- time.Now()
+		burstyLimiter <- time.Now()
 	}
 
 	go func() {
 		for t := range time.Tick(time.Millisecond * 200) {
-			burstyLimiter<- t
+			burstyLimiter <- t
 		}
 	}()
 
 	burstyRequests := make(chan int, 5)
-	for i := 1; i <= 5; i ++ {
-		burstyRequests<- i
+	for i := 1; i <= 5; i++ {
+		burstyRequests <- i
 	}
 	close(burstyRequests)
 
