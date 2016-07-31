@@ -16,6 +16,14 @@ func worker(name int, jobs <-chan int, wg *sync.WaitGroup) {
 	fmt.Printf("Worker %d finished\n", name)
 }
 
+func masterWorker(name, numSubworkers int, jobs <-chan int, wg *sync.WaitGroup) {
+	fmt.Printf("Master worker %d started\n", name)
+	for i := 1; i <= numSubworkers; i += 1 {
+		workerName := name * 10 + i
+		go worker(workerName, jobs, wg)
+	}
+}
+
 func pool(numJobs, numWorkers int, wg *sync.WaitGroup) {
 	var out = make(chan int)
 	go func() {
@@ -25,8 +33,9 @@ func pool(numJobs, numWorkers int, wg *sync.WaitGroup) {
 		close(out)
 	}()
 
-	for i := 1; i <= numWorkers; i += 1 {
-		go worker(i, out, wg)
+	numMasterWorkers := int(numWorkers / 10)
+	for i := 1; i <= numMasterWorkers; i += 1 {
+		go masterWorker(i, 10, out, wg)
 	}
 }
 
