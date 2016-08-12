@@ -6,8 +6,8 @@ import (
 )
 
 type Subscription interface {
-    Updates() <-chan int // stream of Items
-    Close()              // shuts down the stream
+	Updates() <-chan int // stream of Items
+	Close()              // shuts down the stream
 }
 
 type S struct {
@@ -17,10 +17,14 @@ type S struct {
 }
 
 func NewS(id int, interval time.Duration) Subscription {
-	s := &S{id, time.NewTicker(interval), make(chan int)}
+	s := &S{
+		id: id,
+		ticker: time.NewTicker(interval),
+		updates: make(chan int),
+	}
 	go func() {
 		for _ = range s.ticker.C {
-			s.updates<- id
+			s.updates<- s.id
 		}
 	}()
 	return s
@@ -79,6 +83,33 @@ func Merge(subs ...Subscription) Subscription {
 }
 
 func main() {
+	/*
+	s := NewS(1, time.Second)
+	go func() {
+		for i := range s.Updates() {
+			fmt.Println(i)
+		}
+	}()
+	time.Sleep(10 * time.Second)
+	s.Close()
+	*/
+
+	/*
+	s1 := NewS(1, time.Second)
+	s2 := NewS(2, time.Second)
+	s := Merge(s1, s2)
+
+	go func() {
+		for i := range s.Updates() {
+			fmt.Println(i)
+		}
+	}()
+
+	time.Sleep(10 * time.Second)
+	s.Close()
+	*/
+
+
 	s1 := NewS(1, time.Second)
 	s2 := NewS(2, time.Second)
 	s3 := NewS(3, time.Second)
@@ -90,11 +121,13 @@ func main() {
 
 	s := Merge(s1, s2, s3, s4, s5, s6, s7, s8)
 
-	for update := range s.Updates() {
-		fmt.Println(update)
-	}
+	go func() {
+		for update := range s.Updates() {
+			fmt.Println(update)
+		}
+	}()
 
 	time.Sleep(10 * time.Second)
 	s.Close()
-}
 
+}
