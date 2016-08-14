@@ -79,7 +79,6 @@ func Merge(subs ...Subscription) Subscription {
 		m2 := Merge(subs[len(subs)/2:]...)
 		return &M{m1, m2, make(chan struct{})}
 	}
-
 }
 
 func main() {
