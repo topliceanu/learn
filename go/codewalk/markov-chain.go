@@ -35,11 +35,10 @@ type C struct {
 }
 
 func NewChain(prefixLen int) Chain {
-	c := C{
+	return &C{
 		prefixLen: 2,
 		chain: make(map[string][]string),
 	}
-	return &c
 }
 
 func (c *C) Build(r io.Reader) {
