@@ -87,6 +87,7 @@ python -m unittest discover test -p `test_graph.py` # to run a specific test cas
 8. [ ] implement KD-trees
 9. [X] flood fill algorithm
 10. [ ] implement Bitmapped Vector Trie
+11. [ ] implement Boyer-Moore string search algorithm
 
 ### Part 2
 1.  [x] caching - finish implementation of ARCache.
