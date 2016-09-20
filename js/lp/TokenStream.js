@@ -34,23 +34,32 @@ var TokenStream = function(input) {
   var isOpChar = function(ch) {
     return "+-*/%=&|<>!".indexOf(ch) >= 0;
   };
-  var is_punc = function(ch) {
+
+  // @return {Boolean} recognizes punctuation marks.
+  var isPunc = function(ch) {
     return ",;(){}[]".indexOf(ch) >= 0;
   };
-  var is_whitespace = function(ch) {
+
+  // @return {Boolean} true for newline, tabs and white-spaces.
+  var isWhitespace = function(ch) {
     return " \t\n".indexOf(ch) >= 0;
   };
-  var read_while = function(predicate) {
+
+  // Reads the input stream as long as read characters match the predicate or
+  // until EOF is reached.
+  // @return {String} returns a token and also consumes it from the input stream.
+  var readWhile = function(predicate) {
     var str = "";
     while (!input.eof() && predicate(input.peek()))
       str += input.next();
     return str;
   };
+
   // Reads a number from the input stream.
-  // Numbers can have only one dot.
-  var read_number = function() {
+  // Numbers are allowed to have one dot.
+  var readNumber = function() {
     var has_dot = false;
-    var number = read_while(function(ch){
+    var number = readWhile(function(ch){
       if (ch == ".") {
         if (has_dot) return false;
         has_dot = true;
@@ -60,15 +69,19 @@ var TokenStream = function(input) {
     });
     return { type: "num", value: parseFloat(number) };
   };
-  // identifiers are either keywords or variables.
-  var read_ident = function() {
-    var id = read_while(isId);
+
+  // Identifiers are either keywords or variables.
+  // @return {String} a token representing an identifier.
+  var readId = function() {
+    var id = readWhile(isId);
     return {
       type  : isKeyword(id) ? "kw" : "var",
       value : id
     };
   };
-  var read_escaped = function(end) {
+
+  // @return {String} returns a string which can have escaped characters.
+  var readEscaped = function(end) {
     var escaped = false, str = "";
     input.next();
     while (!input.eof()) {
@@ -86,17 +99,18 @@ var TokenStream = function(input) {
     }
     return str;
   };
+
   var read_string = function() {
-    return { type: "str", value: read_escaped('"') };
+    return { type: "str", value: readEscaped('"') };
   };
   var skip_comment = function() {
-    read_while(function(ch) {
+    readWhile(function(ch) {
       return ch != "\n";
     });
     input.next();
   };
   var read_next = function() {
-    read_while(is_whitespace);
+    readWhile(isWhitespace);
     if (input.eof()) return null;
     var ch = input.peek();
     if (ch == "#") {
@@ -104,15 +118,15 @@ var TokenStream = function(input) {
       return read_next();
     }
     if (ch == '"') return read_string();
-    if (isDigit(ch)) return read_number();
-    if (isIdStart(ch)) return read_ident();
-    if (is_punc(ch)) return {
+    if (isDigit(ch)) return readNumber();
+    if (isIdStart(ch)) return readId();
+    if (isPunc(ch)) return {
       type  : "punc",
       value : input.next()
     };
     if (isOpChar(ch)) return {
       type  : "op",
-      value : read_while(isOpChar)
+      value : readWhile(isOpChar)
     };
     input.croak("Can't handle character: " + ch);
   };
