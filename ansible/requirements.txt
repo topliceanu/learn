@@ -1,0 +1,15 @@
+ansible==2.1.1.0
+cffi==1.8.3
+cryptography==1.5
+enum34==1.1.6
+httplib2==0.9.2
+idna==2.1
+ipaddress==1.0.17
+Jinja2==2.8
+MarkupSafe==0.23
+paramiko==2.0.2
+pyasn1==0.1.9
+pycparser==2.14
+pycrypto==2.6.1
+PyYAML==3.12
+six==1.10.0
