@@ -1,0 +1,19 @@
+{
+  "name": "graphql-learn",
+  "version": "1.0.0",
+  "description": "learn graphql",
+  "main": "index.js",
+  "scripts": {
+    "serve": "node index.js",
+    "test": "./node_modules/.bin/mocha",
+    "lint": "./node_modules/.bin/eslint ."
+  },
+  "author": "alexandru topliceanu",
+  "license": "MIT",
+  "dependencies": {
+    "eslint": "3.5.0",
+    "express": "4.14.0",
+    "express-graphql": "0.5.4",
+    "graphql": "0.7.0"
+  }
+}
