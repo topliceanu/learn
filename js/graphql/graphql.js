@@ -32,6 +32,35 @@ const schema = graphql.buildSchema(`
   }
 `);
 
+const userType = new graphql.GraphQLObjectType({
+  name: 'User',
+  fields: {
+    id: {
+      type: graphql.GraphQLString
+    },
+    name: {
+      type: graphql.GraphQLString
+    }
+  }
+});
+
+const queryType = new graphql.GraphQLObjectType({
+  name: "Query",
+  fields: {
+    user: {
+      type: userType,
+      args: {
+        id: {
+          type: graphql.GraphQLString
+        },
+        resolve (_, {id}) {
+            return fakeDatabase[id];
+        }
+      }
+    }
+  }
+});
+
 class Message {
   constructor(id, {content, author}) {
     this.id = id;
