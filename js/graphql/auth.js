@@ -11,7 +11,7 @@ module.exports = (user, pass) => {
         return res.sendStatus(401);
     }
     if (req.headers["authorization"] !== `Basic ${expectedAuth}`) {
-      return res.sendStatus(403);
+      return res.sendStatus(401);
     }
     */
     next();

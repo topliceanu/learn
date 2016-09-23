@@ -32,35 +32,6 @@ const schema = graphql.buildSchema(`
   }
 `);
 
-const userType = new graphql.GraphQLObjectType({
-  name: 'User',
-  fields: {
-    id: {
-      type: graphql.GraphQLString
-    },
-    name: {
-      type: graphql.GraphQLString
-    }
-  }
-});
-
-const queryType = new graphql.GraphQLObjectType({
-  name: "Query",
-  fields: {
-    user: {
-      type: userType,
-      args: {
-        id: {
-          type: graphql.GraphQLString
-        },
-        resolve (_, {id}) {
-            return fakeDatabase[id];
-        }
-      }
-    }
-  }
-});
-
 class Message {
   constructor(id, {content, author}) {
     this.id = id;
@@ -96,12 +67,12 @@ const rootValue = {
     }
     return new Message(id, db[id]);
   },
-  createMessage({input}) {
+  createMessage ({input}) {
     const id = crypto.randomBytes(10).toString("hex");
     db[id] = input;
     return new Message(id, input);
   },
-  updateMessage({id, input}) {
+  updateMessage ({id, input}) {
     if (!db[id]) {
       throw new Error(`Cannot find message with id ${id}`);
     }
