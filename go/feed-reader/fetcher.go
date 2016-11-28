@@ -8,18 +8,22 @@ import (
 	"time"
 )
 
-type fetcher struct {
-	domain string
-	counter int
+// Fetcher is an interface for a thing that know how to fetch Items from a feed.
+type Fetcher interface {
+	Fetch() (items []Item, next time.Time, err error)
 }
 
 func NewFetcher(domain string) Fetcher {
 	return &fetcher{domain, 0}
 }
 
+type fetcher struct {
+	domain string
+	counter int
+}
+
 func (f *fetcher) Fetch() (items []Item, next time.Time, err error) {
 	next = time.Now().Add(5 * time.Second)
-
 	items = make([]Item, 5)
 	for i := 1; i <= 5; i += 1 {
 		guid := f.counter + i
@@ -30,7 +34,6 @@ func (f *fetcher) Fetch() (items []Item, next time.Time, err error) {
 		}
 	}
 	f.counter += 5
-
 	return items, next, err
 }
 

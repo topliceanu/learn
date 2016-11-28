@@ -1,6 +1,6 @@
 package main
 
-// implements Subscription
+// merged implements Subscription interface by aggregating two subscriptions into one.
 type merged struct {
 	s1   Subscription
 	s2   Subscription
@@ -11,7 +11,6 @@ func (m *merged) Updates() <-chan Item {
 	out := make(chan Item)
 	items1 := m.s1.Updates()
 	items2 := m.s2.Updates()
-
 	go func() {
 		for {
 			select {
@@ -24,7 +23,6 @@ func (m *merged) Updates() <-chan Item {
 			}
 		}
 	}()
-
 	return out
 }
 

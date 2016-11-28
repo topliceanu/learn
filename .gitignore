@@ -62,3 +62,6 @@ bower_components
 npm-debug.log
 
 Gemfile.lock
+
+# GO
+go/feed-reader/feed-reader

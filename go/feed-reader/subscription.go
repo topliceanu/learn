@@ -6,11 +6,13 @@ import (
 
 const maxPending = 10
 
-// implements Subscription.
-type sub struct {
-	fetcher Fetcher
-	updates chan Item
-	closing chan chan error
+type Item struct {
+	Title, Channel, GUID string
+}
+
+type Subscription interface {
+	Updates() <-chan Item
+	Close() error
 }
 
 // Takes a Fetcher and returns a Subscription.
@@ -24,8 +26,24 @@ func NewSubscription(fetcher Fetcher) Subscription {
 	return s
 }
 
+// implements Subscription.
+type sub struct {
+	fetcher Fetcher
+	updates chan Item
+	closing chan chan error
+}
+
+
 func (s *sub) Updates() <-chan Item {
 	return s.updates
+}
+
+func (s *sub) Close() error {
+	// Make loop exit.
+	errc := make(chan error)
+	s.closing<- errc
+	// Wait for the loop to finish handling the Close signal and return any error.
+	return <-errc
 }
 
 type fetchResult struct{
@@ -38,7 +56,6 @@ func (s *sub) loop() {
 	var err error
 	var next = time.Now()
 	var pending []Item
-	var fetched []Item
 	var seen = make(map[string]bool)
 	var fetchDone chan fetchResult // if non-nil, Fetch is running.
 
@@ -67,7 +84,7 @@ func (s *sub) loop() {
 			// fetching data from the feed.
 			fetchDone = make(chan fetchResult, 1)
 			go func() {
-				fetched, next, err = s.fetcher.Fetch()
+				fetched, next, err := s.fetcher.Fetch()
 				fetchDone<- fetchResult{fetched, next, err}
 			}()
 		case f := <-fetchDone:
@@ -80,19 +97,11 @@ func (s *sub) loop() {
 			}
 		case errc := <-s.closing:
 			// closing the loop.
-			errc<- err
 			close(s.updates)
+			errc<- err
 			return
 		case updates<- first:
 			pending = pending[1:]
 		}
 	}
-}
-
-func (s *sub) Close() error {
-	// Make loop exit.
-	errc := make(chan error)
-	s.closing<- errc
-	// Return any error.
-	return <-errc
 }
