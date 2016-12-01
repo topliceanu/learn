@@ -1,130 +1,112 @@
 package main
 
 import (
-	"sync"
 	"fmt"
+	_ "sync"
 )
 
-// generates a channel of numbers from an array of numbers.
+// gen takes a list of ints and returns channel which produces these numbers.
 func gen(nums ...int) <-chan int {
-	out := make(chan int)
+	var (
+		out = make(chan int)
+		n   int
+	)
 	go func() {
-		for _, n := range nums {
-			out<- n
+		for _, n = range nums {
+			out <- n
 		}
 		close(out)
 	}()
 	return out
 }
 
-// generates a sequence of squared numbers.
-func sq(done <-chan struct{}, in <-chan int) <-chan int {
-	out := make(chan int)
+// sq takes a channel of ints and return a channel which outputs the squares of the inputs.
+func sq(nums <-chan int) <-chan int {
+	var (
+		out = make(chan int)
+		n   int
+	)
 	go func() {
-		defer close(out)
-		for n := range in {
-			select {
-			case out<- n*n:
-			case <-done:
-				return
-			}
+		for n = range nums {
+			out <- n * n
 		}
+		close(out)
 	}()
 	return out
 }
 
-/* // simple piping example
-func main() {
-	for o := range sq(sq(gen(1,2,3,4,5))) {
-		fmt.Println(o)
-	}
-}
-*/
-
-
-// my own implementation of WaitGroup
-type MyWG interface {
-	Done()
-	Wait()
-	Add(i int)
-}
-
-type StandardWg struct {
-	counter int
-	done bool
-	blocker chan bool
-}
-func (s *StandardWg) Done() {
-	if s.done == true {
-		return
-	}
-	s.counter -= 1
-	if s.counter == 0 {
-		s.done = true
-		s.blocker <- true
-	}
-}
-func (s *StandardWg) Wait() {
-	if s.done == true {
-		return
-	}
-	<-s.blocker
-}
-func (s *StandardWg) Add(i int) {
-	if s.done == true {
-		return
-	}
-	s.counter += i
-}
-
-
-// fan-in multiple channels into a single channel.
-func merge(done <-chan struct{}, cs ...<-chan int) <-chan int {
-	var wg sync.WaitGroup
-	out := make(chan int)
-
-	output := func(c <-chan int) {
-		defer wg.Done()
-		for n := range c {
-			select {
-			case out<- n:
-			case <-done:
-				return
-			}
-		}
-	}
-
+// merge will read from two channels and produce a single output channel
+func merge(cs ...(<-chan int)) <-chan int {
+	var (
+		out chan int
+		wg  sync.WaitGroup
+		c   <-chan int
+	)
+	out = make(chan int)
+	wg = sync.WaitGroup{}
 	wg.Add(len(cs))
-	for _, c := range cs {
-		go output(c)
+	for _, c = range cs {
+		go func(c <-chan int) {
+			for n := range c {
+				out <- n
+			}
+			wg.Done()
+		}(c)
 	}
-
 	go func() {
 		wg.Wait()
 		close(out)
 	}()
-
 	return out
 }
 
-/* // simple fan-in example
+//// merge alternative version only for two channels without the use of a WaitGroup.
+//func merge(c1, c2 <-chan int) <-chan int {
+//	var (
+//		out chan int
+//	)
+//	out = make(chan int)
+//	go func() {
+//		var (
+//			n int
+//			open1, open2 bool
+//		)
+//		for {
+//			select {
+//			case n, open1 = <-c1:
+//				if open1 == false && open2 == false {
+//					close(out)
+//					return
+//				} else if open1 == false {
+//					continue
+//				} else {
+//					out <- n
+//				}
+//			case n, open2 = <-c2:
+//				if open1 == false && open2 == false {
+//					close(out)
+//					return
+//				} else if open2 == false {
+//					continue
+//				} else {
+//					out <- n
+//				}
+//			}
+//		}
+//	}()
+//	return out
+//}
+
 func main() {
-	in := gen(1,2,3,4,5,6)
-	done := make(chan struct{})
-	defer close(done)
-
-	c1 := sq(done, in)
-	c2 := sq(done, in)
-
-	fmt.Println(<-c1)
-	fmt.Println(<-c2)
-	//for n := range merge(done, c1, c2) {
-	//	fmt.Println(n)
-	//}
+	var (
+		c1, c2, c3, c4 <-chan int
+		n              int
+	)
+	c1 = gen(1, 2, 3, 4, 5)
+	c2 = sq(c1)
+	c3 = sq(c2)
+	c4 = gen(1, 2, 3, 4, 4, 5)
+	for n = range merge(c3, c4) {
+		fmt.Println(n)
+	}
 }
-*/
-
-func main() {
-
-}
-
