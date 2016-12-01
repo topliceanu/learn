@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	_ "sync"
+	"sync"
 )
 
 // gen takes a list of ints and returns channel which produces these numbers.
@@ -35,8 +35,16 @@ func sq(nums <-chan int) <-chan int {
 	return out
 }
 
+// consume is a helper method for merge. It reads values from c and writes them to out, until c is closed, calling Done the input WaitGroup.
+func consume(wg *sync.WaitGroup, c <-chan int, out chan<- int) {
+	for n := range c {
+		out<- n
+	}
+	wg.Done()
+}
+
 // merge will read from two channels and produce a single output channel
-func merge(cs ...(<-chan int)) <-chan int {
+func merge(cs ...<-chan int) <-chan int {
 	var (
 		out chan int
 		wg  sync.WaitGroup
@@ -46,18 +54,27 @@ func merge(cs ...(<-chan int)) <-chan int {
 	wg = sync.WaitGroup{}
 	wg.Add(len(cs))
 	for _, c = range cs {
-		go func(c <-chan int) {
-			for n := range c {
-				out <- n
-			}
-			wg.Done()
-		}(c)
+		go consume(&wg, c, out)
 	}
 	go func() {
 		wg.Wait()
 		close(out)
 	}()
 	return out
+}
+
+func main() {
+	var (
+		c1, c2, c3, c4 <-chan int
+		n              int
+	)
+	c1 = gen(1, 2, 3, 4, 5)
+	c2 = sq(c1)
+	c3 = sq(c2)
+	c4 = gen(1, 2, 3, 4, 4, 5)
+	for n = range merge(c3, c4) {
+		fmt.Println(n)
+	}
 }
 
 //// merge alternative version only for two channels without the use of a WaitGroup.
@@ -96,17 +113,3 @@ func merge(cs ...(<-chan int)) <-chan int {
 //	}()
 //	return out
 //}
-
-func main() {
-	var (
-		c1, c2, c3, c4 <-chan int
-		n              int
-	)
-	c1 = gen(1, 2, 3, 4, 5)
-	c2 = sq(c1)
-	c3 = sq(c2)
-	c4 = gen(1, 2, 3, 4, 4, 5)
-	for n = range merge(c3, c4) {
-		fmt.Println(n)
-	}
-}
