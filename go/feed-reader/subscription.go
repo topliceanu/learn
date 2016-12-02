@@ -33,7 +33,6 @@ type sub struct {
 	closing chan chan error
 }
 
-
 func (s *sub) Updates() <-chan Item {
 	return s.updates
 }
@@ -41,15 +40,15 @@ func (s *sub) Updates() <-chan Item {
 func (s *sub) Close() error {
 	// Make loop exit.
 	errc := make(chan error)
-	s.closing<- errc
+	s.closing <- errc
 	// Wait for the loop to finish handling the Close signal and return any error.
 	return <-errc
 }
 
-type fetchResult struct{
+type fetchResult struct {
 	fetched []Item
-	next time.Time
-	err error
+	next    time.Time
+	err     error
 }
 
 func (s *sub) loop() {
@@ -85,7 +84,7 @@ func (s *sub) loop() {
 			fetchDone = make(chan fetchResult, 1)
 			go func() {
 				fetched, next, err := s.fetcher.Fetch()
-				fetchDone<- fetchResult{fetched, next, err}
+				fetchDone <- fetchResult{fetched, next, err}
 			}()
 		case f := <-fetchDone:
 			fetchDone = nil
@@ -98,9 +97,9 @@ func (s *sub) loop() {
 		case errc := <-s.closing:
 			// closing the loop.
 			close(s.updates)
-			errc<- err
+			errc <- err
 			return
-		case updates<- first:
+		case updates <- first:
 			pending = pending[1:]
 		}
 	}
