@@ -1,9 +1,9 @@
 package main
 
 import (
-	"io"
-	"fmt"
 	"errors"
+	"fmt"
+	"io"
 	"strconv"
 	"time"
 )
@@ -18,7 +18,7 @@ func NewFetcher(domain string) Fetcher {
 }
 
 type fetcher struct {
-	domain string
+	domain  string
 	counter int
 }
 
@@ -28,9 +28,9 @@ func (f *fetcher) Fetch() (items []Item, next time.Time, err error) {
 	for i := 1; i <= 5; i += 1 {
 		guid := f.counter + i
 		items[i-1] = Item{
-			GUID: strconv.Itoa(guid),
+			GUID:    strconv.Itoa(guid),
 			Channel: fmt.Sprintf("Channel-%s", f.domain),
-			Title: fmt.Sprintf("Item(%d) in feed %s", guid, f.domain),
+			Title:   fmt.Sprintf("Item(%d) in feed %s", guid, f.domain),
 		}
 	}
 	f.counter += 5

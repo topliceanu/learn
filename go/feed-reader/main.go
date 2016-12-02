@@ -11,9 +11,9 @@ func main() {
 		NewSubscription(NewFetcher("highscalability.com")),
 		NewSubscription(NewFetcher("spectruum.iee.com")),
 	)
-	time.AfterFunc(3 * time.Second, func() {
-		merged.Close()
-		fmt.Println("closed!")
+	time.AfterFunc(3*time.Second, func() {
+		err := merged.Close()
+		fmt.Printf("closed with error: %v\n", err)
 	})
 	for i := range merged.Updates() {
 		fmt.Println(i.Channel, i.Title)
