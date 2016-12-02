@@ -6,14 +6,20 @@ import (
 )
 
 // gen takes a list of ints and returns channel which produces these numbers.
-func gen(nums ...int) <-chan int {
+func gen(done chan struct{}, nums ...int) <-chan int {
 	var (
 		out = make(chan int)
 		n   int
 	)
 	go func() {
 		for _, n = range nums {
-			out <- n
+			select {
+			case out <- n:
+			case <-done:
+				fmt.Println("gen closed")
+				close(out)
+				return
+			}
 		}
 		close(out)
 	}()
@@ -21,14 +27,20 @@ func gen(nums ...int) <-chan int {
 }
 
 // sq takes a channel of ints and return a channel which outputs the squares of the inputs.
-func sq(nums <-chan int) <-chan int {
+func sq(done chan struct{}, nums <-chan int) <-chan int {
 	var (
 		out = make(chan int)
 		n   int
 	)
 	go func() {
 		for n = range nums {
-			out <- n * n
+			select {
+			case out <- n * n:
+			case <-done:
+				fmt.Println("sq closed")
+				close(out)
+				return
+			}
 		}
 		close(out)
 	}()
@@ -36,15 +48,20 @@ func sq(nums <-chan int) <-chan int {
 }
 
 // consume is a helper method for merge. It reads values from c and writes them to out, until c is closed, calling Done the input WaitGroup.
-func consume(wg *sync.WaitGroup, c <-chan int, out chan<- int) {
+func consume(done chan struct{}, wg *sync.WaitGroup, c <-chan int, out chan<- int) {
+	defer wg.Done()
 	for n := range c {
-		out<- n
+		select {
+		case out<- n:
+		case <-done:
+			fmt.Println("consume closed")
+			return
+		}
 	}
-	wg.Done()
 }
 
 // merge will read from two channels and produce a single output channel
-func merge(cs ...<-chan int) <-chan int {
+func merge(done chan struct{}, cs ...<-chan int) <-chan int {
 	var (
 		out chan int
 		wg  sync.WaitGroup
@@ -54,10 +71,11 @@ func merge(cs ...<-chan int) <-chan int {
 	wg = sync.WaitGroup{}
 	wg.Add(len(cs))
 	for _, c = range cs {
-		go consume(&wg, c, out)
+		go consume(done, &wg, c, out)
 	}
 	go func() {
 		wg.Wait()
+		fmt.Println("merge closed")
 		close(out)
 	}()
 	return out
@@ -65,15 +83,26 @@ func merge(cs ...<-chan int) <-chan int {
 
 func main() {
 	var (
-		c1, c2, c3, c4 <-chan int
-		n              int
+		c1, c2, c3, c4, c5 <-chan int
+		done chan struct{}
+		n, i int
 	)
-	c1 = gen(1, 2, 3, 4, 5)
-	c2 = sq(c1)
-	c3 = sq(c2)
-	c4 = gen(1, 2, 3, 4, 4, 5)
-	for n = range merge(c3, c4) {
+	done = make(chan struct{})
+
+	c1 = gen(done, 1, 2, 3, 4, 5)
+	c2 = sq(done, c1)
+	c3 = sq(done, c2)
+	c4 = gen(done, 1, 2, 3, 4, 4, 5)
+	c5 = merge(done, c3, c4)
+
+	i = 0
+	for n = range c5 {
+		i += 1
 		fmt.Println(n)
+		if i == 3 {
+			fmt.Println("main closed")
+			close(done)
+		}
 	}
 }
 
