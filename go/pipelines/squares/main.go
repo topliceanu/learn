@@ -1,12 +1,13 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"sync"
 )
 
 // gen takes a list of ints and returns channel which produces these numbers.
-func gen(done chan struct{}, nums ...int) <-chan int {
+func gen(ctx context.Context, nums ...int) <-chan int {
 	var (
 		out = make(chan int)
 		n   int
@@ -15,7 +16,7 @@ func gen(done chan struct{}, nums ...int) <-chan int {
 		for _, n = range nums {
 			select {
 			case out <- n:
-			case <-done:
+			case <-ctx.Done():
 				fmt.Println("gen closed")
 				close(out)
 				return
@@ -27,7 +28,7 @@ func gen(done chan struct{}, nums ...int) <-chan int {
 }
 
 // sq takes a channel of ints and return a channel which outputs the squares of the inputs.
-func sq(done chan struct{}, nums <-chan int) <-chan int {
+func sq(ctx context.Context, nums <-chan int) <-chan int {
 	var (
 		out = make(chan int)
 		n   int
@@ -36,7 +37,7 @@ func sq(done chan struct{}, nums <-chan int) <-chan int {
 		for n = range nums {
 			select {
 			case out <- n * n:
-			case <-done:
+			case <-ctx.Done():
 				fmt.Println("sq closed")
 				close(out)
 				return
@@ -48,12 +49,12 @@ func sq(done chan struct{}, nums <-chan int) <-chan int {
 }
 
 // consume is a helper method for merge. It reads values from c and writes them to out, until c is closed, calling Done the input WaitGroup.
-func consume(done chan struct{}, wg *sync.WaitGroup, c <-chan int, out chan<- int) {
+func consume(ctx context.Context, wg *sync.WaitGroup, c <-chan int, out chan<- int) {
 	defer wg.Done()
 	for n := range c {
 		select {
-		case out<- n:
-		case <-done:
+		case out <- n:
+		case <-ctx.Done():
 			fmt.Println("consume closed")
 			return
 		}
@@ -61,7 +62,7 @@ func consume(done chan struct{}, wg *sync.WaitGroup, c <-chan int, out chan<- in
 }
 
 // merge will read from two channels and produce a single output channel
-func merge(done chan struct{}, cs ...<-chan int) <-chan int {
+func merge(ctx context.Context, cs ...<-chan int) <-chan int {
 	var (
 		out chan int
 		wg  sync.WaitGroup
@@ -71,7 +72,7 @@ func merge(done chan struct{}, cs ...<-chan int) <-chan int {
 	wg = sync.WaitGroup{}
 	wg.Add(len(cs))
 	for _, c = range cs {
-		go consume(done, &wg, c, out)
+		go consume(ctx, &wg, c, out)
 	}
 	go func() {
 		wg.Wait()
@@ -84,16 +85,17 @@ func merge(done chan struct{}, cs ...<-chan int) <-chan int {
 func main() {
 	var (
 		c1, c2, c3, c4, c5 <-chan int
-		done chan struct{}
-		n, i int
+		ctx                context.Context
+		cancel             context.CancelFunc
+		n, i               int
 	)
-	done = make(chan struct{})
+	ctx, cancel = context.WithCancel(context.Background())
 
-	c1 = gen(done, 1, 2, 3, 4, 5)
-	c2 = sq(done, c1)
-	c3 = sq(done, c2)
-	c4 = gen(done, 1, 2, 3, 4, 4, 5)
-	c5 = merge(done, c3, c4)
+	c1 = gen(ctx, 1, 2, 3, 4, 5)
+	c2 = sq(ctx, c1)
+	c3 = sq(ctx, c2)
+	c4 = gen(ctx, 1, 2, 3, 4, 4, 5)
+	c5 = merge(ctx, c3, c4)
 
 	i = 0
 	for n = range c5 {
@@ -101,7 +103,7 @@ func main() {
 		fmt.Println(n)
 		if i == 3 {
 			fmt.Println("main closed")
-			close(done)
+			cancel()
 		}
 	}
 }
