@@ -1,6 +1,8 @@
 package main
 
 import (
+	"strconv"
+
 	"github.com/graphql-go/graphql"
 )
 
@@ -20,7 +22,7 @@ var MutationType = graphql.NewObject(graphql.ObjectConfig{
 				user := &User{
 					Email: email,
 				}
-				err := SaveUser(user)
+				err := InsertUser(user)
 				return user, err
 			},
 		},
@@ -33,8 +35,12 @@ var MutationType = graphql.NewObject(graphql.ObjectConfig{
 				},
 			},
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				id := p.Args["id"].(int)
-				err := RemoveUserByID(id)
+				i := p.Args["id"].(string)
+				id, err := strconv.Atoi(i)
+				if err != nil {
+					return nil, err
+				}
+				err = RemoveUserByID(id)
 				return (err == nil), err
 			},
 		},
@@ -51,9 +57,17 @@ var MutationType = graphql.NewObject(graphql.ObjectConfig{
 				},
 			},
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				followerID := p.Args["follower"].(int)
-				followeeID := p.Args["followee"].(int)
-				err := Follow(followerID, followeeID)
+				i := p.Args["follower"].(string)
+				followerID, err := strconv.Atoi(i)
+				if err != nil {
+					return nil, err
+				}
+				j := p.Args["followee"].(string)
+				followeeID, err := strconv.Atoi(j)
+				if err != nil {
+					return nil, err
+				}
+				err = Follow(followerID, followeeID)
 				return (err == nil), err
 			},
 		},
@@ -70,9 +84,17 @@ var MutationType = graphql.NewObject(graphql.ObjectConfig{
 				},
 			},
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				followerID := p.Args["follower"].(int)
-				followeeID := p.Args["followee"].(int)
-				err := Unfollow(followerID, followeeID)
+				i := p.Args["follower"].(string)
+				followerID, err := strconv.Atoi(i)
+				if err != nil {
+					return nil, err
+				}
+				j := p.Args["followee"].(string)
+				followeeID, err := strconv.Atoi(j)
+				if err != nil {
+					return nil, err
+				}
+				err = Unfollow(followerID, followeeID)
 				return (err == nil), err
 			},
 		},
@@ -93,7 +115,11 @@ var MutationType = graphql.NewObject(graphql.ObjectConfig{
 				},
 			},
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				userID := p.Args["user"].(int)
+				i := p.Args["user"].(string)
+				userID, err := strconv.Atoi(i)
+				if err != nil {
+					return nil, err
+				}
 				title := p.Args["title"].(string)
 				body := p.Args["body"].(string)
 				post := &Post{
@@ -101,7 +127,7 @@ var MutationType = graphql.NewObject(graphql.ObjectConfig{
 					Title:  title,
 					Body:   body,
 				}
-				err := SavePost(post)
+				err = InsertPost(post)
 				return post, err
 			},
 		},
@@ -114,8 +140,12 @@ var MutationType = graphql.NewObject(graphql.ObjectConfig{
 				},
 			},
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				id := p.Args["id"].(int)
-				err := RemovePostByID(id)
+				i := p.Args["id"].(string)
+				id, err := strconv.Atoi(i)
+				if err != nil {
+					return nil, err
+				}
+				err = RemovePostByID(id)
 				return (err == nil), err
 			},
 		},
@@ -140,8 +170,16 @@ var MutationType = graphql.NewObject(graphql.ObjectConfig{
 				},
 			},
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				userID := p.Args["user"].(int)
-				postID := p.Args["post"].(int)
+				i := p.Args["user"].(string)
+				userID, err := strconv.Atoi(i)
+				if err != nil {
+					return nil, err
+				}
+				j := p.Args["post"].(string)
+				postID, err := strconv.Atoi(j)
+				if err != nil {
+					return nil, err
+				}
 				title := p.Args["title"].(string)
 				body := p.Args["body"].(string)
 				comment := &Comment{
@@ -150,7 +188,7 @@ var MutationType = graphql.NewObject(graphql.ObjectConfig{
 					Title:  title,
 					Body:   body,
 				}
-				err := SaveComment(comment)
+				err = InsertComment(comment)
 				return comment, err
 			},
 		},
@@ -163,8 +201,12 @@ var MutationType = graphql.NewObject(graphql.ObjectConfig{
 				},
 			},
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				id := p.Args["id"].(int)
-				err := RemoveCommentByID(id)
+				i := p.Args["id"].(string)
+				id, err := strconv.Atoi(i)
+				if err != nil {
+					return nil, err
+				}
+				err = RemoveCommentByID(id)
 				return (err == nil), err
 			},
 		},

@@ -1,12 +1,14 @@
 package main
 
 import (
+	"database/sql"
 	"encoding/json"
 	"io/ioutil"
 	"log"
 	"net/http"
 
 	"github.com/graphql-go/graphql"
+	_ "github.com/lib/pq"
 )
 
 func handler(schema graphql.Schema) http.HandlerFunc {
@@ -26,11 +28,17 @@ func handler(schema graphql.Schema) http.HandlerFunc {
 	}
 }
 
+var db *sql.DB
+
 func main() {
 	schema, err := graphql.NewSchema(graphql.SchemaConfig{
 		Query:    QueryType,
 		Mutation: MutationType,
 	})
+	if err != nil {
+		log.Fatal(err)
+	}
+	db, err = sql.Open("postgres", "postgres://vagrant:vagrant@localhost:5432/graphql")
 	if err != nil {
 		log.Fatal(err)
 	}

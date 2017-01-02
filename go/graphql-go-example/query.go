@@ -1,6 +1,8 @@
 package main
 
 import (
+	"strconv"
+
 	"github.com/graphql-go/graphql"
 )
 
@@ -16,7 +18,11 @@ var QueryType = graphql.NewObject(graphql.ObjectConfig{
 				},
 			},
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				id := p.Args["id"].(int)
+				i := p.Args["id"].(string)
+				id, err := strconv.Atoi(i)
+				if err != nil {
+					return nil, err
+				}
 				return GetUserByID(id)
 			},
 		},

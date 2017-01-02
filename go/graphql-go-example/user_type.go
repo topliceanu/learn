@@ -1,6 +1,8 @@
 package main
 
 import (
+	"strconv"
+
 	"github.com/graphql-go/graphql"
 )
 
@@ -39,7 +41,11 @@ func init() {
 		},
 		Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 			if user, ok := p.Source.(*User); ok == true {
-				id := p.Args["id"].(int)
+				i := p.Args["id"].(string)
+				id, err := strconv.Atoi(i)
+				if err != nil {
+					return nil, err
+				}
 				return GetPostByIDAndUser(id, user.ID)
 			}
 			return nil, nil
@@ -64,7 +70,11 @@ func init() {
 		},
 		Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 			if user, ok := p.Source.(*User); ok == true {
-				id := p.Args["id"].(int)
+				i := p.Args["id"].(string)
+				id, err := strconv.Atoi(i)
+				if err != nil {
+					return nil, err
+				}
 				return GetFollowerByIDAndUser(id, user.ID)
 			}
 			return nil, nil
@@ -89,7 +99,11 @@ func init() {
 		},
 		Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 			if user, ok := p.Source.(*User); ok == true {
-				id := p.Args["id"].(int)
+				i := p.Args["id"].(string)
+				id, err := strconv.Atoi(i)
+				if err != nil {
+					return nil, err
+				}
 				return GetFolloweeByIDAndUser(id, user.ID)
 			}
 			return nil, nil

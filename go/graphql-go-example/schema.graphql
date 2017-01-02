@@ -1,6 +1,5 @@
 type User {
   id: ID
-  name: String!
   email: String!
   post(id: ID!): Post
   posts: [Post!]!
