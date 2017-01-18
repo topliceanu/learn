@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+service Google {
+  rpc Search(Request) returns (Result) {
+  }
+}
+
+message Request {
+  string query = 1;
+}
+
+message Result {
+  string title = 1;
+  string url = 2;
+  string snippet = 3;
+}
