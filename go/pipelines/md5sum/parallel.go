@@ -9,7 +9,17 @@ import (
 	"sort"
 )
 
-func walker(root string) <-chan string {
+
+
+
+
+
+
+
+
+
+
+func walker(done <-chan struct{}, root string) <-chan string {
 	var paths = make(chan string)
 	go func() {
 		defer close(paths)
@@ -23,7 +33,10 @@ func walker(root string) <-chan string {
 			if info.Mode().IsRegular() == false {
 				return nil
 			}
-			paths <- path
+			select {
+			case paths <- path:
+			case <-done:
+				return // this always selects if done channel is closed
 			return nil
 		})
 		if err != nil {
