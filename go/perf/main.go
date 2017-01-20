@@ -16,8 +16,9 @@ func main() {
 	}
 }
 
+var	re = regexp.MustCompile("^(.+)@golang.org$")
+
 func handler(w http.ResponseWriter, r *http.Request) {
-	re := regexp.MustCompile("^(.+)@golang.org$")
 	path := r.URL.Path[1:]
 	match := re.FindAllStringSubmatch(path, -1)
 	if match != nil {
