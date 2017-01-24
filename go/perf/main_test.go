@@ -29,3 +29,20 @@ func TestHandler(t *testing.T) {
 		}
 	}
 }
+
+func BenchmarkHandler(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		req, err := http.NewRequest(http.MethodGet, "http://localhost:8080/campoy@golang.org", nil)
+		if err != nil {
+			b.Fatalf("Could not create request: %v", err)
+		}
+		rec := httptest.NewRecorder()
+		handler(rec, req)
+		if rec.Code != http.StatusOK {
+			b.Fatalf("Expected status 200 ok; got %d", rec.Code)
+		}
+		if !strings.Contains(rec.Body.String(), "gopher campoy") {
+			b.Fatalf("Unexpected response body: %q", rec.Body.String())
+		}
+	}
+}
