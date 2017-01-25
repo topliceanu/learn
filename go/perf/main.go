@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/http"
 	_ "net/http/pprof"
-	"regexp"
+	"strings"
 )
 
 func main() {
@@ -17,10 +17,11 @@ func main() {
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
-	path := r.URL.Path[1:]
-	match := re.FindAllStringSubmatch(path, -1)
-	if match != nil {
-		fmt.Fprintf(w, "Hello gopher %s\n", match[0][1])
+	w.Header().Set("Content-Type", "text/plain")
+	var path = r.URL.Path[1:]
+	if strings.HasSuffix(path, "@golang.org") {
+		name := strings.TrimSuffix(path, "@golang.org")
+		fmt.Fprintf(w, "Hello gopher %s\n", name)
 		return
 	}
 	fmt.Fprintf(w, "Hello dear %s\n", path)
