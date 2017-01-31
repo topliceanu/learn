@@ -1,0 +1,3 @@
+BenchmarkHandlerHi-2   	  500000	      3129 ns/op	    1152 B/op	      12 allocs/op
+PASS
+ok  	learn/perf/fitz	1.612s
