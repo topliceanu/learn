@@ -1,0 +1,4 @@
+[root]
+name = "guessing-game-api"
+version = "0.1.0"
+
