@@ -1,0 +1,8 @@
+{
+  "name": "Fetch new bikes from Freecycle",
+  "description": "Fetch new bikes from Freecycle",
+  "repository": "https://github.com/topliceanu/learn",
+  "logo": "http://node-js-sample.herokuapp.com/node.svg",
+  "keywords": ["node", "express", "static"],
+  "image": "heroku/nodejs"
+}
