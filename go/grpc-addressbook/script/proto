@@ -1,0 +1,4 @@
+protoc \
+--proto_path=$GOPATH/src/learn/grpc-addressbook/ \
+--go_out=$GOPATH/src/learn/grpc-addressbook \
+$GOPATH/src/learn/grpc-addressbook/addressbook.proto

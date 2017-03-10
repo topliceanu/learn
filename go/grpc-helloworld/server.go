@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	port = ":50051"
+	PORT = ":50051"
 )
 
 // server is used to implement helloworld.GreeterServer.
@@ -22,8 +22,13 @@ func (s *server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloRe
 	return &pb.HelloReply{Message: "Hello " + in.Name}, nil
 }
 
+// SayHelloAgain implements helloworld.GreeterServer
+func (s *server) SayHelloAgain(ctx context.Context, in *pb.HelloRequest) (*pb.HelloReply, error) {
+	return &pb.HelloReply{Message: "Hello Again " + in.Name}, nil
+}
+
 func main() {
-	lis, err := net.Listen("tcp", port)
+	lis, err := net.Listen("tcp", PORT)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
