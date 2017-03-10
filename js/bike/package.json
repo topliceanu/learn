@@ -9,8 +9,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "agent-base": "^2.0.1",
     "cheerio": "0.22.0",
     "express": "4.15.0",
+    "newrelic": "1.37.2",
     "request": "2.80.0"
   },
   "engines": {
