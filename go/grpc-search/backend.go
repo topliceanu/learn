@@ -43,7 +43,7 @@ type backend struct {
 	index uint
 }
 
-func (s *backend) Search(ctx context.Context, req *pb.Request) (*pb.Result, error) {
+func (b *backend) Search(ctx context.Context, req *pb.Request) (*pb.Result, error) {
 	var (
 		d time.Duration
 	)
@@ -52,10 +52,35 @@ func (s *backend) Search(ctx context.Context, req *pb.Request) (*pb.Result, erro
 	select {
 	case <-time.After(d):
 		return &pb.Result{
-			Title: fmt.Sprintf("result for %s from backend %d", req.Query, s.index),
+			Title: fmt.Sprintf("result for %s from backend %d", req.Query, b.index),
 		}, nil
 	case <-ctx.Done():
 		return nil, ctx.Err()
+	}
+}
+
+func (b *backend) Watch(req *pb.Request, stream pb.Google_WatchServer) error {
+	var (
+		ctx context.Context
+		i   int
+		d   time.Duration
+	)
+	ctx = stream.Context()
+	for i = 0; ; i++ {
+		d = randDuration(100) * time.Millisecond
+		logSleep(ctx, d)
+		select {
+		case <-time.After(d):
+      log.Print("Send event")
+			err := stream.Send(&pb.Result{
+				Title: fmt.Sprintf("result %d for [%s] from backend %d", i, req.Query, b.index),
+			})
+			if err != nil {
+				return err
+			}
+		case <-ctx.Done():
+			return ctx.Err()
+		}
 	}
 }
 

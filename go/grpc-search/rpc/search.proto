@@ -5,6 +5,8 @@ package rpc;
 service Google {
   rpc Search(Request) returns (Result) {
   }
+  rpc Watch(Request) returns (stream Result) {
+  }
 }
 
 message Request {

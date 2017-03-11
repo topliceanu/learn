@@ -4,6 +4,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
+  "io"
 	"log"
 	"time"
 
@@ -48,7 +49,7 @@ func search(client pb.GoogleClient, query string) {
 		res    *pb.Result
 		err    error
 	)
-	ctx, cancel = context.WithTimeout(context.Background(), 80*time.Millisecond)
+	ctx, cancel = context.WithTimeout(context.Background(), 80 * time.Millisecond)
 	defer cancel()
 	req = &pb.Request{
 		Query: query,
@@ -61,5 +62,32 @@ func search(client pb.GoogleClient, query string) {
 }
 
 func watch(client pb.GoogleClient, query string) {
-	// TODO
+	var (
+		ctx    context.Context
+		cancel context.CancelFunc
+		err    error
+    req *pb.Request
+    stream pb.Google_WatchClient
+    res *pb.Result
+	)
+	ctx, cancel = context.WithCancel(context.Background())
+	defer cancel()
+	req = &pb.Request{
+		Query: query,
+	}
+	stream, err = client.Watch(ctx, req)
+	if err != nil {
+		log.Fatalf("failed to start streaming request %+v", err)
+	}
+	for {
+		res, err = stream.Recv()
+		if err != io.EOF {
+			fmt.Println("watch ended")
+			return
+		}
+		if err != nil {
+			log.Fatal("Failed to read from stream %+v", err)
+		}
+		fmt.Println(res)
+	}
 }

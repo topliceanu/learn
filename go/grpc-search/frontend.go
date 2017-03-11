@@ -4,6 +4,7 @@ import (
 	"flag"
 	"log"
 	"net"
+	"sync"
 
 	context "golang.org/x/net/context"
 	"google.golang.org/grpc"
@@ -69,4 +70,64 @@ func (f *frontend) Search(ctx context.Context, req *pb.Request) (*pb.Result, err
 	}
 	first := <-results
 	return first.res, first.err
+}
+
+func (f *frontend) Watch(req *pb.Request, stream pb.Google_WatchServer) error {
+	var (
+		ctx     context.Context
+		results chan result
+		wg      sync.WaitGroup
+		c       pb.GoogleClient
+		res     result
+    err     error
+	)
+	ctx = stream.Context()
+	results = make(chan result)
+	for _, c = range f.clients {
+		wg.Add(1)
+		go func(gc pb.GoogleClient) {
+			defer wg.Done()
+			watchBackend(ctx, gc, req, results)
+		}(c)
+	}
+	go func() {
+		wg.Wait()
+		close(results)
+	}()
+	for res = range results {
+		if res.err != nil {
+			return res.err
+		}
+		if err = stream.Send(res.res); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func watchBackend(ctx context.Context, gc pb.GoogleClient, req *pb.Request, results chan result) {
+	var (
+		stream pb.Google_WatchClient
+		err    error
+		res    *pb.Result
+	)
+	stream, err = gc.Watch(ctx, req)
+	if err != nil {
+		select {
+		case results<- result{err: err}:
+		case <-ctx.Done():
+		}
+		return
+	}
+	for {
+		res, err = stream.Recv()
+		select {
+		case results <- result{res, err}:
+			if err != nil {
+				return
+			}
+		case <-ctx.Done():
+			return
+		}
+	}
 }
