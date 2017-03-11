@@ -1,0 +1,7 @@
+#/bin/bash
+
+protoc \
+--proto_path=$GOPATH/src/learn/grpc-search/rpc \
+--plugin=protoc-gen-go=$GOPATH/bin/protoc-gen-go \
+--go_out=$GOPATH/src/learn/grpc-search/rpc \
+$GOPATH/src/learn/grpc-search/rpc/search.proto
