@@ -18,6 +18,11 @@ import proto "github.com/golang/protobuf/proto"
 import fmt "fmt"
 import math "math"
 
+import (
+	context "golang.org/x/net/context"
+	grpc "google.golang.org/grpc"
+)
+
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
 var _ = fmt.Errorf
@@ -80,6 +85,78 @@ func (m *Result) GetSnippet() string {
 func init() {
 	proto.RegisterType((*Request)(nil), "rpc.Request")
 	proto.RegisterType((*Result)(nil), "rpc.Result")
+}
+
+// Reference imports to suppress errors if they are not otherwise used.
+var _ context.Context
+var _ grpc.ClientConn
+
+// This is a compile-time assertion to ensure that this generated file
+// is compatible with the grpc package it is being compiled against.
+const _ = grpc.SupportPackageIsVersion4
+
+// Client API for Google service
+
+type GoogleClient interface {
+	Search(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Result, error)
+}
+
+type googleClient struct {
+	cc *grpc.ClientConn
+}
+
+func NewGoogleClient(cc *grpc.ClientConn) GoogleClient {
+	return &googleClient{cc}
+}
+
+func (c *googleClient) Search(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Result, error) {
+	out := new(Result)
+	err := grpc.Invoke(ctx, "/rpc.Google/Search", in, out, c.cc, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// Server API for Google service
+
+type GoogleServer interface {
+	Search(context.Context, *Request) (*Result, error)
+}
+
+func RegisterGoogleServer(s *grpc.Server, srv GoogleServer) {
+	s.RegisterService(&_Google_serviceDesc, srv)
+}
+
+func _Google_Search_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Request)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GoogleServer).Search(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/rpc.Google/Search",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GoogleServer).Search(ctx, req.(*Request))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+var _Google_serviceDesc = grpc.ServiceDesc{
+	ServiceName: "rpc.Google",
+	HandlerType: (*GoogleServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "Search",
+			Handler:    _Google_Search_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "search.proto",
 }
 
 func init() { proto.RegisterFile("search.proto", fileDescriptor0) }
