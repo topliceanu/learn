@@ -23,7 +23,10 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to connect to the server %s with error %+v", server, err)
 	}
-	defer cl.Close()
+	defer func() {
+		err = cl.Close()
+		log.Printf("Failed to close the client connection %+v\n", err)
+	}()
 	ping = &pb.Ping{Message: message}
 	switch method {
 	case "get":

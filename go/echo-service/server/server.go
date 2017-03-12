@@ -4,20 +4,24 @@ import (
 	"net"
 	"time"
 
+	"learn/echo-service/pb"
+
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
-	"learn/echo-service/pb"
 )
 
+// Server wraps the Echo RPC server.
 // Server implements pb.EchoServer
 type Server struct {
 	bind string
 }
 
+// NewServer creates a new rpc server.
 func NewServer(bind string) *Server {
 	return &Server{bind}
 }
 
+// Listen binds the server to the indicated interface:port.
 func (s *Server) Listen() error {
 	var (
 		ln  net.Listener
@@ -33,6 +37,7 @@ func (s *Server) Listen() error {
 	return srv.Serve(ln)
 }
 
+// Send handles Ping messages by simply returning the same message wrapped in a Pong type.
 func (s *Server) Send(ctx context.Context, ping *pb.Ping) (*pb.Pong, error) {
 	return &pb.Pong{
 		Message:   ping.Message,
@@ -40,6 +45,7 @@ func (s *Server) Send(ctx context.Context, ping *pb.Ping) (*pb.Pong, error) {
 	}, nil
 }
 
+// Subscribe will return the contents of the Ping message every second in a stream.
 func (s *Server) Subscribe(ping *pb.Ping, stream pb.Echo_SubscribeServer) error {
 	var (
 		ticker    *time.Ticker

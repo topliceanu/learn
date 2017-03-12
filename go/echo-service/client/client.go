@@ -5,20 +5,23 @@ import (
 	"io"
 	"log"
 
-	"google.golang.org/grpc"
 	"learn/echo-service/pb"
+
+	"google.golang.org/grpc"
 )
 
-// client reference implements pb.EchoClient
+// Client struct for the Echo RPC Service.
+// Client reference implements pb.EchoClient
 type Client struct {
 	conn *grpc.ClientConn
 	echo pb.EchoClient
 }
 
+// NewClient connects to the server url given.
 func NewClient(server string) (*Client, error) {
 	var (
-		conn *grpc.ClientConn
-		err   error
+		conn   *grpc.ClientConn
+		err    error
 		client pb.EchoClient
 	)
 	conn, err = grpc.Dial(server, grpc.WithInsecure())
@@ -32,10 +35,12 @@ func NewClient(server string) (*Client, error) {
 	}, nil
 }
 
-func (c *Client) Close() {
-	c.conn.Close()
+// Close should be used with with the defer statement to always close the client connection before exit.
+func (c *Client) Close() error {
+	return c.conn.Close()
 }
 
+// Send encodes a Ping message and sends it to the echo server, the response will be printed to stdout.
 func (c *Client) Send(ping *pb.Ping) {
 	var (
 		ctx    context.Context
@@ -53,6 +58,7 @@ func (c *Client) Send(ping *pb.Ping) {
 	log.Printf("Received pong %+v\n", pong)
 }
 
+// Subscribe encodes a Ping message, sends it, then opens a stream to receive Pong messages from the echo server.
 func (c *Client) Subscribe(ping *pb.Ping) {
 	var (
 		ctx    context.Context
