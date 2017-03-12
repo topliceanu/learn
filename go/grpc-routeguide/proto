@@ -1,0 +1,6 @@
+#!/bin/bash
+
+protoc \
+--proto_path=$GOPATH/src/learn/grpc-routeguide \
+$GOPATH/src/learn/grpc-routeguide/routeguide.proto \
+--go_out=plugins=grpc:.
