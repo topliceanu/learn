@@ -1,0 +1,10 @@
+#!/bin/bash
+
+#protoc -I helloworld/ helloworld/helloworld.proto --go_out=plugins=grpc:helloworld
+protoc \
+--proto_path=$GOPATH/src/learn/grpc-helloworld/helloworld/ \
+$GOPATH/src/learn/grpc-helloworld/helloworld/helloworld.proto \
+--go_out=plugins=grpc:helloworld
+#--go_out=plugins=grpc:$GOPATH/src/learn/grpc-helloworld/helloworld
+#--plugin=grpc \
+#--go_out=$GOPATH/src/learn/grpc-helloworld/helloworld

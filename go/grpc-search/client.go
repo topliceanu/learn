@@ -81,12 +81,13 @@ func watch(client pb.GoogleClient, query string) {
 	}
 	for {
 		res, err = stream.Recv()
-		if err != io.EOF {
+		if err == io.EOF {
 			fmt.Println("watch ended")
 			return
 		}
 		if err != nil {
 			log.Fatal("Failed to read from stream %+v", err)
+			return
 		}
 		fmt.Println(res)
 	}
