@@ -1,4 +1,4 @@
-import Html exposing (Html, button, div, text, ul, li, input, h3)
+import Html exposing (Html, button, div, text, ul, li, input, h3, button)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 
@@ -9,7 +9,10 @@ type alias Model = {
   content: String,
   name: String,
   pass: String,
-  passAgain: String
+  passAgain: String,
+  age: String,
+  isValid: Bool,
+  validationErr: String
 }
 
 model : Model
@@ -19,7 +22,10 @@ model = {
     content = "",
     name = "",
     pass = "",
-    passAgain = ""
+    passAgain = "",
+    age = "20",
+    isValid = False,
+    validationErr = ""
   }
 
 -- update
@@ -33,11 +39,24 @@ type Msg
   | Name String
   | Pass String
   | PassAgain String
+  | Age String
+  | Submit
 
 -- limits the number of items in a list
 addToHistory : String -> List String -> List String
 addToHistory update history =
   List.take 20 (update :: history)
+
+modelValidation : Model -> (Bool, String)
+modelValidation model =
+  if model.name == "" then
+    (False, "Name is empty")
+  else if (String.length model.pass) < 8 then
+    (False, "Password should be at least 8 chars long")
+  else if model.pass /= model.passAgain then
+    (False, "Passwords do not match")
+  else
+    (True, "")
 
 update : Msg -> Model -> Model
 update msg model =
@@ -56,6 +75,13 @@ update msg model =
       { model | pass = newPass, history = addToHistory "password changed" model.history }
     PassAgain newPassAgain ->
       { model | passAgain = newPassAgain, history = addToHistory "re-entered password changed" model.history }
+    Age newAge ->
+      { model | age = newAge, history = addToHistory "updated age" model.history }
+    Submit ->
+      let (isValid, err) =
+        modelValidation model
+      in
+        { model | isValid = isValid, validationErr = err, history = addToHistory "submit register" model.history }
 
 -- renders the history as a UL of LIs
 showHist : List String -> Html Msg
@@ -65,10 +91,10 @@ showHist history =
 viewValidation : Model -> Html msg
 viewValidation model =
   let (color, message) =
-    if model.pass == model.passAgain then
-      ("green", "All OK!")
+    if model.isValid == False then
+      ("red", model.validationErr)
     else
-      ("red", "Passwords do not match")
+      ("green", "All OK!")
   in
     div [ style [ ("color", color) ] ] [ text message ]
 
@@ -80,6 +106,8 @@ view model =
     input [ type_ "test", placeholder "Name", onInput Name ] [],
     input [ type_ "password", placeholder "Password", onInput Pass ] [],
     input [ type_ "password", placeholder "Re-enter password", onInput PassAgain ] [],
+    input [ type_ "number", value model.age, onInput Age ] [],
+    button [ onClick Submit ] [ text "Submit" ],
     viewValidation model,
 
     h3 [] [ text "Reversing Text" ],
