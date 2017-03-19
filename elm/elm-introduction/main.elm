@@ -1,4 +1,4 @@
-import Html exposing (Html, button, div, text, ul, li, input, h3, button)
+import Html exposing (Html, button, div, text, ul, li, input, h3, button, span)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 
@@ -12,7 +12,8 @@ type alias Model = {
   passAgain: String,
   age: String,
   isValid: Bool,
-  validationErr: String
+  validationErr: String,
+  dieFace: Int
 }
 
 model : Model
@@ -25,8 +26,14 @@ model = {
     passAgain = "",
     age = "20",
     isValid = False,
-    validationErr = ""
+    validationErr = "",
+    dieFace = 1
   }
+
+-- init
+init : (Model, Cmd Msg)
+init =
+  (model, Cmd.none)
 
 -- update
 type Msg
@@ -41,6 +48,8 @@ type Msg
   | PassAgain String
   | Age String
   | Submit
+  -- dice roll
+  | Roll
 
 -- limits the number of items in a list
 addToHistory : String -> List String -> List String
@@ -58,30 +67,32 @@ modelValidation model =
   else
     (True, "")
 
-update : Msg -> Model -> Model
+update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
     Increment ->
-      { model | counter = model.counter + 1, history = addToHistory "inc" model.history }
+      ({ model | counter = model.counter + 1, history = addToHistory "inc" model.history }, Cmd.none)
     Decrement ->
-      { model | counter = model.counter - 1, history = addToHistory "dec" model.history }
+      ({ model | counter = model.counter - 1, history = addToHistory "dec" model.history }, Cmd.none)
     Reset ->
-      { model | counter = 0, history = addToHistory "reset" model.history }
+      ({ model | counter = 0, history = addToHistory "reset" model.history }, Cmd.none)
     Change newContent ->
-      { model | content = newContent, history = addToHistory "content changed" model.history }
+      ({ model | content = newContent, history = addToHistory "content changed" model.history }, Cmd.none)
     Name newName ->
-      { model | name = newName, history = addToHistory "name changed" model.history }
+      ({ model | name = newName, history = addToHistory "name changed" model.history }, Cmd.none)
     Pass newPass ->
-      { model | pass = newPass, history = addToHistory "password changed" model.history }
+      ({ model | pass = newPass, history = addToHistory "password changed" model.history }, Cmd.none)
     PassAgain newPassAgain ->
-      { model | passAgain = newPassAgain, history = addToHistory "re-entered password changed" model.history }
+      ({ model | passAgain = newPassAgain, history = addToHistory "re-entered password changed" model.history }, Cmd.none)
     Age newAge ->
-      { model | age = newAge, history = addToHistory "updated age" model.history }
+      ({ model | age = newAge, history = addToHistory "updated age" model.history }, Cmd.none)
     Submit ->
       let (isValid, err) =
         modelValidation model
       in
-        { model | isValid = isValid, validationErr = err, history = addToHistory "submit register" model.history }
+        ({ model | isValid = isValid, validationErr = err, history = addToHistory "submit register" model.history }, Cmd.none)
+    Roll ->
+      (model, Cmd.none)
 
 -- renders the history as a UL of LIs
 showHist : List String -> Html Msg
@@ -102,6 +113,10 @@ viewValidation model =
 view : Model -> Html Msg
 view model =
   div [] [
+    h3 [] [ text "Roll the dice" ],
+    span [] [ text toString (model.dieFace) ]
+    button [ onClick Roll ] [ text "Roll" ]
+
     h3 [] [ text "Signup Form" ],
     input [ type_ "test", placeholder "Name", onInput Name ] [],
     input [ type_ "password", placeholder "Password", onInput Pass ] [],
@@ -124,11 +139,18 @@ view model =
     showHist(model.history)
   ]
 
+-- subscriptions
+subscriptions : Model -> Sub Msg
+subscriptions model =
+  Sub Roll
+
 -- application
 main =
-  Html.beginnerProgram {
+  Html.program {
+    init = init,
     model = model,
     view = view,
-    update = update
+    update = update,
+    subscriptions = subscriptions
   }
 
