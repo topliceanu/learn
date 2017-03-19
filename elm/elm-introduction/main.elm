@@ -1,20 +1,26 @@
-import Html exposing (Html, button, div, text, ul, li)
-import Html.Events exposing (onClick)
+import Html exposing (Html, button, div, text, ul, li, input)
+import Html.Attributes exposing (..)
+import Html.Events exposing (onClick, onInput)
 
 -- model
 type alias Model = {
   counter: Int,
-  history: List String
+  history: List String,
+  content: String
 }
 
 model : Model
 model = {
     counter = 0,
-    history = [ "initial" ]
+    history = [ "initial" ],
+    content = ""
   }
 
 -- update
-type Msg = Increment | Decrement | Reset
+type Msg = Increment
+  | Decrement
+  | Reset
+  | Change String
 
 update : Msg -> Model -> Model
 update msg model =
@@ -22,17 +28,26 @@ update msg model =
     Increment ->
       {
         counter = model.counter + 1,
-        history = "inc" :: model.history
+        history = "inc" :: model.history,
+        content = model.content
       }
     Decrement ->
       {
         counter = model.counter - 1,
-        history = "dec" :: model.history
+        history = "dec" :: model.history,
+        content = model.content
       }
     Reset ->
       {
         counter = 0,
-        history = "reset" :: model.history
+        history = "reset" :: model.history,
+        content = model.content
+      }
+    Change newContent ->
+      {
+        counter = model.counter,
+        history = "content changed" :: model.history,
+        content = newContent
       }
 
 -- view
@@ -43,6 +58,8 @@ showHist history =
 view : Model -> Html Msg
 view model =
   div [] [
+    input [ placeholder "Text to reverse", onInput Change ] [],
+    div [] [ text (String.reverse model.content) ],
     button [ onClick Decrement ] [ text "-" ],
     div [] [ text (toString model.counter) ],
     button [ onClick Increment ] [ text "+" ],
