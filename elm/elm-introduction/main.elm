@@ -26,29 +26,13 @@ update : Msg -> Model -> Model
 update msg model =
   case msg of
     Increment ->
-      {
-        counter = model.counter + 1,
-        history = "inc" :: model.history,
-        content = model.content
-      }
+      { model | counter = model.counter + 1, history = "inc" :: model.history }
     Decrement ->
-      {
-        counter = model.counter - 1,
-        history = "dec" :: model.history,
-        content = model.content
-      }
+      { model | counter = model.counter - 1, history = "dec" :: model.history }
     Reset ->
-      {
-        counter = 0,
-        history = "reset" :: model.history,
-        content = model.content
-      }
+      { model | counter = 0, history = "reset" :: model.history }
     Change newContent ->
-      {
-        counter = model.counter,
-        history = "content changed" :: model.history,
-        content = newContent
-      }
+      { model | history = "content changed" :: model.history, content = newContent }
 
 -- view
 showHist : List String -> Html Msg
