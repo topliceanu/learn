@@ -22,17 +22,22 @@ type Msg = Increment
   | Reset
   | Change String
 
+-- limits the number of items in a list
+addToHistory : String -> List String -> List String
+addToHistory update history =
+  List.take 20 (update :: history)
+
 update : Msg -> Model -> Model
 update msg model =
   case msg of
     Increment ->
-      { model | counter = model.counter + 1, history = "inc" :: model.history }
+      { model | counter = model.counter + 1, history = addToHistory "inc" model.history }
     Decrement ->
-      { model | counter = model.counter - 1, history = "dec" :: model.history }
+      { model | counter = model.counter - 1, history = addToHistory "dec" model.history }
     Reset ->
-      { model | counter = 0, history = "reset" :: model.history }
+      { model | counter = 0, history = addToHistory "reset" model.history }
     Change newContent ->
-      { model | history = "content changed" :: model.history, content = newContent }
+      { model | content = newContent, history = addToHistory "content changed" model.history }
 
 -- view
 showHist : List String -> Html Msg
