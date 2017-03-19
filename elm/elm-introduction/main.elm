@@ -8,7 +8,7 @@ model : Model
 model = 0
 
 -- update
-type Msg = Increment | Decrement
+type Msg = Increment | Decrement | Reset
 
 update : Msg -> Model -> Model
 update msg model =
@@ -17,6 +17,8 @@ update msg model =
       model + 1
     Decrement ->
       model - 1
+    Reset ->
+      0
 
 -- view
 view : Model -> Html Msg
@@ -24,7 +26,8 @@ view model =
   div [] [
     button [onClick Decrement] [text "-"],
     div [] [text (toString model)],
-    button [onClick Increment] [text "+"]
+    button [onClick Increment] [text "+"],
+    button [onClick Reset] [text "0"]
   ]
 
 -- application
