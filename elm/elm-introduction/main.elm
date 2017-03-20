@@ -14,7 +14,7 @@ type alias Model = {
   age: String,
   isValid: Bool,
   validationErr: String,
-  dieFace: Int
+  dieFaces: (Int, Int)
 }
 
 model : Model
@@ -28,7 +28,7 @@ model = {
     age = "20",
     isValid = False,
     validationErr = "",
-    dieFace = 1
+    dieFaces = (1, 1)
   }
 
 -- init
@@ -51,7 +51,7 @@ type Msg
   | Submit
   -- dice roll
   | Roll
-  | NewFace Int
+  | NewFace (Int, Int)
 
 -- limits the number of items in a list
 addToHistory : String -> List String -> List String
@@ -94,9 +94,9 @@ update msg model =
       in
         ({ model | isValid = isValid, validationErr = err, history = addToHistory "submit register" model.history }, Cmd.none)
     Roll ->
-      (model, Random.generate NewFace (Random.int 1 6))
-    NewFace newFace ->
-      ({ model | dieFace = newFace, history = addToHistory "dice rolled" model.history }, Cmd.none)
+      (model, Random.generate NewFace (Random.pair (Random.int 1 6) (Random.int 1 6)))
+    NewFace newFaces ->
+      ({ model | dieFaces = newFaces, history = addToHistory "dices rolled" model.history }, Cmd.none)
 
 -- renders the history as a UL of LIs
 showHist : List String -> Html Msg
@@ -118,7 +118,8 @@ view : Model -> Html Msg
 view model =
   div [] [
     h3 [] [ text "Roll the dice" ],
-    span [] [ text (toString model.dieFace) ],
+    span [] [ text (toString (Tuple.first model.dieFaces)) ],
+    span [] [ text (toString (Tuple.second model.dieFaces)) ],
     button [ onClick Roll ] [ text "Roll" ],
 
     h3 [] [ text "Signup Form" ],
