@@ -1,7 +1,9 @@
-import Html exposing (Html, button, div, text, ul, li, input, h3, button, span)
+import Html exposing (Html, button, div, text, ul, li, input, h3, button, span, img, p, select, option)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
+import Http
 import Random
+import Json.Decode as Decode
 
 -- model
 type alias Model = {
@@ -14,7 +16,11 @@ type alias Model = {
   age: String,
   isValid: Bool,
   validationErr: String,
-  dieFaces: (Int, Int)
+  dieFaces: (Int, Int),
+  topic: String,
+  gifUrl: String,
+  disableMoreButton: Bool,
+  error: String
 }
 
 model : Model
@@ -28,7 +34,11 @@ model = {
     age = "20",
     isValid = False,
     validationErr = "",
-    dieFaces = (1, 1)
+    dieFaces = (1, 1),
+    topic = "cats",
+    gifUrl = "waiting.gif",
+    disableMoreButton = False,
+    error = ""
   }
 
 -- init
@@ -52,6 +62,10 @@ type Msg
   -- dice roll
   | Roll
   | NewFace (Int, Int)
+  -- fetch cat gifs with http api
+  | More
+  | NewGif (Result Http.Error String)
+  | ChangeTopic String
 
 -- limits the number of items in a list
 addToHistory : String -> List String -> List String
@@ -68,6 +82,22 @@ modelValidation model =
     (False, "Passwords do not match")
   else
     (True, "")
+
+-- rolls the two dices and return a message with a function that returns two random number
+rollDices : Cmd Msg
+rollDices = Random.generate NewFace (Random.pair (Random.int 1 6) (Random.int 1 6))
+
+decodeResponse : Decode.Decoder String
+decodeResponse = Decode.at ["data", "image_url"] Decode.string
+
+-- retrieves a random topic gif
+getRandomGif : String -> Cmd Msg
+getRandomGif topic =
+  let
+    url = "https://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag=" ++ topic
+    request = Http.get url decodeResponse
+  in
+    Http.send NewGif request
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
@@ -94,9 +124,17 @@ update msg model =
       in
         ({ model | isValid = isValid, validationErr = err, history = addToHistory "submit register" model.history }, Cmd.none)
     Roll ->
-      (model, Random.generate NewFace (Random.pair (Random.int 1 6) (Random.int 1 6)))
+      (model, rollDices)
     NewFace newFaces ->
       ({ model | dieFaces = newFaces, history = addToHistory "dices rolled" model.history }, Cmd.none)
+    More ->
+      ({ model | disableMoreButton = True , history = addToHistory "ask for another image" model.history }, getRandomGif model.topic)
+    NewGif (Ok newUrl) ->
+      ({ model | gifUrl = newUrl, error = "", disableMoreButton = False }, Cmd.none)
+    NewGif (Err e) ->
+      ({ model | error = (toString e), disableMoreButton = False, history = addToHistory "error fetching image" model.history }, Cmd.none)
+    ChangeTopic newTopic ->
+      ({ model | topic = newTopic, history = addToHistory "change topic" model.history }, Cmd.none)
 
 -- renders the history as a UL of LIs
 showHist : List String -> Html Msg
@@ -113,17 +151,38 @@ viewValidation model =
   in
     div [ style [ ("color", color) ] ] [ text message ]
 
+isError : String -> Bool
+isError err =
+  case err of
+    "" -> False
+    _ -> True
+
+-- displays an ul with topic options.
+topicSelect : Model -> List String -> Html Msg
+topicSelect model options =
+  let htmlOpts =
+    List.map (\o -> option [ selected (model.topic == o), value o ] [ text o ]) options
+  in
+    select [ onInput ChangeTopic ] htmlOpts
+
 -- view
 view : Model -> Html Msg
 view model =
   div [] [
+    p [ hidden (not (isError model.error))] [ text model.error ],
+
+    h3 [] [ text "Cat pics" ],
+    img [ src model.gifUrl ] [],
+    button [ onClick More, disabled model.disableMoreButton ] [ text "More Pictures!" ],
+    topicSelect model [ "cats", "dogs", "unicorns" ],
+
     h3 [] [ text "Roll the dice" ],
     span [] [ text (toString (Tuple.first model.dieFaces)) ],
     span [] [ text (toString (Tuple.second model.dieFaces)) ],
     button [ onClick Roll ] [ text "Roll" ],
 
     h3 [] [ text "Signup Form" ],
-    input [ type_ "test", placeholder "Name", onInput Name ] [],
+    input [ type_ "text", placeholder "Name", onInput Name ] [],
     input [ type_ "password", placeholder "Password", onInput Pass ] [],
     input [ type_ "password", placeholder "Re-enter password", onInput PassAgain ] [],
     input [ type_ "number", value model.age, onInput Age ] [],
