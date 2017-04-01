@@ -6,6 +6,7 @@ import Random
 import Json.Decode as Decode
 import Svg
 import Svg.Attributes as SAttr
+import Time exposing (Time, second)
 
 -- model
 type alias Model = {
@@ -22,11 +23,14 @@ type alias Model = {
   topic: String,
   gifUrl: String,
   disableMoreButton: Bool,
-  error: String
+  error: String,
+  time: Time,
+  paused: Bool
 }
 
-model : Model
-model = {
+-- init
+init : (Model, Cmd Msg)
+init = ({
     counter = 0,
     history = [ "initial" ],
     content = "",
@@ -40,13 +44,10 @@ model = {
     topic = "cats",
     gifUrl = "waiting.gif",
     disableMoreButton = False,
-    error = ""
-  }
-
--- init
-init : (Model, Cmd Msg)
-init =
-  (model, Cmd.none)
+    error = "",
+    time = 0,
+    paused = False
+  }, Cmd.none)
 
 -- update
 type Msg
@@ -68,6 +69,9 @@ type Msg
   | More
   | NewGif (Result Http.Error String)
   | ChangeTopic String
+  -- clock
+  | Tick Time
+  | Pause
 
 -- limits the number of items in a list
 addToHistory : String -> List String -> List String
@@ -137,6 +141,10 @@ update msg model =
       ({ model | error = (toString e), disableMoreButton = False, history = addToHistory "error fetching image" model.history }, Cmd.none)
     ChangeTopic newTopic ->
       ({ model | topic = newTopic, history = addToHistory "change topic" model.history }, Cmd.none)
+    Tick newTime ->
+      ({ model | time = newTime }, Cmd.none)
+    Pause ->
+      ({ model | paused = (not model.paused), history = addToHistory "switch clock" model.history }, Cmd.none)
 
 -- renders the history as a UL of LIs
 showHist : List String -> Html Msg
@@ -192,8 +200,8 @@ displayDiceFace face =
     dot face [4, 5, 6] "80" "80"
   ]
 
-renderClock Int -> Html Msg
-rencerClock curTime =
+renderClock : Time -> Html Msg
+renderClock curTime =
   let
     angle = turns (Time.inMinutes curTime)
     handX = toString (50 + 40 * cos angle)
@@ -201,16 +209,19 @@ rencerClock curTime =
   in
     Svg.svg [ SAttr.viewBox "0 0 100 100", SAttr.width "300px" ] [
       Svg.circle [ SAttr.cx "50", SAttr.cy "50", SAttr.r "45", SAttr.fill "#0B79CE" ] [],
-      Svg.line [ SAttr.x1 "50", SAttr.y1 "50", SAttr.x2 handX, y2 SAttr.handY, SAttr.stroke "#023963" ] []
+      Svg.line [ SAttr.x1 "50", SAttr.y1 "50", SAttr.x2 handX, SAttr.y2 handY, SAttr.stroke "#023963" ] []
     ]
 
 -- view
 view : Model -> Html Msg
 view model =
   div [] [
-    p [ hidden (not (isError model.error))] [ text model.error ],
+    h3 [] [ text "Clock" ],
+    renderClock model.time,
+    button [ onClick Pause ] [ text (if model.paused == True then "Resume" else "Pause") ],
 
     h3 [] [ text "Cat pics" ],
+    p [ hidden (not (isError model.error))] [ text model.error ],
     img [ src model.gifUrl ] [],
     button [ onClick More, disabled model.disableMoreButton ] [ text "More Pictures!" ],
     topicSelect model [ "cats", "dogs", "unicorns" ],
@@ -247,7 +258,7 @@ view model =
 -- subscriptions
 subscriptions : Model -> Sub Msg
 subscriptions model =
-  Sub.none
+  Time.every second Tick
 
 -- application
 main =
