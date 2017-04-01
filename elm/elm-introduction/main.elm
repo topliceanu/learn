@@ -4,6 +4,8 @@ import Html.Events exposing (onClick, onInput)
 import Http
 import Random
 import Json.Decode as Decode
+import Svg
+import Svg.Attributes as SAttr
 
 -- model
 type alias Model = {
@@ -165,6 +167,43 @@ topicSelect model options =
   in
     select [ onInput ChangeTopic ] htmlOpts
 
+-- display an svg dice face
+dot : Int -> List Int -> String -> String -> Svg.Svg Msg
+dot n valid x y =
+  if (List.member n valid) then
+      Svg.circle [SAttr.cx x, SAttr.cy y, SAttr.r "5", SAttr.fill "white"] []
+  else
+      Svg.circle [SAttr.cx x, SAttr.cy y, SAttr.r "5", SAttr.fill "black"] []
+
+displayDiceFace : Int -> Html Msg
+displayDiceFace face =
+  Svg.svg [ SAttr.version "1.1", SAttr.width "100", SAttr.height "100", SAttr.viewBox "0 0 100 100" ] [
+    Svg.rect [ SAttr.x "0", SAttr.y "0", SAttr.width "100", SAttr.height "100", SAttr.rx "15", SAttr.ry "15", SAttr.color "black" ] [],
+    dot face [4, 5, 6] "40" "40",
+    dot face [6] "60" "40",
+    dot face [4, 5, 6] "80" "40",
+
+    dot face [2, 3] "40" "60",
+    dot face [1, 3, 5] "60" "60",
+    dot face [2, 3] "80" "60",
+
+    dot face [4, 5, 6] "40" "80",
+    dot face [6] "60" "80",
+    dot face [4, 5, 6] "80" "80"
+  ]
+
+renderClock Int -> Html Msg
+rencerClock curTime =
+  let
+    angle = turns (Time.inMinutes curTime)
+    handX = toString (50 + 40 * cos angle)
+    handY = toString (50 + 40 * sin angle)
+  in
+    Svg.svg [ SAttr.viewBox "0 0 100 100", SAttr.width "300px" ] [
+      Svg.circle [ SAttr.cx "50", SAttr.cy "50", SAttr.r "45", SAttr.fill "#0B79CE" ] [],
+      Svg.line [ SAttr.x1 "50", SAttr.y1 "50", SAttr.x2 handX, y2 SAttr.handY, SAttr.stroke "#023963" ] []
+    ]
+
 -- view
 view : Model -> Html Msg
 view model =
@@ -177,8 +216,10 @@ view model =
     topicSelect model [ "cats", "dogs", "unicorns" ],
 
     h3 [] [ text "Roll the dice" ],
-    span [] [ text (toString (Tuple.first model.dieFaces)) ],
-    span [] [ text (toString (Tuple.second model.dieFaces)) ],
+    displayDiceFace (Tuple.first model.dieFaces),
+    displayDiceFace (Tuple.second model.dieFaces),
+    --span [] [ text (toString (Tuple.first model.dieFaces)) ],
+    --span [] [ text (toString (Tuple.second model.dieFaces)) ],
     button [ onClick Roll ] [ text "Roll" ],
 
     h3 [] [ text "Signup Form" ],
