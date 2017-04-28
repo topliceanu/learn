@@ -7,6 +7,7 @@ import Json.Decode as Decode
 import Svg
 import Svg.Attributes as SAttr
 import Time exposing (Time, second)
+import WebSocket
 
 -- model
 type alias Model = {
@@ -25,7 +26,9 @@ type alias Model = {
   disableMoreButton: Bool,
   error: String,
   time: Time,
-  paused: Bool
+  paused: Bool,
+  input: String,
+  messages: List String
 }
 
 -- init
@@ -46,7 +49,9 @@ init = ({
     disableMoreButton = False,
     error = "",
     time = 0,
-    paused = False
+    paused = False,
+    input = "",
+    messages = []
   }, Cmd.none)
 
 -- update
@@ -72,6 +77,10 @@ type Msg
   -- clock
   | Tick Time
   | Pause
+  -- chat
+  | Input String
+  | Send
+  | NewMessage String
 
 -- limits the number of items in a list
 addToHistory : String -> List String -> List String
@@ -145,6 +154,12 @@ update msg model =
       ({ model | time = newTime }, Cmd.none)
     Pause ->
       ({ model | paused = (not model.paused), history = addToHistory "switch clock" model.history }, Cmd.none)
+    Input newInput ->
+      ({ model | input = newInput }, Cmd.none)
+    Send ->
+      ({ model | input = "" }, WebSocket.send "ws://echo.websocket.org" model.input)
+    NewMessage str ->
+      ({ model | messages = (str :: model.messages) }, Cmd.none)
 
 -- renders the history as a UL of LIs
 showHist : List String -> Html Msg
@@ -212,14 +227,26 @@ renderClock curTime =
       Svg.line [ SAttr.x1 "50", SAttr.y1 "50", SAttr.x2 handX, SAttr.y2 handY, SAttr.stroke "#023963" ] []
     ]
 
+viewMessage : String -> Html Msg
+viewMessage chatFrame =
+  li [] [ text chatFrame ]
+
 -- view
 view : Model -> Html Msg
 view model =
   div [] [
+    -- chat
+    h3 [] [ text "Chat" ],
+    ul [] (List.map viewMessage model.messages),
+    input [ onInput Input ] [],
+    button [ onClick Send ] [ text "send" ],
+
+    -- stupid clock
     h3 [] [ text "Clock" ],
     renderClock model.time,
     button [ onClick Pause ] [ text (if model.paused == True then "Resume" else "Pause") ],
 
+    -- cat pictures
     h3 [] [ text "Cat pics" ],
     p [ hidden (not (isError model.error))] [ text model.error ],
     img [ src model.gifUrl ] [],
@@ -258,7 +285,10 @@ view model =
 -- subscriptions
 subscriptions : Model -> Sub Msg
 subscriptions model =
-  Time.every second Tick
+  Sub.batch [
+    Time.every second Tick,
+    WebSocket.listen "ws://echo.websocket.org" NewMessage
+  ]
 
 -- application
 main =
