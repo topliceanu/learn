@@ -7,6 +7,7 @@ import Json.Decode as Decode
 import Svg
 import Svg.Attributes as SAttr
 import Time exposing (Time, second)
+import WebSocket
 
 -- model
 type alias Model = {
@@ -25,7 +26,9 @@ type alias Model = {
   disableMoreButton: Bool,
   error: String,
   time: Time,
-  paused: Bool
+  paused: Bool,
+  input: String,
+  messages: List String
 }
 
 -- init
@@ -46,7 +49,9 @@ init = ({
     disableMoreButton = False,
     error = "",
     time = 0,
-    paused = False
+    paused = False,
+    input = "",
+    messages = []
   }, Cmd.none)
 
 -- update
