@@ -57,8 +57,34 @@ func TestHandleHi_TestServer_Parallel(t *testing.T) {
 func BenchmarkHandlerHi(b *testing.B) {
   b.ReportAllocs()
   r := req(b, "GET / HTTP/1.0\r\n\r\n")
+  rw := httptest.NewRecorder()
   for i := 0; i < b.N; i ++ {
-    rw := httptest.NewRecorder()
     handleHi(rw, r)
+    reset(rw)
+  }
+}
+
+func BenchmarkHiParallel(b *testing.B) {
+  r := req(b, "GET / HTTP/1.0\r\n\r\n")
+  b.RunParallel(func(pb *testing.PB) {
+    rw := httptest.NewRecorder()
+    for pb.Next() {
+      handleHi(rw, r)
+      reset(rw)
+    }
+  })
+}
+
+
+func reset(rw *httptest.ResponseRecorder) {
+  m := rw.HeaderMap
+  for k := range m {
+    delete(m, k)
+  }
+  body := rw.Body
+  body.Reset()
+  *rw = httptest.ResponseRecorder{
+    Body:      body,
+    HeaderMap: m,
   }
 }

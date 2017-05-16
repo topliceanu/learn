@@ -1,11 +1,12 @@
 package main
 
 import (
-  "fmt"
+  "bytes"
   "log"
   "net/http"
   "regexp"
   "sync"
+  "strconv"
 )
 
 var visitors struct {
@@ -14,6 +15,12 @@ var visitors struct {
 }
 
 var colorRx = regexp.MustCompile(`^\w*$`)
+
+var bufPool = sync.Pool{
+  New: func() interface{} {
+    return new(bytes.Buffer)
+  },
+}
 
 func handleHi(w http.ResponseWriter, r *http.Request) {
   if !colorRx.MatchString(r.FormValue("color")) {
@@ -24,7 +31,18 @@ func handleHi(w http.ResponseWriter, r *http.Request) {
   visitors.m++
   visitorsNum := visitors.m
   visitors.Unlock()
-  fmt.Fprintf(w, "<h1 style='color: %s'>Welcome!</h1>You are visitor number %v!", r.FormValue("color"), visitorsNum)
+
+  //fmt.Fprintf(w, "<h1 style='color: %s'>Welcome!</h1>You are visitor number %v!", r.FormValue("color"), visitorsNum)
+  // This is equivalent to the above!
+  buf := bufPool.Get().(*bytes.Buffer)
+  defer bufPool.Put(buf)
+  buf.Reset()
+  buf.WriteString("<h1 style='color: ")
+  buf.WriteString(r.FormValue("color"))
+  buf.WriteString(">Welcome!</h1>You are visitor number ")
+  b := strconv.AppendInt(buf.Bytes(), int64(visitorsNum), 10)
+  b = append(b, '!')
+  w.Write(b)
 }
 
 func main() {
