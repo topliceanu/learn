@@ -157,9 +157,9 @@ update msg model =
     Input newInput ->
       ({ model | input = newInput }, Cmd.none)
     Send ->
-      ({ model | input = "" }, WebSocket.send "ws://echo.websocket.org" model.input)
+      ({ model | input = "", history = addToHistory "sending message" model.history }, WebSocket.send "ws://echo.websocket.org" model.input)
     NewMessage str ->
-      ({ model | messages = (str :: model.messages) }, Cmd.none)
+      ({ model | messages = (str :: model.messages), history = addToHistory "message received" model.history }, Cmd.none)
 
 -- renders the history as a UL of LIs
 showHist : List String -> Html Msg
