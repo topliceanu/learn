@@ -8,10 +8,12 @@ import Svg
 import Svg.Attributes as SAttr
 import Time exposing (Time, second)
 import WebSocket
+import Counter
+import Tuple
 
 -- model
 type alias Model = {
-  counter: Int,
+  counter: Counter.Model,
   history: List String,
   content: String,
   name: String,
@@ -34,7 +36,7 @@ type alias Model = {
 -- init
 init : (Model, Cmd Msg)
 init = ({
-    counter = 0,
+    counter = Counter.init,
     history = [ "initial" ],
     content = "",
     name = "",
@@ -57,9 +59,8 @@ init = ({
 -- update
 type Msg
   -- counter
-  = Increment
-  | Decrement
-  | Reset
+  = Counter.Msg
+  -- input form
   | Change String
   -- register form, the inputs will be changed separately
   | Name String
@@ -117,12 +118,11 @@ getRandomGif topic =
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
-    Increment ->
-      ({ model | counter = model.counter + 1, history = addToHistory "inc" model.history }, Cmd.none)
-    Decrement ->
-      ({ model | counter = model.counter - 1, history = addToHistory "dec" model.history }, Cmd.none)
-    Reset ->
-      ({ model | counter = 0, history = addToHistory "reset" model.history }, Cmd.none)
+    Counter.Msg ->
+      let
+        updates = Counter.update msg model.counter
+      in
+        ({ model | counter = Tuple.first updates }, Tuple.second updates)
     Change newContent ->
       ({ model | content = newContent, history = addToHistory "content changed" model.history }, Cmd.none)
     Name newName ->
@@ -272,11 +272,7 @@ view model =
     input [ placeholder "Text to reverse", onInput Change ] [],
     div [] [ text (String.reverse model.content) ],
 
-    h3 [] [ text "Counter" ],
-    button [ onClick Decrement ] [ text "-" ],
-    div [] [ text (toString model.counter) ],
-    button [ onClick Increment ] [ text "+" ],
-    button [ onClick Reset ] [ text "0" ],
+    Counter.view model.counter,
 
     h3 [] [ text "history" ],
     showHist(model.history)
