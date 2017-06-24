@@ -1,26 +1,50 @@
-type node =
+(* OCaml implementation of a red-black binary ballanced search tree.
+ * The invariants are:
+ * - Each node is either Black or Red
+ * - The root is always Black
+ * - No Red node has a Red parent.
+ * - Every path from root to Empty passes through the same number of Black nodes.
+ * Reference: https://www.cs.cornell.edu/courses/cs3110/2009sp/lectures/lec11.html
+ * *)
+
+type color = Red | Black
+
+type 'a rbtree =
     Empty
-  | Node of node * int * node ;;
+  | Node of color * 'a * 'a rbtree * 'a rbtree
 
-let rec insert root value =
+let rec lookup x root =
   match root with
+      Empty -> false
+    | Node (_, y, left, right) ->
+        if x = y then true
+        else if x < y then lookup x left
+        else lookup x right
+
+let balance node =
+  match node with
+      Black, z, Node (Red, y, Node (Red, x, a, b), c), d
+    | Black, z, Node (Red, x, a, Node (Red, y, b, c)), d
+    | Black, x, a, Node (Red, z, Node (Red, y, b, c), d)
+    | Black, x, a, Node (Red, y, b, Node (Red, z, c, d)) ->
+        Node (Red, y, Node (Black, x, a, b), Node (Black, z, c, d))
+    | a, b, c, d ->
+        Node (a, b, c, d)
+
+let rec insert_red parent x =
+  match parent with
+    Empty -> Node (Red, x, Empty, Empty)
+  | Node (color, y, left, right) ->
+      if x < y
+      then balance (Node (color, y, (insert_red left x), right))
+      else if x > y
+      then balance (Node (color, y, left, (insert_red right x)))
+      else parent
+
+let insert x root =
+  let new_root = insert_red root x in
+  match new_root with
+      Node (_, y, left, right) ->
+        Node(Black, y, left, right)
     | Empty ->
-        Node (Empty, value, Empty) (* value constructors are regular functions which receive a tuple *)
-    | Node (left, existing, right) ->
-        if existing > value (* how does it know to compare this things *)
-        then Node (left, existing, (insert right value))
-        else Node ((insert left value), existing, right)
-
-let rec lookup root value =
-  match root with
-    | Empty -> false
-    | Node (left, existing, right) ->
-        if existing == value (* how does it know how to compare these things *)
-        then true
-        else (lookup left value) || (lookup right value)
-
-let root = insert (insert (insert (insert (insert (insert Empty 1) 2) 3) 4) 5) 6
-let () =
-  let found = lookup root 7 in
-  let printable = string_of_bool found in
-  print_endline printable
+        raise (Failure "Root cannot be empty after an insertion")
