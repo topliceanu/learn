@@ -1,3 +1,5 @@
+(* See: http://odis.io/parser-combinators.html *)
+
 open Format
 
 (* val ( ||| ) : ('a -> 'b) -> ('a -> 'b) -> 'a -> 'b
@@ -161,6 +163,7 @@ type expr =
   | Var of string
   | Add of expr * expr
   | Mul of expr * expr
+  | Pow of expr * expr
 
 (* val ( +: ) expr -> expr -> expr
  * Implements the addition operator. Reduces complexity by replacing two ints added or additions to 0.
@@ -181,6 +184,17 @@ let rec ( *: ) f g =
   | (Int 1, e) | (e, Int 1) -> e
   | (f, g) -> Mul (f, g)
 
+(* val ( ^: ) expr -> expr -> expr
+ * Implements the power operator. Reduces complex expressions in some well known cases.
+ * *)
+let rec ( ^: ) f g =
+  match (f, g) with
+  | (Int n, Int m) -> Int (int_of_float ((float_of_int n) ** (float_of_int m)))
+  | (Int 0, _) -> Int 0
+  | (_, Int 0) | (Int 1, _) -> Int 1
+  | (e, Int 1) -> e
+  | (f, g) -> Pow (f, g)
+
 (* Helper functions to print the AST *)
 let rec print_expr ff = function
   | Int n -> fprintf ff "%d" n
@@ -189,6 +203,8 @@ let rec print_expr ff = function
       fprintf ff "%a + %a" print_expr f print_expr g
   | Mul (f, g) ->
       fprintf ff "%a %a" print_mul f print_mul g
+  | Pow (f, g) ->
+      fprintf ff "%a ^ %a" print_expr f print_expr g
 and print_mul ff = function
   | Add _ as e -> fprintf ff "(%a)" print_expr e
   | e -> fprintf ff "%a" print_expr e
@@ -198,7 +214,7 @@ let ident = function
   | IDENT x :: t -> x, t
   | _ -> raise Not_found
 
-(* val ident : token list -> string * token list *)
+(* val int : token list -> string * token list *)
 let int = function
   | INT n :: t -> n, t
   | _ -> raise Not_found
@@ -211,15 +227,18 @@ let rec atom s =
    (ident >| fun x -> Var x) |||
    (a (KWD "(") ++ term ++ a (KWD ")") >| fun ((_, e), _) -> e)) s
 (* var factor : token list -> expr * token list
-* factor matches one or more atoms.
-*)
+ * factor matches one or more atoms without a keyword between them, which
+ * implies multiplication.
+ *)
  and factor s =
    ((atom ++ factor >| fun (f, g) -> f *: g) ||| atom) s
 (* var term : token list -> expr * token list
- * term parses sequences of factors and sums them up!
+ * term parses plus and power operations.
  *)
  and term s =
-   ((factor ++ a (KWD "+") ++ term >| fun ((f, _), g) -> f +: g) ||| factor) s
+   ((factor ++ a (KWD "+") ++ term >| fun ((f, _), g) -> f +: g) |||
+    (factor ++ a (KWD "^") ++ term >| fun ((f, _), g) -> f ^: g) |||
+    factor) s
 
 (* val expr : token list -> expr * 'a list *)
 let expr =
