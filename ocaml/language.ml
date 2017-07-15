@@ -80,8 +80,20 @@ let languages = "Ocaml,Perl,C++,C"
 
 let dashed_languages =
   let languages = String.split languages ~on:',' in
-  String.concat ~sep:"-" ~sl:languages
+  String.concat ~sep:"-" languages
 
 let (ints, strings) = List.unzip [(1, "one"); (2, "two"); (3, "three")]
 
+let (+!) (x1, y1) (x2, y2) = (x1+x2, y1+y2)
 
+let concat ?(sep="") x y = x ^ sep ^ y
+
+exception Problem of int
+
+let f x y =
+  if y = 0
+  then raise (Problem x)
+  else x / y
+
+let g x y =
+  try f x y with Problem p -> p
