@@ -47,6 +47,12 @@ let some p = function
  *)
 let a x = some (( = ) x)
 
+(* var several : ('a -> bool) -> 'a list -> 'a list * 'a list
+ * Matches as many leading items in the input list, returns a pair, first is a
+ * list of matched elements, second is the list of remaining elements.
+ * *)
+let several p = many (some p)
+
 module Abstr : sig
   type t
   val x : t
@@ -63,15 +69,9 @@ let fin = function
   | _ -> raise Not_found
 
 type token =
-  | IDENT of string
-  | KWD of string
-  | INT of string
-
-(* var several : ('a -> bool) -> 'a list -> 'a list * 'a list
- * Matches as many leading items in the input list, returns a pair, first is a
- * list of matched elements, second is the list of remaining elements.
- * *)
-let several p = many (some p)
+  | IDENT of string (* x and y in mathematical equations *)
+  | KWD of string (* parantheses, operators etc. *)
+  | INT of string (* integers *)
 
 (* val digit : char -> bool
  * Matches a digit.
@@ -87,7 +87,9 @@ let alpha = function
   | 'a'..'z' | 'A'..'Z' -> true
   | _ -> false
 
-(* val alphanum : char -> bool *)
+(* val alphanum : char -> bool
+ * Matches anything alpha-numeric.
+ * *)
 let alphanum c = digit c || alpha c
 
 (* val space : char -> bool *)
@@ -97,25 +99,25 @@ let space = function
 
 (* val collect : char * char list -> string
  * Collects the matches characters in a string.
- * Usefull for building gramar types.
  * *)
 let collect (h, t) =
-  String.concat "" (List.map (String.make 1) (h :: t))
+  String.concat "" (List.map (String.make 1) (h :: t)) (* transforms char list into string list *)
 
 (* val rawindent : char list -> token * char list
- * Matches an IDENT token
+ * Parser to match an IDENT token
  * *)
 let rawindent =
   some alpha ++ several alphanum >| fun x -> IDENT (collect x)
 
 (* val rawnumber: char list -> token * char list
- * Matches an INT token.
+ * Parser to match an INT token.
  * *)
 let rawnumber =
   some digit ++ several digit >| fun x -> INT(collect x)
 
 (* val rawkeyword : char list -> token * char list
- * Matches any non-IDENT|INT keyword and builds a KWD keyword.
+ * Matches any non-IDENT|INT token and builds a KWD token.
+ * These can be parantheses, operators, etc.
  * *)
 let rawkeyword =
   let p c = not (space c) && not (digit c) in
@@ -250,4 +252,4 @@ let expr =
 let parse p str =
   fst(p(lex str))
 
-(* parse expr "a x x + b x + c"; *)
+(* parse expr "a x ^ 2 + b x + c"; *)
