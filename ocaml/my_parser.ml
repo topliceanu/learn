@@ -9,10 +9,15 @@
  *    token list -> 'a
  *)
 
-(* chr matches a character *)
-let is_char c =
-  match c with
-  | 'A'..'Z' -> true
-  | _ -> false
+type token =
+  | IDENT of string (* includes all the event characters *)
+  | KWD of string (* includes all the supported special character: *, +, ?, ., <> *)
 
+let string_to_char_list str =
+  let l = ref [] in
+  String.iter (fun c -> l := c :: !l) str;
+  List.rev !l
 
+(* var lexer: string -> Token list *)
+let lexer str =
+  (string_to_char_list str)
