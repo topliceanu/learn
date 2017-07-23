@@ -10,13 +10,27 @@
  *)
 
 type token =
-  | IDENT of string (* includes all the event characters *)
-  | KWD of string (* includes all the supported special character: *, +, ?, ., <> *)
+  | Ident of string (* includes all the event characters *)
+  | Kwd of string (* includes all the supported special character: *, +, ?, ., <> *)
 
 let string_to_char_list str =
   let l = ref [] in
   String.iter (fun c -> l := c :: !l) str;
   List.rev !l
+
+(* is_alpha : char -> bool
+ * Matches an alphabetical character.
+ * *)
+let is_aplha = function
+  | 'a'..'z' | 'A'..'Z' -> true
+  | _ -> false
+
+(* val build_ident : char -> token *)
+let build_ident c =
+  Ident c
+
+(* val char list -> list token * char list *)
+
 
 (* var lexer: string -> Token list *)
 let lexer str =

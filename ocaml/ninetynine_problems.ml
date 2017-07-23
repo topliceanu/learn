@@ -64,5 +64,26 @@ let compress xs =
   in List.rev (comp [] xs)
 
 (* 9. Pack consecutive duplicates of list elements into sublists. (medium) *)
+(* val pack : 'a list -> 'a list list *)
 let pack xs =
+  let pred acc x =
+    match acc with
+    | [] -> []
+    | hd :: tl -> begin
+      match hd with
+      | [] -> [x] :: tl
+      | h :: t ->
+          if h = x
+          then (x :: h :: t) :: tl
+          else [x] :: (h :: t) :: tl
+    end
+  in List.rev (List.fold_left pred [[]] xs)
 
+(* 10. Run-length encoding of a list. (easy) *)
+(* val encode : 'a list -> (int * 'a) list *)
+let encode xs =
+  let count x =
+    ((List.length x), (List.nth x 0))
+  in match (pack xs) with
+  | [] -> []
+  | non_empty -> List.map count non_empty
