@@ -87,3 +87,31 @@ let encode xs =
   in match (pack xs) with
   | [] -> []
   | non_empty -> List.map count non_empty
+
+(* 11. Modify the result of the previous problem in such a way that if an
+ * element has no duplicates it is simply copied into the result list
+ **)
+type 'a rle =
+  | One of 'a
+  | Many of int * 'a
+
+let encode2 xs =
+  let count = function
+    | [] -> raise (Failure "cannot be empty!")
+    | [x] -> One x
+    | x :: _ as l -> Many ((List.length l), x)
+  in match pack xs with
+  | [] -> []
+  | non_empty -> List.map count non_empty
+
+(* 12. Decode a run-length encoded list *)
+let decode rs =
+  let rec rep x = function
+    | 0 -> []
+    | n -> x :: rep x (n - 1)
+  in let expand acc r =
+    match r with
+    | One x -> acc @ [[x]]
+    | Many (count, x) ->
+        acc @ [rep x count]
+  in List.fold_left expand [] rs

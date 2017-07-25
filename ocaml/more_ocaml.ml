@@ -112,9 +112,27 @@ let fib = Cons (0, fun () -> Cons (1, fun () -> (fibonacci 0 1)))
 
 (* ex.5 given a list produces two lazy lists, one on even positions, one on odd positions *)
 (* val unleave : 'a lazylist -> 'a lazylist * 'a lazylist *)
-let unleave (Cons hd1, tl1) =
-  let Cons (hd2, tl2) = (tl1 ()) in
-  let Cons (_, tl3) = (tl2 ()) in
-  let odds = Cons (hd1, fun () -> ) in
-  let evens = Cons (hd2, fun () -> ) in
-  (odds, evens)
+let rec unleave (Cons (hd, tl)) =
+  let Cons (hd', tl') = tl () in
+  let t = tl' () in
+  (Cons (hd, fun () -> fst (unleave t)),
+   Cons (hd', fun () -> snd (unleave t)))
+
+(* ex.6 write a lazy list which produces A, B, C .. X, Y, Z, AA, AB, AC .. AX, AY, AZ, BA, BB, ... BX, BY, BZ, ... *)
+(* val empty : 'a lazylist *)
+(*
+let empty = Cons ('', fun () -> '')
+
+let rec labels hd tl =
+  match hd with
+  'Z' -> Cons (hd, fun () -> Cons ('A'))
+  _ -> Cons ((concat hd tl ()), fun () -> labels next(hd) tl)
+*)
+(* let l = labels 'A' empty *)
+(*
+let labels fst =
+  Cons (fst, fun () ->
+    match fst with
+    | 'Z' - >
+  )
+*)
