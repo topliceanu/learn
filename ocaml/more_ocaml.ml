@@ -119,20 +119,4 @@ let rec unleave (Cons (hd, tl)) =
    Cons (hd', fun () -> snd (unleave t)))
 
 (* ex.6 write a lazy list which produces A, B, C .. X, Y, Z, AA, AB, AC .. AX, AY, AZ, BA, BB, ... BX, BY, BZ, ... *)
-(* val empty : 'a lazylist *)
-(*
-let empty = Cons ('', fun () -> '')
-
-let rec labels hd tl =
-  match hd with
-  'Z' -> Cons (hd, fun () -> Cons ('A'))
-  _ -> Cons ((concat hd tl ()), fun () -> labels next(hd) tl)
-*)
-(* let l = labels 'A' empty *)
-(*
-let labels fst =
-  Cons (fst, fun () ->
-    match fst with
-    | 'Z' - >
-  )
-*)
+(* ... *)

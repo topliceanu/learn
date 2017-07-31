@@ -1,7 +1,5 @@
 (* learn the language by going through all the tutorials on ocaml.org *)
 
-open Core
-
 let x = 11
 
 let square x = x * x
@@ -31,7 +29,7 @@ let log_entry maybe_time message =
   let time =
     match maybe_time with
     | Some x -> x
-    | None -> Time.now ()
+    | None -> Core.Time.now ()
   in
   Time.to_string time ^ " -- " ^ message
 
@@ -97,3 +95,36 @@ let f x y =
 
 let g x y =
   try f x y with Problem p -> p
+
+let heads = ["language";"architect";"first release"]
+let langs = [
+  ["Lisp" ;"John McCarthy" ;"1958"] ;
+  ["C"    ;"Dennis Ritchie";"1969"] ;
+  ["ML"   ;"Robin Milner"  ;"1973"] ;
+  ["OCaml";"Xavier Leroy"  ;"1996"] ;
+]
+
+let max_widths header rows =
+  let lengths l = List.map ~f:String.length l in
+  List.fold rows ~init:(lengths header) ~f:(fun acc row ->
+    List.map2_exn ~f:Int.max acc (lengths row))
+
+let render_separator widths =
+  let lines = List.map widths ~f:(fun w -> String.make w '-')
+  in  "+" ^ (String.concat ~sep:"+" lines) ^ "+"
+
+let left_pad width str =
+  (String.make (width - String.length str) ' ') ^ str
+
+let render_row widths row =
+  let parts = List.map2_exn widths row ~f:left_pad
+  in "|" ^ String.concat ~sep:"|" parts ^ "|"
+
+let render_table header rows =
+  let widths = max_widths header rows in
+  let head_row = render_row widths header in
+  let sep_row = render_separator widths in
+  let rendered_rows = List.map ~f:(render_row widths) rows in
+  String.concat ~sep:"\n" (head_row :: sep_row :: rendered_rows)
+
+render_table heads langs
