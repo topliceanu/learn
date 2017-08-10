@@ -128,3 +128,8 @@ let render_table header rows =
   String.concat ~sep:"\n" (head_row :: sep_row :: rendered_rows)
 
 render_table heads langs
+
+let reduce lst pred =
+  match lst with
+  | [] -> None
+  | hd :: tl -> Some (List.fold_left pred hd tl)
