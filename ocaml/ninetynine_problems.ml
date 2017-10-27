@@ -115,3 +115,21 @@ let decode rs =
     | Many (count, x) ->
         acc @ [rep x count]
   in List.fold_left expand [] rs
+
+(* 13. Implement the so-called run-length encoding data compression method directly.
+ * I.e. don't explicitly create the sublists containing the duplicates, as in problem 9).,
+ * but only count them. As in problem 11)., simplify the result list by replacing the singleton lists (1 X) by X.
+ * TODO implement this
+ **)
+
+(* 14 Duplicate the elements of a list. (easy) TODO test this *)
+let duplicate xs =
+  let pred acc x =
+    x :: ( x :: acc )
+  in List.fold_left pred [] xs
+
+(* 15. Replicate the elements of a list a given number of times. (medium) *)
+let replicate xs n =
+  let pred acc x =
+    (List.times x n) :: acc
+  in List.fold_left pred [] xs

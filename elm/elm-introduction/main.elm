@@ -8,12 +8,11 @@ import Svg
 import Svg.Attributes as SAttr
 import Time exposing (Time, second)
 import WebSocket
-import Counter
 import Tuple
 
 -- model
 type alias Model = {
-  counter: Counter.Model,
+  counter: Int,
   history: List String,
   content: String,
   name: String,
@@ -36,7 +35,7 @@ type alias Model = {
 -- init
 init : (Model, Cmd Msg)
 init = ({
-    counter = Counter.init,
+    counter = 0,
     history = [ "initial" ],
     content = "",
     name = "",
@@ -59,7 +58,9 @@ init = ({
 -- update
 type Msg
   -- counter
-  = Counter.Msg
+  = Increment
+  | Decrement
+  | Reset
   -- input form
   | Change String
   -- register form, the inputs will be changed separately
@@ -118,11 +119,12 @@ getRandomGif topic =
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
-    Counter.Msg ->
-      let
-        updates = Counter.update msg model.counter
-      in
-        ({ model | counter = Tuple.first updates }, Tuple.second updates)
+    Increment ->
+      ({ model | counter = model.counter + 1 }, Cmd.none)
+    Decrement ->
+      ({ model | counter = model.counter - 1 }, Cmd.none)
+    Reset ->
+      ({ model | counter = 0 }, Cmd.none)
     Change newContent ->
       ({ model | content = newContent, history = addToHistory "content changed" model.history }, Cmd.none)
     Name newName ->
@@ -231,10 +233,23 @@ viewMessage : String -> Html Msg
 viewMessage chatFrame =
   li [] [ text chatFrame ]
 
+counterView : { r | counter: Int } -> Html Msg
+counterView model =
+  div [] [
+    h3 [] [ text "Counter" ],
+    button [ onClick Decrement ] [ text "-" ],
+    div [] [ text (toString model.counter) ],
+    button [ onClick Increment ] [ text "+" ],
+    button [ onClick Reset ] [ text "0" ]
+  ]
+
 -- view
 view : Model -> Html Msg
 view model =
   div [] [
+    -- counter
+    counterView model,
+
     -- chat
     h3 [] [ text "Chat" ],
     ul [] (List.map viewMessage model.messages),
@@ -271,8 +286,6 @@ view model =
     h3 [] [ text "Reversing Text" ],
     input [ placeholder "Text to reverse", onInput Change ] [],
     div [] [ text (String.reverse model.content) ],
-
-    Counter.view model.counter,
 
     h3 [] [ text "history" ],
     showHist(model.history)

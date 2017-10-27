@@ -1,0 +1,4 @@
+#!/bin/bash
+
+sudo rkt --insecure-options=image run server-0.0.1-linux-amd64.aci
+
