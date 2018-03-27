@@ -22,18 +22,22 @@ import "sort"
 func Solution(A []int) int {
 	cs := make(circles, len(A))
 	for c, r := range A {
-		cs[c] = &circle{
+		cs[c] = circle{
 			left: max(0, c - r),
 			right: min(c + r, len(A) - 1),
 		}
 	}
 	sort.Sort(cs) // O(NlogN)
-	lefts := cs.lefts()
 	count := 0
 	for i, c := range cs {
-		k := sort.SearchInts(lefts, c.right)
+		k := sort.Search(len(cs), func(j int) bool {
+			return c.right < cs[j].left
+		})
 		add := k - i - 1
 		count += add
+	}
+	if count > 10000000 {
+		return -1
 	}
 	return count
 }
@@ -42,7 +46,7 @@ type circle struct {
 	left, right int
 }
 
-type circles []*circle
+type circles []circle
 
 func (c circles) Len() int {
 	return len(c)
@@ -52,7 +56,7 @@ func (c circles) Less(i, j int) bool {
 	if c[i].left < c[j].left {
 		return true
 	}
-	if c[i].left == c[j].left && c[i].right < c[j].right {
+	if c[i].left == c[j].left && c[i].right > c[j].right {
 		return true
 	}
 	return false
