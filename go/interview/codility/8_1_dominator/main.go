@@ -41,7 +41,7 @@ func Solution(A []int) int {
 			index = i
 		}
 	}
-	if float64(count) >= math.Ceil(float64(len(A)) / 2) {
+	if count >= int(math.Floor(float64(len(A)) / 2)) + 1 {
 		return index
 	}
 	return -1

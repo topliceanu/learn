@@ -21,6 +21,10 @@ func TestSolution(t *testing.T) {
 		{[]int{1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2}, -1},
 		// for even length arrays.
 		{[]int{1, 1, 1, 2, 3, 3}, -1},
+		{[]int{1, 1, 1, 1, 3, 3}, 3},
+		// for odd length array.
+		{[]int{1, 1, 3, 3}, -1},
+		{[]int{1, 1, 1, 3}, 2},
 		// no leader
 		{[]int{1, 1, 2, 2, 3, 3}, -1},
 		// negative numbers give out the same value as when no leader is found?!
