@@ -11,7 +11,7 @@ service: serverless-hello-world
 provider:
   name: aws
   runtime: nodejs6.10
-  memorySize: 512
+  memorySize: 256
   timeout: 5
 
 # The `functions` block defines what code to deploy
@@ -24,28 +24,6 @@ functions:
           path: hello-world
           method: get
           cors: true
-  read:
-    handler: handler.read
-    events:
-      - http:
-          path: items/{id}
-          method: get
-          cors: true
-          request:
-            parameters:
-              paths:
-                id: true
-  update:
-    handler: handler.replace
-    events:
-      - http:
-          path: items/{id}
-          method: put
-          cors: true
-          request:
-            parameters:
-              paths:
-                id: true
   delete:
     handler: handler.remove
     events:
@@ -71,3 +49,22 @@ functions:
           path: items
           method: get
           cors: true
+
+# This is where the Cloud Template code goes.
+resources:
+  Resources:
+    itemsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: itemsTable
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+          - AttributeName: body
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1

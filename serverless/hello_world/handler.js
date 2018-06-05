@@ -1,5 +1,10 @@
 'use strict';
 
+const AWS = require('aws-sdk')
+
+let id = 1
+const db = new AWS.DynamoDB.DocumentClient()
+
 module.exports.helloWorld = (event, context, callback) => {
   const response = {
     statusCode: 200,
@@ -15,54 +20,48 @@ module.exports.helloWorld = (event, context, callback) => {
   callback(null, response);
 };
 
-// static database, it might get removed.
-var db = []
-
 module.exports.create = (event, context, callback) => {
-  const newID = db.length
   const {item, err} = parseBody(event)
   if (err) {
     return respond(callback, 400, err)
   }
-  item.id = newID
-  db[newID] = item
-  respond(callback, 201, item)
-}
-
-module.exports.read = (event, context, callback) => {
-  const id = event.pathParameters.id
-  if (id >= db.length) {
-    return respond(callback, 404, {})
-  }
-  const item = db[id]
-  respond(callback, 200, item)
-}
-
-module.exports.replace = (event, context, callback) => {
-  const id = event.pathParameters.id
-  if (id >= db.length) {
-    return respond(callback, 404, {})
-  }
-  const {item, err} = parseBody(event)
-  if (err) {
-    return respond(callback, 400, err)
-  }
-  item.id = id
-  db[id] = item
-  respond(callback, 200, item)
+  id = id + 1
+  item.id = ''+id
+  db.put({
+    TableName: process.env.DYNAMODB_TABLE,
+    ITEM: item,
+  }, (err) => {
+    if (err) {
+      return respond(callback, 500, err)
+    }
+    respond(callback, 201, item)
+  })
 }
 
 module.exports.delete = (event, context, callback) => {
   const id = event.pathParameters.id
-  if (id >= db.length) {
-    return respond(callback, 404, {})
-  }
-  db.splice(id, 1)
-  respond(callback, 200, {})
+  db.delete({
+    TableName: process.env.DYNAMODB_TABLE<
+    KEY: {
+      id: id,
+    },
+  }, (err) => {
+    if (err) {
+      return respond(callback, 500, err)
+    }
+    respond(callback, 200, {})
+  })
 }
 
 module.exports.readall = (event, context, callback) => {
-  respond(callback, 200, db)
+  db.scan({
+    TableName: process.env.DYNAMODB_TABLE,
+  }, (err, result) => {
+    if (err) {
+      return respond(callback, 500, err)
+    }
+    return respond(callback, 200, result.Items)
+  })
 }
 
 // HELPERS
