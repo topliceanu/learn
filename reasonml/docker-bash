@@ -1,0 +1,8 @@
+docker run -it --rm \
+--name reason-bash \
+-p 8888:8888 \
+-w /source \
+-v "$(pwd)":/source \
+--user 1000:1001 \
+topliceanu/reasonml:latest \
+bash
