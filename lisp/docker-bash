@@ -1,0 +1,1 @@
+docker run -it --rm --name racket-bash -p 8888:8888 -w /source -v "$(pwd)":/source topliceanu/racket:7.4 bash
