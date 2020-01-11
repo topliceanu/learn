@@ -1,0 +1,23 @@
+[package]
+name = "rustlings"
+version = "2.1.0"
+authors = ["Marisa <mokou@posteo.de>", "Carol (Nichols || Goulding) <carol.nichols@gmail.com"]
+edition = "2018"
+
+[dependencies]
+clap = "2.32.0"
+indicatif = "0.9.0"
+console = "0.6.2"
+notify = "4.0.0"
+toml = "0.4.10"
+regex = "1.1.6"
+serde = {version = "1.0.10", features = ["derive"]}
+
+[[bin]]
+name = "rustlings"
+path = "src/main.rs"
+
+[dev-dependencies]
+assert_cmd = "0.11.0"
+predicates = "1.0.1"
+glob = "0.3.0"
