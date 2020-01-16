@@ -1,0 +1,15 @@
+extends layout
+
+block content
+  h1 register
+  form(name="register", method="post")
+    div
+      label(for="username") Username
+      input(type="text", name="username")
+    div
+      label(for="email") Email
+      input(type="email", name="email")
+    div
+      input(type="submit", value="Register")
+
+
