@@ -8,7 +8,7 @@ defer==1.0.6
 httplib2==0.8
 ipython==2.1.0
 paramiko==1.10.1
-psutil==1.2.1
+psutil==5.6.6
 pycrypto==2.6.1
 pycups==1.9.66
 pycurl==7.19.3
