@@ -1,0 +1,22 @@
+<div id="brinza-task-description">
+<p>Two non-negative integers N and M are said to be <i>similar</i> if their decimal representations can be obtained from each other by rearranging their digits. Note that a correct decimal representation does not contain leading zeroes (except for number 0). For example:</p>
+<blockquote><ul style="margin: 10px;padding: 0px;"><li>1234 is similar to 4312;</li>
+<li>12 is similar to 12;</li>
+<li>113 is NOT similar to 133 (there are different numbers of individual digits);</li>
+<li>100 is NOT similar to 10 (010 contains a leading zero, so it is not a correct decimal representation).</li>
+</ul>
+</blockquote><p>Write a function:</p>
+<blockquote><p style="font-family: monospace; font-size: 9pt; display: block; white-space: pre-wrap"><tt>func Solution(N int) int</tt></p></blockquote>
+<p>that, given a non-negative integer N, returns the number of non-negative integers similar to N.</p>
+<p>For example, given N = 1213 the function should return 12 because there are twelve integers similar to 1213, namely: 1123, 1132, 1213, 1231, 1312, 1321, 2113, 2131, 2311, 3112, 3121 and 3211.</p>
+<p>Given N = 123 the function should return 6 because there are six integers similar to 123, namely: 123, 132, 213, 231, 312 and 321.</p>
+<p>Given N = 100 the function should return 1 because there is only one similar integer (the number itself). 001 and 010 are both incorrect decimal representations of integers.</p>
+<p>Given N = 0 the function should return 1 bacause there is only one similar integer (the number itself).</p>
+<p>Assume that:</p>
+<blockquote><ul style="margin: 10px;padding: 0px;"><li>N is an integer within the range [<span class="number">0</span>..<span class="number">2,000,000,000</span>].</li>
+</ul>
+</blockquote><p>Complexity:</p>
+<blockquote><ul style="margin: 10px;padding: 0px;"><li>expected worst-case time complexity is O(log(N));</li>
+<li>expected worst-case space complexity is O(1).</li>
+</ul>
+</blockquote></div>
