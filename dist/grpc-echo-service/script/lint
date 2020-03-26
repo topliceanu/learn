@@ -1,0 +1,18 @@
+#!/bin/sh
+
+set -e
+
+echo ">>> go fmt"
+go fmt $(glide novendor)
+
+echo ">>> goimports"
+goimports -w $(find . -type f -name '*.go' -not -path "./vendor/*")
+
+echo ">>> go vet"
+go vet $(go list ./... | grep -v /vendor/)
+
+echo ">>> golint"
+go list ./... | grep -v /vendor/ | xargs -L1 golint
+
+echo ">>> errcheck"
+errcheck $(glide novendor)

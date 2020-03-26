@@ -1,0 +1,6 @@
+#!/bin/sh
+
+protoc \
+--proto_path=$GOPATH/src/github.com/learnscalability/grpc-echo-service/pb \
+$GOPATH/src/github.com/learnscalability/grpc-echo-service/pb/echo.proto \
+--go_out=plugins=grpc:pb

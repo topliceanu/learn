@@ -1,0 +1,5 @@
+package: github.com/learnscalability/gossip
+import:
+- package: github.com/golang/protobuf
+  subpackages:
+  - proto
