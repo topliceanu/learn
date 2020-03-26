@@ -1,0 +1,70 @@
+# Welcome to serverless. Read the docs
+# https://serverless.com/framework/docs/
+
+# Serverless.yml is the configuration the CLI
+# uses to deploy your code to your provider of choice
+
+# The `service` block is the name of the service
+service: serverless-hello-world
+
+# The `provider` block defines where your service will be deployed
+provider:
+  name: aws
+  runtime: nodejs6.10
+  memorySize: 256
+  timeout: 5
+
+# The `functions` block defines what code to deploy
+functions:
+  helloWorld:
+    handler: handler.helloWorld
+    # The `events` block defines how to trigger the handler.helloWorld code
+    events:
+      - http:
+          path: hello-world
+          method: get
+          cors: true
+  delete:
+    handler: handler.remove
+    events:
+      - http:
+          path: items/{id}
+          method: delete
+          cors: true
+          request:
+            parameters:
+              paths:
+                id: true
+  create:
+    handler: handler.create
+    events:
+      - http:
+          path: items
+          method: post
+          cors: true
+  readall:
+    handler: handler.readall
+    events:
+      - http:
+          path: items
+          method: get
+          cors: true
+
+# This is where the Cloud Template code goes.
+resources:
+  Resources:
+    itemsTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: itemsTable
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+          - AttributeName: body
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1

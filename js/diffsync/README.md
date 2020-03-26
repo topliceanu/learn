@@ -1,6 +1,3 @@
 # DiffSync
 
-Differential Synchronization
-
-
-## Resources
+Differential Synchronization Implementation
