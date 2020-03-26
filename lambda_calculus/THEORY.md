@@ -103,11 +103,18 @@ fix'=\f.(\x.f (x x)) (\x.f (x x)) # call-by-name version of the Y-combinator
 factorial=fix (\f.\n.if realeq n c0 then c1 else times n (f pred n))
 factorial'=fix (\f.\n.test (realeq n c0) c1 (times n (f pred n))) # Ex.5.2.9 Q: Why do we use if and not test; it's the same thing!?
 churchnat=fix (\f.\n.\s.\z.if (realeq n 0) then z else s (f (n - 1))) # Ex.5.2.10 converts a primitive natural number to a Church numeral
-sum=fix (\f.\l.if (isnil l) then c0 else plus (head l) (f (tail l))) # Ex.5.2.11 sum the church numerals in a list.
+sum=fix (\f.\l.if (isnil l) then c0 else plus (head l) (f (tail l))) # Ex.5.2.11 sum the church numerals in a list. How do you apply sum to a list?!
+reduce=\l.\l.fix () # Ex.5.2.11 tried my hand at a fold-like function
 ```
 
 ## Formalism
 - size of a term: the number of nodes in its abstract syntax tree
+- the set of free variables in a term:
+  FV(x) = {x}
+  FV(\x.t) = FV(t) - {x}
+  FV(t1 t2) = FV(t1) U FV(t2)
+
+EX.5.3.3.|FV(t)| <= size(t) because t can have bound variables which appear in the AST Q: Is this correct?!
 
 # Questions:
 1. Should I implement a lambda calculus interpretor?
