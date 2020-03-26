@@ -366,6 +366,9 @@ def shuffle(arr):
 def rewire_pointers(linked_list):
     """ Given a singly linked list, swap the list items in pairs (reconnect the
     pointers, not simply swap the values).
+
+    Before: ...--(before)--(node)--(after)--...
+    After:  ...--(before)--(after)--(node)--...
     """
     before = None
     node = linked_list

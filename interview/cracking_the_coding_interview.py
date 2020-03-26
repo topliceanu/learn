@@ -101,7 +101,8 @@ def problem_1_3(data):
 def problem_1_4(s1, s2):
     """ Write a method to decide if two strings are anagrams or not.
 
-    Complexity: O(n^2) time but O(n) space (no extra data structure)
+    Brute force method: O(n^2) time with O(1) extra space.
+    Complexity: O(n) time but O(n) space (one extra data structure)
     """
     if len(s1) != len(s2):
         return False
@@ -287,7 +288,7 @@ def problem_2_3(node):
 def problem_2_4(l1, l2):
     """You have two numbers represented by a linked list, where each node
     contains a single digit. The digits are stored in reverse order, such that
-    the 1’s digit is at the head of the list. Write a function that adds the
+    the 1st digit is at the head of the list. Write a function that adds the
     two numbers and returns the sum as a linked list.
 
     EXAMPLE
@@ -330,8 +331,8 @@ def problem_2_4(l1, l2):
     return start
 
 def problem_2_5(node):
-    """ Given a circular linked list, implement an algorithm which returns node
-    at the beginning of the loop.
+    """ Given a circular linked list, implement an algorithm which returns the
+    node at the beginning of the loop.
 
     DEFINITION
     Circular linked list: A (corrupt) linked list in which a node’s next pointer
@@ -344,7 +345,7 @@ def problem_2_5(node):
     - start two node traversals, one moving one node at a time, the other two
     nodes at a time.
     - if they meet, then the list has a loop, otherwise no loop.
-    - the place where they meed is k nodes aways from the start of the loop,
+    - the place where they meet is k nodes aways from the start of the loop,
     where k is the number of nodes from the begining of the list to the start of the loop.
     - move one traverser on the begining of the list
     - move both traversers one node at a time until they meet, this is the start of the loop.
@@ -364,7 +365,7 @@ def problem_2_5(node):
         return None
 
     # Find the starting point of the loop.
-    n1 = node
+    n1 = node # n2 is still in the point where they met.
     while n1 != n2:
         n1 = n1.next
         n2 = n2.next
@@ -546,7 +547,20 @@ def problem_3_4(rod1, rod2, rod3):
     return (rod1, rod2, rod3)
 
 def problem_3_5():
-    """ Implement a MyQueue class which implements a queue using two stacks. """
+    """ Implement a MyQueue class which implements a queue using two stacks.
+
+    Idea: on 'enqueue' use the second queue to revert the first queue, push the
+    new element, then revert back on the first queue.
+
+    |1|  | |        | |  |3|      | |  |4|      |1|  | |
+    *-*  *-*        *-*  *-*      *-*  *-*      *-*  *-*
+    |2|                  |2|           |3|      |2|
+    *-*      + 4 ->      *-*  ->       *-*  ->  *-*
+    |3|                  |1|           |2|      |3|
+    *-*                  *-*           *-*      *-*
+                                       |1|      |4|
+                                       *-*      *-*
+    """
 
     class MyQueue(object):
         """
@@ -582,7 +596,9 @@ def problem_3_6(stack):
         push | pop | peek | isEmpty.
 
     Solution #1: use one more stack.
-    Solution #1: no additional stack but using recursion.
+    Solution #2: no additional stack but using recursion, first recurse on the
+        substack without the last element to bring the max to top, then compare
+        top two elements.
     """
     def move_last(stack):
         """ Finds the max element in stack and moves it to to the top. """
@@ -629,6 +645,8 @@ def problem_4_1(root):
     leaf nodes differ in distance from the root by more than one.
 
     Solution: modify Pre-Order Traversal to collect the depth of each leaf.
+    In this case we chose to create an explicit stack instead of using recursion.
+    Another way is to count the disting depths for leaves. There should be only 2.
     """
     max_leaf_depth = None
     node_stack = [(root, 0)]
@@ -725,7 +743,7 @@ def problem_4_5(tree):
     Solution: There are two cases:
     1. the node has a right subtree, in which case his immediate successor is
     the smallest node in the right subtree.
-    2. if the node has ane empty right subtree, then go up the ancestors until
+    2. if the node has an empty right subtree, then go up the ancestors until
     you reach a right one. If you reach the root, then the node has on successor
     because it's the max node.
     """
@@ -749,6 +767,14 @@ def problem_4_6(node1, node2):
     """ Design an algorithm and write code to find the first common ancestor of
     two nodes in a binary tree. Avoid storing additional nodes in a data
     structure. NOTE: This is not necessarily a binary search tree.
+
+    Solution: traverse from n1 up to the root; for each ancestor, start traversing
+    from n2 up to the root until you you hit n1's parent of the root.
+
+    Alternative solution (not the implementation below): at the very least the
+    root will be the common ancestor of the two nodes. So, build two linked lists
+    with all the nodes on the path from each node to the root. Then traverse the
+    two lists until the last element which is common. This uses extra space!
     """
     n1 = node1
     while n1 != None:
