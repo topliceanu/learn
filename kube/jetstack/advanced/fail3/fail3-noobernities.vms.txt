@@ -1,0 +1,5 @@
+fail3-noobernities-etcd-9jfm	35.195.34.150
+fail3-noobernities-etcd-bk59	35.195.103.66
+fail3-noobernities-etcd-rgxw	35.195.15.96
+fail3-noobernities-master	35.195.165.92
+fail3-noobernities-slave-lj2x	35.195.100.126

@@ -1,0 +1,20 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: frontend-ingress
+  namespace: sock-shop
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+spec:
+  rules:
+  - host: dru.kubernetes.today
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: front-end
+          servicePort: 80
+  tls:
+  - hosts:
+    - dru.kubernetes.today
+    secretName: example-com

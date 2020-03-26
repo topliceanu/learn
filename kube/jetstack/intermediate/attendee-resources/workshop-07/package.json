@@ -1,0 +1,16 @@
+{
+  "name": "basic-webserver",
+  "private": true,
+  "version": "1.0.0",
+  "description": "example webserver showing hostname, env and cli args",
+  "main": "index.js",
+  "scripts": {
+    
+  },
+  "dependencies": {
+    
+  },
+  "devDependencies": {
+    
+  }
+}

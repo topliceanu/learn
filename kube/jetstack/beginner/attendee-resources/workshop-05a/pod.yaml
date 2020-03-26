@@ -1,0 +1,15 @@
+---
+kind: Pod
+apiVersion: v1
+metadata:
+  name: k8s-counter
+  labels:
+    name: my-example-pod
+  namespace: demo
+spec:
+  containers:
+  - name: my-container
+    image: binocarlos/k8s-counter
+    ports:
+    - containerPort: 80
+      protocol: TCP

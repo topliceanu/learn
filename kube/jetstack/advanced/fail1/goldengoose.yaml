@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: goldengoose
+spec:
+  type: ClusterIP
+  externalIPs: ["104.155.14.136"]
+  ports:
+  - port: 80
+    targetPort: 8080
+  selector:
+    app: goldengoose
+    track: prod
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: goldengoose
+spec:
+  replicas: 4
+  template:
+    metadata:
+      labels:
+        app: goldengoose
+        track: prod
+    spec:
+      containers:
+      - name: echoserver
+        image: gcr.io/google_containers/echoserver:1.4
+        resources:
+          limits:
+            cpu: 100m
+            memory: 256Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+        ports:
+        - containerPort: 8080

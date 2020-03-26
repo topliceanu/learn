@@ -1,0 +1,23 @@
+---
+# Modified from https://github.com/microservices-demo/microservices-demo
+# Please see this repository for the original
+
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: shipping
+  labels:
+    name: shipping
+  namespace: sock-shop
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        name: shipping
+    spec:
+      containers:
+      - name: shipping
+        image: weaveworksdemos/shipping:0.4.8
+        ports:
+        - containerPort: 80

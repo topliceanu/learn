@@ -1,0 +1,11 @@
+package: github.com/learnscalability/grpc-echo-service
+import:
+- package: github.com/golang/protobuf
+  subpackages:
+  - proto
+  - protoc-gen-go
+- package: golang.org/x/net
+  subpackages:
+  - context
+- package: google.golang.org/grpc
+  version: v1.0.5

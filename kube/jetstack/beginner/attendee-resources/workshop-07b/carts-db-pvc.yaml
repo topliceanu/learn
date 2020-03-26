@@ -1,0 +1,16 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: carts-db-volume-claim
+  namespace: sock-shop
+spec:
+  resources:
+    requests:
+      storage: 10Gi
+  accessModes:
+  - ReadWriteOnce
+  storageClassName: ""
+  selector:
+    matchLabels:
+      app: carts-db

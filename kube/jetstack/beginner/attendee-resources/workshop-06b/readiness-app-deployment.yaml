@@ -1,0 +1,30 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    test: readiness
+  name: readiness-app
+spec:
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        test: readiness
+    spec:      
+      containers:
+      - name: readiness
+        image: gcr.io/jetstack-demo/readiness-app:0.0.1
+        ports:
+        - containerPort: 8080
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 5

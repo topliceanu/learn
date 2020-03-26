@@ -1,0 +1,16 @@
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: carts-db-volume
+  labels:
+    app: carts-db
+spec:
+  capacity:
+    storage: 10Gi
+  accessModes:
+  - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  gcePersistentDisk:
+    pdName: sock-shop-carts-db
+    fsType: ext4

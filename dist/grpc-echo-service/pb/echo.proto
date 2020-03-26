@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package pb;
+
+// Echo service returns back whatever it was sent to it.
+service Echo {
+  rpc Send(Ping) returns (Pong) {}
+  // Subscribe opens a stream and returns the Ping message and an Unix timestamp every second.
+  rpc Subscribe(Ping) returns (stream Pong) {}
+}
+
+message Ping {
+  string message = 1;
+}
+
+message Pong {
+  string message = 1;
+  int64 timestamp = 2;
+}

@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package pb;
+
+message Update {
+  oneof type {
+    Publish publish = 1;
+    Join join = 2;
+  }
+}
+
+message Publish {
+  bytes payload = 1;
+}
+
+message Join {
+  string id = 1;
+  string bind = 2;
+}

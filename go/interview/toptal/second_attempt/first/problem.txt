@@ -1,0 +1,42 @@
+<div class="task-description-content">
+
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+
+<div id="brinza-task-description">
+<p>In this problem we consider binary trees. The figure below shows an example binary tree consisting of seven nodes.</p>
+<p><img class="inline-description-image" src="https://codility-frontend-prod.s3.amazonaws.com:443/media/task_static/tree_most_distinct_path/static/images/auto/4a4fad897b080c028e2c27a47ee835b3.png"></p>
+<p>A <i>binary tree</i> is either an empty tree or a node (called the <i>root</i>) containing a single integer value and linked to two further binary trees. We are interested in paths (sequences of linked adjacent nodes) that start at the root and follow the tree edges (marked as arrows in the figure above). For example, the sequence of nodes A, B, D is a valid path, but the sequence A, B, G is not.</p>
+<p></p><h2>Problem</h2>
+<p></p>
+<p>We would like to find the maximum number of distinct values that appear on a path starting at the root of the tree. For example, on the path consisting of nodes A, B, D, G there are two distinct values (4 and 5). On the path A, C, E there are three distinct values (1, 4 and 6). There is no path that contains four or more distinct values.</p>
+<p><img class="inline-description-image" src="https://codility-frontend-prod.s3.amazonaws.com:443/media/task_static/tree_most_distinct_path/static/images/auto/c558ed02fdd113d8ad580b18ada5bded.png"></p>
+<p>Write a function:</p>
+<blockquote><p style="font-family: monospace; font-size: 9pt; display: block; white-space: pre-wrap"><tt>class Solution { public int solution(Tree T); }</tt></p></blockquote>
+<p>that, given a binary tree T consisting of N nodes, returns the maximum number of distinct values that appear on a path starting at the root of tree T. For example, given the tree shown above, the function should return 3.</p>
+<p></p><h2>Technical details</h2>
+<p></p>
+<p>A binary tree is given using a pointer data structure. Assume that the following declarations are given:</p>
+<blockquote><p style="font-family: monospace; font-size: 9pt; display: block; white-space: pre-wrap"><tt>class Tree {
+  public int x;
+  public Tree l;
+  public Tree r;
+}</tt></p></blockquote>
+<p>An empty tree is represented by an empty pointer (denoted by <tt style="white-space:pre-wrap">null</tt>). A non-empty tree is represented by a pointer to an object representing its root. The attribute <tt style="white-space:pre-wrap">x</tt> holds the integer contained in the root, whereas attributes <tt style="white-space:pre-wrap">l</tt> and <tt style="white-space:pre-wrap">r</tt> hold the left and right subtrees of the binary tree, respectively.</p>
+<p></p><h2>Assumptions</h2>
+<p></p>
+<p>Assume that:</p>
+<blockquote><ul style="margin: 10px;padding: 0px;"><li>N is an integer within the range [<span class="number">1</span>..<span class="number">50,000</span>];</li>
+<li>the height of tree T (number of edges on the longest path from root to leaf) is within the range [<span class="number">0</span>..<span class="number">3,500</span>];</li>
+<li>each value in tree T is an integer within the range [<span class="number">1</span>..<span class="number">N</span>].</li>
+</ul>
+</blockquote><p>Complexity:</p>
+<blockquote><ul style="margin: 10px;padding: 0px;"><li>expected worst-case time complexity is O(N);</li>
+<li>expected worst-case space complexity is O(N).</li>
+</ul>
+</blockquote></div>
+<div style="margin-top:5px">
+<small>Copyright 2009–2018 by Codility Limited. All Rights Reserved. Unauthorized copying, publication or disclosure prohibited.</small>
+</div>
+
+</div>

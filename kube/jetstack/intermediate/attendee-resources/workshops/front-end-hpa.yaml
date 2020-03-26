@@ -1,0 +1,13 @@
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: front-end
+  namespace: sock-shop
+spec:
+  minReplicas: 1
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 50
+  scaleTargetRef:
+    kind: Deployment
+    name: front-end
+    apiVersion: apps/v1beta1

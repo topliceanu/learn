@@ -1,0 +1,17 @@
+---
+# Derived from https://github.com/microservices-demo/microservices-demo
+# Please see this repository for the original
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: orders-db
+  labels:
+    name: orders-db
+spec:
+  containers:
+  - name: orders-db
+    image: mongo
+    ports:
+    - name: mongo
+      containerPort: 27017
