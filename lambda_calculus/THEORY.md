@@ -145,3 +145,4 @@ EX.5.3.3.|FV(t)| <= size(t) because t can have bound variables which appear in t
   - [What is a monad](https://www.youtube.com/watch?v=t1e8gqXLbsU)
   - [Functional parsing](https://www.youtube.com/watch?v=dDtZLm7HIJs)
   - [What is Functional Programming](https://www.youtube.com/watch?v=LnX3B9oaKzw)
+  - [Lambda calculus in Haskell](http://dev.stephendiehl.com/fun/lambda_calculus.html)
