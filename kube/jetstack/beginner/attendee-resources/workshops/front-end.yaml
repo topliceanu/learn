@@ -1,0 +1,13 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: front-end
+  labels:
+    name: front-end
+spec:
+  containers:
+  - name: front-end
+    image: weaveworksdemos/front-end:0.3.12
+    ports:
+    - containerPort: 8079

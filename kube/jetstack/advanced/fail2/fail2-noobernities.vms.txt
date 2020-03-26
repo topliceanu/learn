@@ -1,0 +1,2 @@
+fail2-noobernities-master	35.205.149.178
+fail2-noobernities-slave-pfw7	35.205.158.177
