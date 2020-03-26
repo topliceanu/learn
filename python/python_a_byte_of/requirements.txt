@@ -1,7 +1,7 @@
 Jinja2==2.7.2
 MarkupSafe==0.18
 PyYAML==3.10
-ansible==1.5.4
+ansible==2.6.18
 argparse==1.2.1
 chardet==2.0.1
 defer==1.0.6
