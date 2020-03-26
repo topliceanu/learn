@@ -133,3 +133,9 @@ let replicate xs n =
   let pred acc x =
     (List.times x n) :: acc
   in List.fold_left pred [] xs
+
+(* 16. Drop every N'th element from a list. (medium)
+ **)
+let rec drop xs i k =
+  match xs with
+  | [] -> ....
