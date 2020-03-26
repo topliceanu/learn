@@ -1,7 +1,6 @@
 const crypto = require('crypto');
 
 const express = require('express');
-const uuidv4 = require('uuid/v4');
 
 const router = express.Router();
 
@@ -18,6 +17,28 @@ router.get('/register', function(req, res, next) {
   res.render('register', { title: 'Register' });
 });
 
+/*
+// @param {String} req.body.email - it will use it to fetch the id.
+router.get('/registration/request', (req, res, next) => {
+  const challenge = crypto.randomBytes(256);
+
+  return res.status(200).json({
+    challenge: challenge.toString('base64'),
+    rp: {
+      name: "test",
+    },
+    user: {
+      id: 1,
+      name: "name",
+      displayName: "displayName",
+    },
+  });
+});
+
+module.exports = router;
+*/
+
+/*
 router.post('/registration/request', (req, res, next) => {
   const { email, username } = req.body;
   const challengeBuf = crypto.randomBytes(256);
@@ -53,4 +74,4 @@ router.post('/registration/request', (req, res, next) => {
   });
 });
 
-module.exports = router;
+*/
