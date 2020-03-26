@@ -1,4 +1,4 @@
-# Lambda calculus
+# BOOK: Types and Programming Languages
 
 ## Concepts
 * term:
@@ -134,6 +134,9 @@ EX.5.3.3.|FV(t)| <= size(t) because t can have bound variables which appear in t
 5. I need help with the application! Eg. (times c2 c2)
 6. call-by-name vs call-by-value. What is the difference? Eg. fix and fix'
 7. I don't understand recursion with the fix function! What it the practical use of learning/understanding this construct? Where can I use it?
+8. Let's go over how `factorial c3` works?
+9. Let's see how the exercises in the recursion section work. How do you implement a reduce method?
+10. Let's do the exercises in the formalism section.
 
 # Resources
 1. Church encodings used in TaPL [wiki](https://en.wikipedia.org/wiki/Church_encoding#List_encodings)
@@ -145,4 +148,4 @@ EX.5.3.3.|FV(t)| <= size(t) because t can have bound variables which appear in t
   - [What is a monad](https://www.youtube.com/watch?v=t1e8gqXLbsU)
   - [Functional parsing](https://www.youtube.com/watch?v=dDtZLm7HIJs)
   - [What is Functional Programming](https://www.youtube.com/watch?v=LnX3B9oaKzw)
-  - [Lambda calculus in Haskell](http://dev.stephendiehl.com/fun/lambda_calculus.html)
+5. Lambda calculus in Haskell [link](http://dev.stephendiehl.com/fun/lambda_calculus.html)
