@@ -1,0 +1,61 @@
+SHOW HOSTS;
+
+-- create the schema
+
+CREATE SPACE nba(partition_num=10, replica_factor=1);
+
+USE nba;
+
+SHOW SPACES;
+
+CREATE TAG player (name string, age int);
+
+CREATE TAG team (name string);
+
+SHOW TAGS;
+
+CREATE EDGE follow(degree int);
+
+CREATE EDGE serve(start_year int, end_year int);
+
+SHOW EDGES;
+
+DESCRIBE TAG player;
+
+DESCRIBE EDGE serve;
+
+-- insert data: note the id you give each vertex, called VID
+
+INSERT VERTEX player(name, age) VALUES 100:("Tim Duncan", 42);
+INSERT VERTEX player(name, age) VALUES 101:("Tony Parker", 36);
+INSERT VERTEX player(name, age) VALUES 102:("LaMarcus Aldridge", 33);
+INSERT VERTEX team(name) VALUES 200:("Warriors");
+INSERT VERTEX team(name) VALUES 201:("Nuggets");
+INSERT VERTEX player(name, age) VALUES 121:("Useless", 60);
+
+INSERT EDGE follow(degree) VALUES 100 -> 101:(95);
+INSERT EDGE follow(degree) VALUES 100 -> 102:(90);
+INSERT EDGE follow(degree) VALUES 102 -> 101:(75);
+INSERT EDGE serve(start_year, end_year) VALUES 100 -> 200:(1997, 2016);
+INSERT EDGE serve(start_year, end_year) VALUES 101 -> 201:(1999, 2018);
+
+-- query data
+
+FETCH PROP ON player 100;
+FETCH PROP ON serve 100 -> 200;
+
+-- update data
+UPDATE EDGE 100 -> 101 OF follow SET degree = 96;
+
+-- delete data
+DELETE VERTEX 121;
+DELETE EDGE follow 100 -> 200;
+
+-- advanced queries
+GO FROM 100 OVER follow;
+
+GO FROM 100 OVER follow WHERE $$.player.age >= 35 YIELD $$.player.name AS Teammate, $$.player.age AS Age;
+
+var=GO FROM 100 OVER follow YIELD follow._dst AS id; \
+GO FROM $var.id OVER serve YIELD $$.team.name \
+AS Team, $^.player.name AS Player;
