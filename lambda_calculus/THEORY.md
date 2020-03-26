@@ -57,10 +57,20 @@ c2=\s.\z.s (s z)
 # ...
 scc=\n.\s.\z.s (n s z)
 scc=\n.\s.\z.n s (s z) # alternative impl. # EX.5.2.2
-scc=\n.\s.s (n s) # Q: would this work? How do you apply this? EX.5.2.2
+scc=\n.\s.s (n s) # EX.5.2.2 Works!
 plus=\n.\m.\s.\z.n s (m s z)
 times=\n.\m.m (plus n) c0 # adds n to 0, m times!
-times=\n.\m.\s.\z.n (m s) z # EX.5.2.3 My implementation. Q: does this work?
+times'=\n.\m.\s.\z.n (m s) z # EX.5.2.3 Works!
+
+times'c2 c3 =
+(\n.\m.\s.\z.n (m s) z) c2 c3 =
+(\n.\m.\s.\z.n (m s) z) (\s'.\z'.s' (s' z')) (\s".\z".s" (s" (s" z"))) =
+\m.\s.\z.(\s'.\z'.s' (s' z')) (m s) z =
+\m.\s.\z.(m s) ((m s) z)) =
+\s.\z.((\s".\z".s" (s" (s" z")) s) (((\s".\z".s" (s" (s" z"))) s) z)) =
+\s.\z.(\z".s (s (s z")) (s (s (s z)) =
+\s.\z.s (s (s (s (s (s z))))) = c6
+
 pow=\n.\m.m (times n) n # n^m=n*n*..*n, m times. EX.5.2.4. Q: does this work?
 iszro=\n.n (\x fls) true # c0 is the only Church numeral which does not apply s to z, so it will return true. For all other number, s is apply and it will discard the parameter and return fls.
 
@@ -72,7 +82,7 @@ sub=\n.\m.m pred n # n - m so it applies pred on n, m times EX.5.2.5 subtraction
 ```
 EX.5.2.6. sub will do pred (pred (pred ... (pred n))), m times. Each pred does n steps, so (n-m) + (n-m+1) + .. + n = n - m/2
 ```
-equal=\n.\m.iszro (sub n m) # EX.5.2.7
+equal=\n.\m.iszro (sub n m) # EX.5.2.7 DOES NOT WORK
 ```
 
 ## Lists EX.5.2.8 [source](https://en.wikipedia.org/wiki/Church_encoding#Represent_the_list_using_right_fold)
