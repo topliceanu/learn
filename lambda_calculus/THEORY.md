@@ -1,5 +1,7 @@
 # BOOK: Types and Programming Languages
 
+# Chapter 5: Lambda Calculus
+
 ## Concepts
 * term:
   - either a variable (x)
@@ -55,14 +57,32 @@ c0=\s.\z.z
 c1=\s.\z.s z
 c2=\s.\z.s (s z)
 # ...
+```
+Successor
+```
 scc=\n.\s.\z.s (n s z)
 scc=\n.\s.\z.n s (s z) # alternative impl. # EX.5.2.2
 scc=\n.\s.s (n s) # EX.5.2.2 Works!
+```
+Addition
+```
 plus=\n.\m.\s.\z.n s (m s z)
+# Trying out plus.
+plus c2 c3 =
+(\n.\m.\s.\z. n s (m s z)) c2 c3 =
+\s.\z.c2 s (c3 s z) =
+\s.\z.c2 s ((\s'.\z'.s' (s' (s' z'))) s z) =
+\s.\z.c2 s (s (s (s z))) =
+\s.\z.(\s'.\z'.s' (s' z')) s (s (s (s z))) =
+\s.\z.s (s (s (s (s z))))
+c5
+```
+Multiplication
+```
 times=\n.\m.m (plus n) c0 # adds n to 0, m times!
-times'=\n.\m.\s.\z.n (m s) z # EX.5.2.3 Works!
-
-times'c2 c3 =
+times'=\n.\m.\s.\z.n (m s) z # EX.5.2.3 alternative implementation.
+# Trying out times'
+times' c2 c3 =
 (\n.\m.\s.\z.n (m s) z) c2 c3 =
 (\n.\m.\s.\z.n (m s) z) (\s'.\z'.s' (s' z')) (\s".\z".s" (s" (s" z"))) =
 \m.\s.\z.(\s'.\z'.s' (s' z')) (m s) z =
@@ -70,31 +90,145 @@ times'c2 c3 =
 \s.\z.((\s".\z".s" (s" (s" z")) s) (((\s".\z".s" (s" (s" z"))) s) z)) =
 \s.\z.(\z".s (s (s z")) (s (s (s z)) =
 \s.\z.s (s (s (s (s (s z))))) = c6
+```
+Power
+```
+pow=\n.\m.m (times n) c1 # n^m=n*n*..*n*c1, m times. EX.5.2.4.
+# Trying out pow. I'll not expand times.
+pow c2 c3 =
+(\n.\m.m (times n) c1) c2 c3 =
+c3 (times c2) c1) =
+(\s.\z.s (s (s z))) (times c2) c1 =
+(times c2) ((times c2) ((times c2) c1)) =
+(times c2) ((times c2) c2) =
+(times c2) c4 =
+c8
+```
+Mapping between Church numerals and Church booleans with `iszro`.
+```
+iszro=\n.n (\_ fls) tru # c0 does not execute s, only returns z, z=tru here.
+# Trying out iszro with c0 and c3
+iszro c0 = (\n.n (\_ fls) tru) c0 = c0 (\_ fls) tru = (\s.\z.z) (\_ fls) tru = tru
+iszro c3 = (\n.n (\_ fls) tru) c3 = c3 (\_ fls) tru = (\s.\z.s (s (s z))) (\_ fls) true = (\_ fls) ((\_ fls) ((\_ fls) true)) = fls
+```
 
-pow=\n.\m.m (times n) n # n^m=n*n*..*n, m times. EX.5.2.4. Q: does this work?
-iszro=\n.n (\x fls) true # c0 is the only Church numeral which does not apply s to z, so it will return true. For all other number, s is apply and it will discard the parameter and return fls.
-
-# predecessor is more complicated, it involves building a list of (cn-1, cn) church numerals, up until cn, then returning cn-1.
+Predecessor
+This is more complicated, it involves building a list of (cn-1, cn) church numerals, up until cn, then returning cn-1.
+```
 zz=pair c0 c0
 ss=\p.pair (snd p) (plus (snd p) c1)
 prd=\m.fst (m ss zz)
-sub=\n.\m.m pred n # n - m so it applies pred on n, m times EX.5.2.5 subtraction using pred
+# Trying out prd
+prd c2 =
+(\m.fst (m ss zz)) c2 =
+fst (c2 ss zz) =
+fst ((\s.\z s (s z)) ss zz) =
+fst (ss (ss zz)) =
+fst (ss (\p.pair (snd p) (plus (snd p) c1) (pair c0 c0))) =
+fst (ss (pair c0 c1)) =
+fst (\p.pair (snd p) (plus (snd p) c1) (pair c0 c1)) =
+fst (pair c1 c2) =
+c1
+# Trying out prd for c0
+prd c0 =
+(\m.fst (m ss zz)) c0 =
+fst (c0 ss zz) =
+fst zz =
+fst (pair c0 c0) =
+c0 # predecessor of c0 is c0
 ```
-EX.5.2.6. sub will do pred (pred (pred ... (pred n))), m times. Each pred does n steps, so (n-m) + (n-m+1) + .. + n = n - m/2
+Subtraction
 ```
-equal=\n.\m.iszro (sub n m) # EX.5.2.7 DOES NOT WORK
+sub=\n.\m.m prd n # EX.5.2.5 subtraction using prd, n - m applies prd on n, m times
+# Trying out sub, without expanding prd.
+sub c4 c2 =
+(\n.\m.m prd n) c4 c2 =
+c2 prd c4 =
+(\x.\z.s (s z)) prd c4 =
+prd (prd c4) = c2
+# Trying out sub in case of a negative result.
+sub c2 c4 =
+(\n.\m.m prd n) c4 c2 =
+c4 prd c2 =
+(\x.\z.s (s (s (s z)))) prd c2 =
+prd (prd (prd (prd c2))) =
+prd (prd c0) =
+c0 # instead of a negative result we get c0
+```
+EX.5.2.6. sub will do pred (pred (pred ... (pred n))), m times.
+Each pred does n steps, so (n-m) + (n-m+1) + .. + n = n - m/2 total calculations.
+
+Equality (EX.5.2.7)
+```
+equal=\n.\m.iszro (sub n m) # Does not work when m > n
+equal=\n.\m.and (iszero (sub m n)) (iszro (sub n m) # will work but is complicated!
+# Trying equal without evaluating iszro and sub
+equal c3 c2 =
+and (iszro (sub c2 c3)) (iszro (sub c3 c2)) =
+and (iszro c0) (iszro c1) =
+and tru fls =
+fls
 ```
 
 ## Lists EX.5.2.8 [source](https://en.wikipedia.org/wiki/Church_encoding#Represent_the_list_using_right_fold)
+Construct a list from a value h - the new list's head - and another list t - tail.
+The empty list is nil whic is a function that returns its second argument.
 ```
-fold=\x.\c.\n.c x n # for one value
-fold=\x.\y.\c.\n.c x (c y n) # for two values
-fold=\x.\y.\z.\c.\n.c x (c y (c z n)) # for three values
 nil=\c.\n.n # nil is always the second argument of a list abstraction
 cons=\h.\t.\c.\n.c h (t c n)
+# Trying out cons
+l1 = cons x nil = # list with one value x
+(\h.\t.\c.\n.c h (t c n)) x nil =
+\c.\n.c x (nil c n) =
+\c.\n.c x (\c'.\n'.n' c n) =
+\c.\n.c x n
+
+l2 = cons y (cons x nil) = # list with two values x, y
+cons y ((\h.\t.\c.\n.c h (t c n)) x nil) =
+cons y (\c.\n.c x (nil c n)) =
+cons y (\c.\n.c x ((\c'.\n'.n') c n)) =
+cons y (\c.\n.c x n) =
+(\h.\t.\c.\n.c h (t c n)) y (\c'.\n'.c' x n') =
+\c.\n.c y ((\c'.\n'.c' x n') c n)) =
+\c.\n.c y (c x n)
+```
+A mapping from a list to a Church boolean.
+```
 isnil=\l.l (\h.\t.fls) tru # this looks similar to pattern matching
+isnil nil =
+(\l.l (\h.\t.fls) tru) nil =
+nil (\h.\t.fls) tru =
+(\c.\n.n) (\h.\t.fls) tru =
+tru
+# isnil on the list with one element.
+isnil (cons x nil) =
+(\l.l (\h.\t.fls) tru) (cons x nil) =
+(cons x nil) (\h.\t.fls) tru =
+(\c.\n.c x n) (\h.\t.fls) tru =
+(\h.\t.fls) x tru =
+fls
+```
+Extract the first element of the list
+```
 head=\l.l (\h.\t.h) nil
+# Trying out head
+head (cons x nil) =
+(\l.l (\h.\t.h) nil) (cons x nil) =
+(cons x nil) (\h.\t.h) nil =
+(\c.\n.c x n) (\h.\t.h) nil =
+(\h.\t.h) x nil =
+x
+```
+Tail of a list
+```
 tail=\l.l (\h.\t.t) nil # Q: will this work ok?!
+tail (cons x (cons y nil)) =
+tail (\c.\n.c x (c y n)) =
+(\l.l (\h.\t.t) nil) (\c.\n.c x (c y n)) =
+(\c.\n.c x (c y n)) (\h.\t.t) nil =
+(\h.\t.t) x ((\h.\t.t) y nil) =
+(\h.\t.t) x nil =
+nil # DOES NOT WORK!!!
 ```
 
 ## Lambda NB
@@ -127,16 +261,15 @@ reduce=\l.\l.fix () # Ex.5.2.11 tried my hand at a fold-like function
 EX.5.3.3.|FV(t)| <= size(t) because t can have bound variables which appear in the AST Q: Is this correct?!
 
 # Questions:
-1. Should I implement a lambda calculus interpretor?
-2. I'm having trouble with this application to the left! Is it common? Isn't it to the right in other languages?
-3. We're encoding a pair in terms of the exhaustive set of operations we know it supports (fst, snd). Is it ok?
-4. Do all the types of evaluation yield the same result all the time?
-5. I need help with the application! Eg. (times c2 c2)
-6. call-by-name vs call-by-value. What is the difference? Eg. fix and fix'
-7. I don't understand recursion with the fix function! What it the practical use of learning/understanding this construct? Where can I use it?
-8. Let's go over how `factorial c3` works?
-9. Let's see how the exercises in the recursion section work. How do you implement a reduce method?
-10. Let's do the exercises in the formalism section.
+* Should I implement a lambda calculus interpretor?
+* Do all the types of evaluation yield the same result all the time?
+* Can I do a better `equal`?
+* I don't know how to implement `tail` and I don't understand the one on Wikipedia.
+* call-by-name vs call-by-value. What is the difference? Eg. fix and fix'
+* I don't understand recursion with the fix function! What it the practical use of learning/understanding this construct? Where can I use it?
+* Let's go over how `factorial c3` works?
+* Let's see how the exercises in the recursion section work. How do you implement a reduce method?
+* Let's do the exercises in the formalism section.
 
 # Resources
 1. Church encodings used in TaPL [wiki](https://en.wikipedia.org/wiki/Church_encoding#List_encodings)
