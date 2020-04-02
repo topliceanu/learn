@@ -1,0 +1,243 @@
+   0  $accept : %entry% $end
+
+   1  toplevel : EOF
+   2           | Command SEMI toplevel
+
+   3  Command : Term
+   4          | LCID Binder
+
+   5  Binder : SLASH
+
+   6  Term : AppTerm
+   7       | LAMBDA LCID DOT Term
+   8       | LAMBDA USCORE DOT Term
+
+   9  AppTerm : ATerm
+  10          | AppTerm ATerm
+
+  11  ATerm : LPAREN Term RPAREN
+  12        | LCID
+
+  13  %entry% : '\001' toplevel
+
+state 0
+	$accept : . %entry% $end  (0)
+
+	'\001'  shift 1
+	.  error
+
+	%entry%  goto 2
+
+
+state 1
+	%entry% : '\001' . toplevel  (13)
+
+	LAMBDA  shift 3
+	LCID  shift 4
+	EOF  shift 5
+	LPAREN  shift 6
+	.  error
+
+	toplevel  goto 7
+	Command  goto 8
+	Term  goto 9
+	AppTerm  goto 10
+	ATerm  goto 11
+
+
+state 2
+	$accept : %entry% . $end  (0)
+
+	$end  accept
+
+
+state 3
+	Term : LAMBDA . LCID DOT Term  (7)
+	Term : LAMBDA . USCORE DOT Term  (8)
+
+	LCID  shift 12
+	USCORE  shift 13
+	.  error
+
+
+state 4
+	Command : LCID . Binder  (4)
+	ATerm : LCID .  (12)
+
+	SLASH  shift 14
+	LCID  reduce 12
+	LPAREN  reduce 12
+	SEMI  reduce 12
+
+	Binder  goto 15
+
+
+state 5
+	toplevel : EOF .  (1)
+
+	.  reduce 1
+
+
+state 6
+	ATerm : LPAREN . Term RPAREN  (11)
+
+	LAMBDA  shift 3
+	LCID  shift 16
+	LPAREN  shift 6
+	.  error
+
+	Term  goto 17
+	AppTerm  goto 10
+	ATerm  goto 11
+
+
+state 7
+	%entry% : '\001' toplevel .  (13)
+
+	.  reduce 13
+
+
+state 8
+	toplevel : Command . SEMI toplevel  (2)
+
+	SEMI  shift 18
+	.  error
+
+
+state 9
+	Command : Term .  (3)
+
+	.  reduce 3
+
+
+state 10
+	Term : AppTerm .  (6)
+	AppTerm : AppTerm . ATerm  (10)
+
+	LCID  shift 16
+	LPAREN  shift 6
+	RPAREN  reduce 6
+	SEMI  reduce 6
+
+	ATerm  goto 19
+
+
+state 11
+	AppTerm : ATerm .  (9)
+
+	.  reduce 9
+
+
+state 12
+	Term : LAMBDA LCID . DOT Term  (7)
+
+	DOT  shift 20
+	.  error
+
+
+state 13
+	Term : LAMBDA USCORE . DOT Term  (8)
+
+	DOT  shift 21
+	.  error
+
+
+state 14
+	Binder : SLASH .  (5)
+
+	.  reduce 5
+
+
+state 15
+	Command : LCID Binder .  (4)
+
+	.  reduce 4
+
+
+state 16
+	ATerm : LCID .  (12)
+
+	.  reduce 12
+
+
+state 17
+	ATerm : LPAREN Term . RPAREN  (11)
+
+	RPAREN  shift 22
+	.  error
+
+
+state 18
+	toplevel : Command SEMI . toplevel  (2)
+
+	LAMBDA  shift 3
+	LCID  shift 4
+	EOF  shift 5
+	LPAREN  shift 6
+	.  error
+
+	toplevel  goto 23
+	Command  goto 8
+	Term  goto 9
+	AppTerm  goto 10
+	ATerm  goto 11
+
+
+state 19
+	AppTerm : AppTerm ATerm .  (10)
+
+	.  reduce 10
+
+
+state 20
+	Term : LAMBDA LCID DOT . Term  (7)
+
+	LAMBDA  shift 3
+	LCID  shift 16
+	LPAREN  shift 6
+	.  error
+
+	Term  goto 24
+	AppTerm  goto 10
+	ATerm  goto 11
+
+
+state 21
+	Term : LAMBDA USCORE DOT . Term  (8)
+
+	LAMBDA  shift 3
+	LCID  shift 16
+	LPAREN  shift 6
+	.  error
+
+	Term  goto 25
+	AppTerm  goto 10
+	ATerm  goto 11
+
+
+state 22
+	ATerm : LPAREN Term RPAREN .  (11)
+
+	.  reduce 11
+
+
+state 23
+	toplevel : Command SEMI toplevel .  (2)
+
+	.  reduce 2
+
+
+state 24
+	Term : LAMBDA LCID DOT Term .  (7)
+
+	.  reduce 7
+
+
+state 25
+	Term : LAMBDA USCORE DOT Term .  (8)
+
+	.  reduce 8
+
+
+46 terminals, 8 nonterminals
+14 grammar rules, 26 states
