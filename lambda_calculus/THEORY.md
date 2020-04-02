@@ -29,6 +29,8 @@
   - call by need: instead of re-evaluating a term every time it's used, overwrite all occurrences with its value the first time it is evaluated. Lazy!
 - call by value strategy: outermost redexes are reduced first; a redex is reduced only when it's right-hand side has already been reduced to a value. Strict.
 * value - a term that is finished computing and cannot be reduced anymore.
+* normal form - a term that cannot be evaluated anymore.
+  - divergent term do not have a normal form.
 
 ## Church booleans
 ```
@@ -158,7 +160,7 @@ c0 # instead of a negative result we get c0
 EX.5.2.6. sub will do pred (pred (pred ... (pred n))), m times.
 Each pred does n steps, so (n-m) + (n-m+1) + .. + n = n - m/2 total calculations.
 
-Equality (EX.5.2.7)
+Equality (EX.5.2.7) Q: Can I do a better zero?!
 ```
 equal=\n.\m.iszro (sub n m) # Does not work when m > n
 equal=\n.\m.and (iszero (sub m n)) (iszro (sub n m) # will work but is complicated!
@@ -244,21 +246,116 @@ realnat=\m.m (\x.succ x) 0 # converts a Church numeral into a primitive number
 omega=(\x.x x) (\x.x x) # the omega combinator is a divergent operator
 fix=\f.(\x.f (\y.x x y)) (\x.f (\y.x x y)) # the fix-point combinator or the call-by-value Y-combinator
 fix'=\f.(\x.f (x x)) (\x.f (x x)) # call-by-name version of the Y-combinator
-factorial=fix (\f.\n.if realeq n c0 then c1 else times n (f pred n))
+
+fix g =
+(\f.(\x.f (\y.x x y)) (\x.f (\y.x x y))) g =
+(\x.g (\y.x x y)) (\x.g (\y.x x y)) =
+g (\y.(\x.g (\y.x x y)) (\x.g (\y.x x y)) y) =
+g (\y.(fix g) y) =
+g (fix g) # Q: is this true!?
+```
+Note that `fix g = g (fix g)` so fix is self-replicating.
+
+Factorial
+```
+factorial=fix (\f.\n.if realeq n c0 then c1 else times n (f (pred n)))k
 factorial'=fix (\f.\n.test (realeq n c0) c1 (times n (f pred n))) # Ex.5.2.9 Q: Why do we use if and not test; it's the same thing!?
-churchnat=fix (\f.\n.\s.\z.if (realeq n 0) then z else s (f (n - 1))) # Ex.5.2.10 converts a primitive natural number to a Church numeral
-sum=fix (\f.\l.if (isnil l) then c0 else plus (head l) (f (tail l))) # Ex.5.2.11 sum the church numerals in a list. How do you apply sum to a list?!
-reduce=\l.\l.fix () # Ex.5.2.11 tried my hand at a fold-like function
+# Trying the first factorial
+factorial c3 =
+fix g c3 = # where g = \f.\n.if realeq n c0 then c1 else times n (f (pred n))
+\f.(\x.f (\y.x x y)) (\x.f (\y.x x y)) g c3 =
+(\x.g (\y.x x y)) (\x.g (\y.x x y)) c3 =
+(\x.g (\y.x x y)) (\x.g (\y.x x y)) c3 = # h h c3, where h = \x.g (\y.x x y)
+g (\y.(\x.g (\y.x x y)) (\x.g (\y.x x y)) y) c3 = # g fct c3, where fct = \y.h h y
+g fct c3 =
+(\f.\n.if realeq n c0 then c1 else times n (f (pred n))) fct c3 =
+if realeq c3 c0 then c1 else times c3 (fct (pred c3)) =
+times c3 (fct c2') = # where c2' behaves like c2
+times c3 ((\y.h h y) c2') =
+times c3 (h h c2') = # this is the result of h h c3, so we can extrapolate that h h c2' is..
+times c3 (times c2' (h h c1')) = # where c1' behaves like c1'
+times c3 (times c2' (times c1' (h h c0'))) = (h h c0' = c1)
+times c3 (times c2' (times c1' c1)) =
+c6' # c6' is behaviorally equivalent to c6
+```
+Convert a primitive number into a Church numeral - Ex.5.2.10
+```
+churchnat=fix (\f.\n.\s.\z.if eq n 0 then z else s (f (pred n)))
+# Trying it out
+churchnat 3 =
+fix g 3 =  # where g = \f.\n.\s.\z.if eq n 0 then z else s (f (pred n))
+(\f.(\x.f (\y.x x y)) (\x.f (\y.x x y))) g 3 =
+(\x.g (\y.x x y)) (\x.g (\y.x x y)) 3 =
+(g (\y.(\x.g (\y.x x y)) (\x.g (\y.x x y)) y)) 3 =
+g (fix g) 3 = # Q: is this correct?
+(\f.\n.\s.\z.if (eq n 0) then z else s (f (pred n))) (fix g) 3 =
+\s.\z.if (eq 3 0) then z else s ((fix g) (pred 3))) =
+\s.\z.s (fix g) 2 = # recursion!
+\s.\z.s (\s'.\z'.s' (fix g) 1) =
+\s.\z.s (\s'.\z'.s' (\s".\z".s" (fix g) 0)) =
+\s.\z.s (\s'.\z'.s' (\s".\z".s" (\s'".\z'".z"))) =
+c3' # equivalent to c3
+```
+Sum a list of church numerals - Ex.5.2.11
+Q: Can you apply sum to a list?
+```
+sum=fix (\f.\l.if (isnil l) then c0 else plus (head l) (f (tail l))) #
+# Tryig it out
+sum l3 = # where l3 = (\c.\n.c x (c y (c z n))) and x,y,z are Church numerals.
+fix g l3 =
+(\f.(\x.f (\y.x x y)) (\x.f (\y.x x y))) g l3 =
+(\x.g (\y.x x y)) (\x.g (\y.x x y)) l3 =
+g (\y.(\x.g (\y.x x y)) (\x.g (\y.x x y)) y) l3 =
+g (fix g) l3 =
+(\f.\l.if isnil l then c0 else plus (head l) (f (tail l))) (fix g) l3 =
+plus (head l3) ((fix g) (tail l3)) =
+plus x ((fix g) l2) = # where l2 = \c.\n.c y (c z n)
+plus x (plus y ((fix g) l1)) = # where l1 = \c.\n.c z n
+plus x (plus y (plus z ((fix g) l0)) = # Where l0 = \c.\n.n - empty list
+plus x (plus y (plus z c0)) =
+```
+Tried a reduce (or fold) function. Q: how do you implement this?
+```
+reduce=\l.\l.fix ()
 ```
 
 ## Formalism
+
+* Substitution:
+```
+[x->s]x       = s
+[x->s]y       = y, x != y
+[x->s](\y.t1) = \y.[x->s]t1, y != x & y not in FV(s) # x is not the bound variable y AND y should not be part of the free variables of s
+[x->s](t1 t2) = [x->s]t1 [x->s]t2
+```
+This works if we assume that bound varialbe y is always different than x. Renaming is also an option.
+
+- names of bound variables do not matter. eg. \x.x == \y.y == identity
+- you can see non-canonical representations of Church numerals
 - size of a term: the number of nodes in its abstract syntax tree
 - the set of free variables in a term:
-  FV(x) = {x}
-  FV(\x.t) = FV(t) - {x}
-  FV(t1 t2) = FV(t1) U FV(t2)
-
+```
+FV(x) = {x}
+FV(\x.t) = FV(t) - {x}
+FV(t1 t2) = FV(t1) U FV(t2)
+```
 EX.5.3.3.|FV(t)| <= size(t) because t can have bound variables which appear in the AST Q: Is this correct?!
+
+* operational semantics
+```
+# terms
+term = x # variable
+     | \x.t # abstraction
+     | (t1 t2) # application
+# values
+value = \x.t # only abstractions can be values in lambda calculus.
+
+#evaluation
+t1 -> t1' => (t1 t2) -> (t1' t2) # E-APP1 - first, we evaluate the left-hand side to a value/abstraction.
+t2 -> t2' => (v1 t2) -> (v1 t2') # E-APP2 - second, we evaluate the right-hand side to a value/abstraction.
+(\x.t12) v2 => [x->v2]t12 # A-APP-ABS - finally we perform the application itself by substition.
+```
+EX.5.3.6. HOW!?!?
 
 # Questions:
 * Should I implement a lambda calculus interpretor?
@@ -266,10 +363,12 @@ EX.5.3.3.|FV(t)| <= size(t) because t can have bound variables which appear in t
 * Can I do a better `equal`?
 * I don't know how to implement `tail` and I don't understand the one on Wikipedia.
 * call-by-name vs call-by-value. What is the difference? Eg. fix and fix'
-* I don't understand recursion with the fix function! What it the practical use of learning/understanding this construct? Where can I use it?
-* Let's go over how `factorial c3` works?
-* Let's see how the exercises in the recursion section work. How do you implement a reduce method?
-* Let's do the exercises in the formalism section.
+* Review exercises in the recursion section work.
+* How do you implement a reduce method?
+* Should we do the exercises in the formalism section?
+* How do you get to the fix combinator? Is there any process to reach it?
+* Is it true that fix f = f (fix f) ?
+* How would you make a fold function over a list?
 
 # Resources
 1. Church encodings used in TaPL [wiki](https://en.wikipedia.org/wiki/Church_encoding#List_encodings)
@@ -281,4 +380,4 @@ EX.5.3.3.|FV(t)| <= size(t) because t can have bound variables which appear in t
   - [What is a monad](https://www.youtube.com/watch?v=t1e8gqXLbsU)
   - [Functional parsing](https://www.youtube.com/watch?v=dDtZLm7HIJs)
   - [What is Functional Programming](https://www.youtube.com/watch?v=LnX3B9oaKzw)
-5. Lambda calculus in Haskell [link](http://dev.stephendiehl.com/fun/lambda_calculus.html)
+5. Impl of lambda calculus in Haskell [link](http://dev.stephendiehl.com/fun/lambda_calculus.html)
