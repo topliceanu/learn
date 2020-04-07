@@ -1,4 +1,4 @@
-(* lazy lists *)
+(* The "More Ocaml" book, chapter 2: Being Lazy" *)
 
 type 'a lazylist = Cons of 'a * (unit -> 'a lazylist)
 

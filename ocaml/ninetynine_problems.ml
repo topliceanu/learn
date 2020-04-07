@@ -1,8 +1,9 @@
+(* exercises from https://ocaml.org/learn/tutorials/99problems.html *)
+
 (* 1. Write a function last : 'a list -> 'a option that returns the last element of a list. (easy) *)
 let rec last xs =
   match xs with
-  | [] -> None
-  | [x] -> Some x
+  | [] -> None | [x] -> Some x
   | _ :: t -> last t
 
 (* 2. Find the last but one (last and penultimate) elements of a list. (easy) *)
@@ -131,11 +132,79 @@ let duplicate xs =
 (* 15. Replicate the elements of a list a given number of times. (medium) *)
 let replicate xs n =
   let pred acc x =
-    (List.times x n) :: acc
+    (List.init n (fun _ -> x)) :: acc
   in List.fold_left pred [] xs
 
 (* 16. Drop every N'th element from a list. (medium)
+ * TODO test this!?!
  **)
-let rec drop xs i k =
-  match xs with
-  | [] -> ....
+let rec drop xs n =
+  let rec split i ys =
+    match ys with
+    | [] -> []
+    | y :: yss ->
+        if i == n then split 1 yss
+        else y :: split (i + 1) yss
+  in split 1 xs
+
+(* 17. Split a list into two parts; the length of the first part is given. (easy)
+ * If the length of the first part is longer than the entire list,
+ * then the first part is the list and the second part is empty.
+ **)
+let split xs n =
+  let rec aux ys zs k =
+    match zs with
+    | [] -> (ys, zs)
+    | z :: zss ->
+        if k == n+1 then (ys, zs)
+        else let (ts, us) = aux ys zss (k + 1)
+        in (z :: ts, us)
+  in aux [] xs 1
+
+let split' xs n =
+  let rec aux i acc = function
+    | [] -> (List.rev acc, [])
+    | h :: t ->
+        if i == n then (List.rev (h :: acc), t)
+        else aux (i + 1) (h :: acc) t
+  in aux 1 [] xs
+
+(* 18. Extract a slice from a list. (medium)
+ * Given two indices, i and k, the slice is the list containing the elements
+ * between the i'th and k'th element of the original list (both limits included).
+ * Start counting the elements with 0 (this is the way the List module numbers elements).
+ **)
+let slice xs i j =
+  let rec aux k ys =
+    match ys with
+    | [] -> []
+    | y :: yss ->
+        if i <= k && k <= j then y :: (aux (k + 1) yss)
+        else if k > j then []
+        else aux (k + 1) yss
+  in aux 0 xs
+
+(* the solution from the ocaml website involves a function fold_until
+ * with the signature ('a -> 'b -> 'a) -> 'a -> int -> 'b list -> 'a * list 'b
+ * which applies f to each element of the input list until it reaches the n index.
+ **)
+let rec fold_until f acc n = function
+  | [] -> (acc, [])
+  | h :: t as l ->
+      if n == 0 then (acc, l)
+      else fold_until f (f acc h) (n - 1) t
+
+let slice' xs i j =
+  let (_, rest) = fold_until (fun _ x -> []) [] i xs in
+  let (pluck, _) = fold_until (fun acc x -> x :: acc) [] (j - i + 1) rest in
+  List.rev pluck
+
+(* 19. Rotate a list N places to the left. (medium)
+ * TODO make this work
+ **)
+let rotate xs n =
+  let m = List.length xs in
+  let n = n mod m in
+  let (_, second) = fold_until (fun acc _ -> []) [] (m - n + 1) xs in
+  let (first, _) = fold_until (fun acc x -> x :: acc) [] (m - n) xs in
+  List.append (List.rev first) second
