@@ -323,10 +323,10 @@ reduce=\l.\l.fix ()
 
 * Substitution:
 ```
-[x->s]x       = s
-[x->s]y       = y, x != y
-[x->s](\y.t1) = \y.[x->s]t1, y != x & y not in FV(s) # x is not the bound variable y AND y should not be part of the free variables of s
-[x->s](t1 t2) = [x->s]t1 [x->s]t2
+[x-s]x       = s
+[x-s]y       = y, x != y
+[x->s](\y.t1) = \y.[x-s]t1, y != x & y not in FV(s) # x is not the bound variable y AND y should not be part of the free variables of s
+[x->s](t1 t2) = [x-s]t1 [x-s]t2
 ```
 This works if we assume that bound varialbe y is always different than x. Renaming is also an option.
 
@@ -343,21 +343,74 @@ EX.5.3.3.|FV(t)| <= size(t) because t can have bound variables which appear in t
 
 * operational semantics
 ```
-# terms
+-- terms
 term = x # variable
      | \x.t # abstraction
      | (t1 t2) # application
-# values
+------------------ values
 value = \x.t # only abstractions can be values in lambda calculus.
 
-#evaluation
+-- evaluation
 t1 -> t1' => (t1 t2) -> (t1' t2) # E-APP1 - first, we evaluate the left-hand side to a value/abstraction.
 t2 -> t2' => (v1 t2) -> (v1 t2') # E-APP2 - second, we evaluate the right-hand side to a value/abstraction.
 (\x.t12) v2 => [x->v2]t12 # A-APP-ABS - finally we perform the application itself by substition.
 ```
 EX.5.3.6. HOW!?!?
 
+# Chapter 8: Typed arithmetic expressions
+
+## Definitions:
+- a term t is _typable_ (Or well typed) if there is a type T such that t:T.
+- a typing relation is the smallest binary relation between terms and types satisfying:
+```
+T ::= Nat
+0:Nat (T-ZERO)
+
+t1:Nat -> succ t1:Nat
+t1:Nat -> pred t1:Nat
+t1:Nat -> iszero t1: Bool
+```
+- Uniqueness of types: each term t has at most one type T: if t is typable, then its type is unique.
+- _statements_ are formal assertions about the typing of programs
+- _typing rules_ are implications between statements
+- _derivations_ are deductions based on typing rules.
+
+Ex.8.2.3. Prove that every subterm of a well typed term is well typed.
+There are three types of terms: x; \x.t; and (t1 t1). A variable term x has not subterms.
+The abstraction \x.t has type T than t is of type T because that's what \x.t returns.
+The application (t1 t2) has type T than subterm t1 has type T. Q: what can we say about t2?!
+
+- _Safety_ = progress + preservation. Safety - also called _soundness_ - well-typed
+systems do not "go wrong", ie. don't end up in a state that is not a value but we
+can't evaluate further based on the rules we have.
+- _Progress_ = a well-typed term is either a value or it can take a step acording to
+evaluation rules.
+- _Preservation_ = all intermediate terms in the evaluation of a well-typed term are
+also well-typed. Also know as _subject reduction_ or _subject evaluation_.
+  Theorem: if t:T and t->t' then t':T
+
+What it means for a term to be ill-typed
+- terms whose evaluation reaches a stuck state. Eg. `if 0 then 1 else 2` breaks T-IF
+- terms that behave well under evaluation but fail the static type check. Eg. `if true then 0 else false` breaks T-IF
+
+# Curry-Howard equivalence: for every proposition you can associate a type.
+
++--------------------------+------------------------+
+| mathematical logic       | programming languages  |
++--------------------------+------------------------+
+| propositions             | types                  |
++--------------------------+------------------------+
+| proofs                   | terms (programs)       |
++--------------------------+------------------------+
+| simplification of proofs | evaluation of programs |
++--------------------------+------------------------+
+
+Product types == records == structs (carthesian products)
+Sum types == union types
+
 # Questions:
+
+Questions for Ch5.
 * Should I implement a lambda calculus interpretor?
 * Do all the types of evaluation yield the same result all the time?
 * Can I do a better `equal`?
@@ -370,6 +423,9 @@ EX.5.3.6. HOW!?!?
 * Is it true that fix f = f (fix f) ?
 * How would you make a fold function over a list?
 
+Questions for Ch8.
+* How do you know the type of t if you haven't fully evaluated t. Related to preservation.
+
 # Resources
 1. Church encodings used in TaPL [wiki](https://en.wikipedia.org/wiki/Church_encoding#List_encodings)
 2. System F, a typed lambda calculus [wiki](https://en.wikipedia.org/wiki/System_F)
@@ -381,3 +437,10 @@ EX.5.3.6. HOW!?!?
   - [Functional parsing](https://www.youtube.com/watch?v=dDtZLm7HIJs)
   - [What is Functional Programming](https://www.youtube.com/watch?v=LnX3B9oaKzw)
 5. Impl of lambda calculus in Haskell [link](http://dev.stephendiehl.com/fun/lambda_calculus.html)
+6. Propositions as Types:
+  - [computerphile](https://www.youtube.com/watch?v=SknxggwRPzU)
+  - [Philip Wadler](https://www.youtube.com/watch?v=IOiZatlZtGU) ***
+7. Homotropy theory:
+  - [Computerphile - computer science and mathemathics](https://www.youtube.com/watch?v=qT8NyyRgLDQ)
+  - [Computerphile - homotropy theory](https://www.youtube.com/watch?v=Ft8R3-kPDdk)
+8. Category theory for the working hacker [link](https://www.youtube.com/watch?v=gui_SE8rJUM)
