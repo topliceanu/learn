@@ -8,9 +8,9 @@
 ## Tests
 
 ```bash
-cd learn/algo
-python -m unittest discover test # to run all tests.
-python -m unittest discover test -p `test_graph.py` # to run a specific test case.
+cd learn/python/algo
+python -m unittest discover test # to run all tests. Don't do this, it will execute the slow tests as well.
+python -m unittest discover ./test/ -p "test_binary_search_tree.py" # execute only tests that match the pattern.
 ```
 
 ## Primitives

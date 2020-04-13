@@ -39,6 +39,10 @@ class BTree(object):
             node = node.parent
         self.root = node
 
+    def merge(self, other_btree):
+        """ Merges another btree into the current one. """
+        pass
+
     @classmethod
     def build(cls, m, data):
         """ Builds a new BTree given a dictionary of (key, value) pairs.
@@ -91,7 +95,7 @@ class BTreeNode(object):
         http://www.bluerwhite.org/btree/
 
     Attrs:
-        m: rank fo the node, ie. you are only allowed to m children and m-1 values.
+        m: rank fo the node, ie. you are only allowed m children and m-1 values.
         parent: object, pointer to the parent node of this node.
         keys: list, of sorted items. The format is [(key, value, ref)]
         values: list, of values stored in the node associated with the keys

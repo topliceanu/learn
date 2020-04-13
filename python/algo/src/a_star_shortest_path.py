@@ -7,7 +7,9 @@ from src.dijkstra_shortest_path import VertexHeap
 def a_star_shortest_path(graph, source, destination):
     """ Finds the least-cost path from source to destination vertices.
 
-    Note: this is not the same as the single source shortest path problem.
+    Note: this algorithm solves the same problem as Dijkstra's single-source
+    shortest path, but while Dijkstra tries all possible path, a-star uses
+    heuristics to speed up the search.
 
     Args:
         graph: object, instance of src.graph.Graph
