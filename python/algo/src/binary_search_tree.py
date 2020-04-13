@@ -2,13 +2,11 @@
 
 from src.merge_sort import merge
 
-
 PARENT = 0
 KEY = 1
 LEFT = 2
 RIGHT = 3
 SIZE = 4
-
 
 class BinarySearchTreeNode(object):
     """ A node in a binary search tree.
@@ -64,6 +62,9 @@ class BinarySearchTreeNode(object):
     def lookup(self, key):
         """ Find a node with the given key in the subtree rooted by the current
         node.
+
+        Returns:
+            object, instance of src.binary_search_tree.BinarySearchTreeNode
         """
         if self.key == key:
             return self
@@ -82,6 +83,9 @@ class BinarySearchTreeNode(object):
     def get_min(self):
         """ Retrieves the node with the smallest key in the subtree rooted at
         the current node.
+
+        Returns:
+            object, instance of src.binary_search_tree.BinarySearchTreeNode
         """
         if self.left == None:
             return self
@@ -90,6 +94,9 @@ class BinarySearchTreeNode(object):
     def get_max(self):
         """ Retrieves the node with the largest key in the subtree rooted at
         the current node.
+
+        Returns:
+            object, instance of src.binary_search_tree.BinarySearchTreeNode
         """
         if self.right == None:
             return self
@@ -104,6 +111,9 @@ class BinarySearchTreeNode(object):
             2. node has no left child, in which case we need to go up the parent
                 list until we find a parent on the left side to return it or
                 return None if the root is reached.
+
+        Returns:
+            object, instance of src.binary_search_tree.BinarySearchTreeNode
         """
         if self.left != None:
             return self.left.get_max()
@@ -124,6 +134,9 @@ class BinarySearchTreeNode(object):
             1. node has a right child, return the node with minimum key in the
                 subtree rooted in the right child.
             2. node has no right child,
+
+        Returns:
+            object, instance of src.binary_search_tree.BinarySearchTreeNode
         """
         if self.right != None:
             return self.right.get_min()
@@ -140,10 +153,13 @@ class BinarySearchTreeNode(object):
     def rank(self):
         """ Returns the index of the current node in the array obtained by
         sorting all the nodes in the tree. OR. Returns the number of elements
-        with the keys smaller or equal to the current node's key.
+        with keys smaller or equal to the current node's key.
 
         A node is larger than all nodes in it's left subtree and all his
         ancestors from the right direction and the nodes in their left subtrees.
+
+        Returns:
+            int, rank of current node
         """
         index = 0
         if self.left != None:
@@ -165,6 +181,9 @@ class BinarySearchTreeNode(object):
 
         If node has less ancestors in the left side than the required index,
         then recurse on the right side, otherwise, recurse on the left side.
+
+        Returns:
+            object, instance of src.binary_search_tree.BinarySearchTreeNode
         """
         if self.left == None:
             left = 0
@@ -224,6 +243,9 @@ class BinarySearchTreeNode(object):
     def in_order_traversal(self):
         """ Traverse the tree rooted in this node, in the following order:
         left subtree, root, right subtree.
+
+        Returns:
+            list, of all the nodes in the tree.
         """
         out = []
         if self.left != None:
@@ -236,6 +258,9 @@ class BinarySearchTreeNode(object):
     def pre_order_traversal(self):
         """ Traverse the tree rooted in this node, in the following order:
         root, left subtree, right subtree.
+
+        Returns:
+            list, of all the nodes in the tree.
         """
         out = [self]
         if self.left != None:
@@ -247,6 +272,9 @@ class BinarySearchTreeNode(object):
     def post_order_traversal(self):
         """ Traverse the tree rooted in this node, in the following order:
         left subtree, right subtree, root.
+
+        Returns:
+            list, of all the nodes in the tree.
         """
         out = []
         if self.left != None:
@@ -256,6 +284,17 @@ class BinarySearchTreeNode(object):
         out.append(self)
         return out
 
+    def path_to_root(self):
+        """
+        Builds a list of node pointers from root to the current node, inclusive
+
+        Returns:
+            list, of pointers to nodes from current node to the root
+        """
+        if self.parent == None:
+            return [self]
+        return self.parent.path_to_root().append(self)
+
     def common_ancestor(self, other):
         """ Detect the first common ancestor between the current node the
         other node.
@@ -263,21 +302,41 @@ class BinarySearchTreeNode(object):
         Populates a list of ancestors for both self and other. Then compares
         the two lists starting at the root and stops at the first divergent node.
 
-        Complexity: O((logn)^2) in time and O(1) in space
+        Complexity: O(logn) in time and O(logn) in space
+
+        Returns:
+            object, instance of src.binary_search_tree.BinarySearchTreeNode
+        """
+        path_root_self = self.path_to_root() # O(logn) in time
+        path_root_other = other.path_to_root() # O(logn) in time
+        i = 0
+        min_len = min(len(path_root_self), len(path_root_other))
+        while i < min_len:
+            node1 = path_root_self[i]
+            node2 = path_root_other[i]
+            if node1 != node2:
+                break
+            i += 1
+        return path_root_self[i-1]
+
+    def common_ancestor_prime(self, other):
+        """ Same goal as the method above, but this method will look for the
+        other node in the subtree of itself and it's successive ancestors until
+        it reaches root.
+
+        Time complexity: O((logn)^2) - we're looking at the same subtree multiple times
+        Space complexity: O(1)
+
+        Returns:
+            object, instance of src.binary_search_tree.BinarySearchTreeNode
         """
         if self == other:
             return self
-        if self.lookup(other.key) == other: # self is ancestor of other.
+        if self.lookup(other.key) != None:
             return self
-
-        node = self
-        while node != None:
-            if node == other:
-                return node
-            if node.right != None and node.right.lookup(other.key) == other:
-                return node
-            node = node.parent
-        return None
+        if self.parent == None:
+            return None # probably a raised exception
+        return self.parent.common_ancestor_prime(other)
 
     def is_identical(self, other):
         """ Checks if two nodes have the same subtree keys. """
@@ -322,6 +381,8 @@ class BinarySearchTreeNode(object):
 
     def diameter(self):
         """ Computes the diameter of the tree rooted in the current node.
+
+        Complexity: O(n) in time and O(1) in space
 
         The diameter is the longest path of any two nodes in the subtree.
         It is computed as the maximum of:
@@ -544,7 +605,7 @@ class BinarySearchTreeNode(object):
 
 
 class BST(object):
-    """ Implements the operations needed for a Unballanced Binary Search Tree.
+    """ A different implementation for an unballanced Binary Search Tree.
 
     Search Tree Property: for any node k, all keys in the left subtree are
     smaller than k and all keys in the right three are larger than k

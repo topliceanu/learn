@@ -346,9 +346,37 @@ class TestBinarySearchTreeNode(unittest.TestCase):
         s_node = x_node.insert('s')
         q_node = x_node.insert('q')
 
-        self.assertEqual(t_node.common_ancestor(v_node), t_node, 't is ancestor of v')
-        self.assertEqual(v_node.common_ancestor(u_node), u_node, 'u is parent of v')
-        self.assertEqual(q_node.common_ancestor(x_node), x_node, 'x is root')
+        self.assertEqual(t_node.common_ancestor_prime(t_node), t_node, 'both nodes are the same')
+        self.assertEqual(t_node.common_ancestor_prime(v_node), t_node, 't is ancestor of v')
+        self.assertEqual(v_node.common_ancestor_prime(u_node), u_node, 'u is parent of v')
+        self.assertEqual(q_node.common_ancestor_prime(x_node), x_node, 'x is root')
+        self.assertEqual(q_node.common_ancestor_prime(z_node), x_node, 'x is root')
+
+    def test_common_ancestor_prime(self):
+        """ Uses following tree structure:
+                (x)
+               /   \
+             (t)   (y)
+            /  \      \
+          (r)  (u)    (z)
+          / \    \
+        (q) (s)  (v)
+        """
+        x_node = BinarySearchTreeNode('x')
+        y_node = x_node.insert('y')
+        z_node = x_node.insert('z')
+        t_node = x_node.insert('t')
+        u_node = x_node.insert('u')
+        v_node = x_node.insert('v')
+        r_node = x_node.insert('r')
+        s_node = x_node.insert('s')
+        q_node = x_node.insert('q')
+
+        self.assertEqual(t_node.common_ancestor_prime(t_node), t_node, 'both nodes are the same')
+        self.assertEqual(t_node.common_ancestor_prime(v_node), t_node, 't is ancestor of v')
+        self.assertEqual(v_node.common_ancestor_prime(u_node), u_node, 'u is parent of v')
+        self.assertEqual(q_node.common_ancestor_prime(x_node), x_node, 'x is root')
+        self.assertEqual(q_node.common_ancestor_prime(z_node), x_node, 'x is root')
 
     def test_is_identical(self):
         """ Using the following tree structure and two test candidates:
