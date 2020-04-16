@@ -184,9 +184,11 @@ let slice xs i j =
         else aux (k + 1) yss
   in aux 0 xs
 
-(* the solution from the ocaml website involves a function fold_until
+(* The solution from the ocaml website involves a function fold_until
  * with the signature ('a -> 'b -> 'a) -> 'a -> int -> 'b list -> 'a * list 'b
  * which applies f to each element of the input list until it reaches the n index.
+ *
+ * This is a cool function!
  **)
 let rec fold_until f acc n = function
   | [] -> (acc, [])
@@ -200,11 +202,46 @@ let slice' xs i j =
   List.rev pluck
 
 (* 19. Rotate a list N places to the left. (medium)
- * TODO make this work
  **)
+(* val rotate : 'a list -> int -> 'a list *)
 let rotate xs n =
   let m = List.length xs in
   let n = n mod m in
-  let (_, second) = fold_until (fun acc _ -> []) [] (m - n + 1) xs in
-  let (first, _) = fold_until (fun acc x -> x :: acc) [] (m - n) xs in
-  List.append (List.rev first) second
+  let (second, first) = fold_until (fun acc x -> x :: acc) [] n xs in
+  List.append first (List.rev second)
+
+(* 20. Remove the K'th element from a list. (easy)
+ * The first element of the list is numbered 0, the second 1,...
+ **)
+(* val remove_at : int -> 'a list -> 'a list *)
+let rec remove_at n = function
+  | [] -> []
+  | hd :: tl ->
+      if n == 0 then tl
+      else hd :: remove_at (n-1) tl
+
+(* 21. Insert an element at a given position into a list. (easy)
+ * Start counting list elements with 0. If the position is larger or equal to the
+ * length of the list, insert the element at the end.
+ * (The behavior is unspecified if the position is negative.)
+ **)
+(* val insert_at : 'a -> int -> 'a list -> 'a list *)
+let rec insert_at x n = function
+  | [] -> x :: []
+  | hd :: tl ->
+      if n == 0 then x :: hd :: tl
+      else hd :: insert_at x (n-1) tl
+
+(* 22. Create a list containing all integers within a given range. (easy)
+ * If first argument is greater than second, produce a list in decreasing order.
+ **)
+(* val range int -> int -> int list *)
+let range start stop =
+  (* val aux : int list -> int -> int -> int list *)
+  let rec aux n m =
+    if n = m then n :: []
+    else if n < m then n :: aux (n + 1) m
+    else n :: aux (n - 1) m
+  in aux start stop
+
+
