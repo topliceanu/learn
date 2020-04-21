@@ -141,7 +141,7 @@ let rec diameter = function
       let right_height = height right in
         max (max left_diameter right_diameter) (left_height + right_height + 1)
 
-(* var merge: 'a tree -> 'a tree -> 'a tree *)
+(* val merge: 'a tree -> 'a tree -> 'a tree *)
 let rec merge t1 t2 =
   match t1 with
   | Leaf -> t2
@@ -149,3 +149,19 @@ let rec merge t1 t2 =
       let left_and_t2 = merge left t2 in
       let right_and_left_and_t2 = merge right left_and_t2 in
         insert x right_and_left_and_t2
+
+(* val is_ballanced : 'a tree -> bool
+ * CCI book, 5th edition, problem 4.1
+ **)
+let is_ballanced t =
+  let rec get_min_max_height = function
+    | Leaf -> (0, 0)
+    | Node (left, x, right) ->
+        let (min_left, max_left) = get_min_max_height left in
+        let (min_right, max_right) = get_min_max_height right in
+        (1 + (min min_left min_right), 1 + (max max_left max_right))
+  in
+    let (min_height, max_height) = get_min_max_height t
+    in
+      if max_height <= (min_height + 1) then true
+      else false
