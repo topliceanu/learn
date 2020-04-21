@@ -1,38 +1,36 @@
 # -*- conding: utf-8 -*-
 
 class TrieNode(object):
-    def __init__(self):
-        self.key = None
+    def __init__(self, key=None, isWord=False):
+        self.key = key
+        self.isWord = isWord
         self.children = {}
 
     def insert(self, key):
+        """ Inserts an new key in the current node's subtree.
+        Args:
+            key, string
+        """
         if key == '':
+            self.isWord = True
             return
         head, tail = key[0], key[1:]
         if head not in self.children:
-            tn = TrieNode()
-            tn.key = head
-            self.children[head] = tn
-            tn.insert(tail)
-        else:
-            self.children[head].insert(tail)
+            self.children[head] = TrieNode(head)
+        self.children[head].insert(tail)
 
-    def traverse(self, prefix):
-        """ Returns [] if the prefix is not in the tree.
-        Computes a list of works from the dictionary with the same prefix.
+    def advance(self, path):
+        """ Returns the node that results from traversing path from current node.
+        Args:
+            path, string
+        Returns:
+            object, instance of spelling_suggestion.TrieNode
         """
-        node = self.advance(prefix)
-        if node == None:
-            return []
-        words = node.collect()
-        return [ prefix + word for word in words ]
-
-    def advance(self, prefix):
-        if len(prefix) == 1:
+        if path == '':
             return self
-        head, tail = prefix[0], prefix[1:]
+        head, tail = path[0], path[1:]
         if head in self.children:
-            return self.advance(tail)
+            return self.children[head].advance(tail)
         return None
 
     def collect(self):
@@ -48,6 +46,16 @@ class TrieNode(object):
             with_key = [ prefix + p for p in postfixes ]
             words += with_key
         return words
+
+    def traverse(self, prefix):
+        """ Returns [] if the prefix is not in the tree.
+        Computes a list of words from the dictionary with the same prefix.
+        """
+        node = self.advance(prefix)
+        if node == None:
+            return []
+        words = node.collect()
+        return [ prefix + word for word in words ]
 
 def spelling_suggestions(dictionary, prefix):
     dict_trie = TrieNode()
