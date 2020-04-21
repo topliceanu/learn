@@ -1,12 +1,23 @@
 # BOOK: Types and Programming Languages
 
-# Chapter 5: Lambda Calculus
+## Chapter 3:
 
-## Concepts
+- _meta-mathematics_ - a subfield of logic whose subject matter is the mathematical
+properties of systems for mathematical and logical reasoning - this includes
+programming languages.
+- _operational semantics_ - specification of a programming language in terms of a
+simple abstract machine for it.
+- _denotational semantics_ - giving an denotational semantics for a language means
+finding a collection of semantic domains  and then finding an interpretation function
+mapping terms to elements of these domains.
+- _axiomatic semantics_ - ...
+
+## Chapter 5: Lambda Calculus
+
+### Concepts
 * term:
   - either a variable (x)
-  - an abstraction (\x.t, or function definition, t is the body of the abstraction)
-  - or an application (t t, t applied to t)
+  - an abstraction (\x.t, or function definition, t is the body of the abstraction) - or an application (t t, t applied to t)
 * concrete syntax (or surface syntax): the source text
 * abstract syntax: simpler internal representation of the program as ASTs
 * application associates to the left: eg. s t u == (s t) u
@@ -26,13 +37,17 @@
 - full beta-reduction: pick any redex to evaluate first.
 - normal strategy: leftmost, outermost redex is always reduced first
 - call by name strategy: no reduction inside abstractions is allowed
-  - call by need: instead of re-evaluating a term every time it's used, overwrite all occurrences with its value the first time it is evaluated. Lazy!
-- call by value strategy: outermost redexes are reduced first; a redex is reduced only when it's right-hand side has already been reduced to a value. Strict.
+  - call by need: instead of re-evaluating a term every time it's used, overwrite
+    all occurrences with its value the first time it is evaluated.
+    Ie. lazy evaluation!
+- call by value strategy: outermost redexes are reduced first; a redex is reduced
+  only when it's right-hand side has already been reduced to a value.
+  Ie. strict evaluation!
 * value - a term that is finished computing and cannot be reduced anymore.
 * normal form - a term that cannot be evaluated anymore.
   - divergent term do not have a normal form.
 
-## Church booleans
+### Church booleans
 ```
 tru=\t.\f.t
 fls=\t.\f.f
@@ -44,14 +59,14 @@ not=\b.b fls tru # EX.5.2.1
 xor=\b.\c.b (not c) c
 ```
 
-## Pairs
+### Pairs
 ```
 pair=\f.\s.\b.b f s # encoded as a func which takes a boolean.
 fst=\p.p tru
 snd=\p.p fls
 ```
 
-## Church numerals
+### Church numerals
 A numeral cn is encoded as functions which take a function s and a value z and
 applies s to z n times
 ```
@@ -172,7 +187,8 @@ and tru fls =
 fls
 ```
 
-## Lists EX.5.2.8 [source](https://en.wikipedia.org/wiki/Church_encoding#Represent_the_list_using_right_fold)
+### Lists
+EX.5.2.8 [source](https://en.wikipedia.org/wiki/Church_encoding#Represent_the_list_using_right_fold)
 Construct a list from a value h - the new list's head - and another list t - tail.
 The empty list is nil whic is a function that returns its second argument.
 ```
@@ -319,7 +335,7 @@ Tried a reduce (or fold) function. Q: how do you implement this?
 reduce=\l.\l.fix ()
 ```
 
-## Formalism
+### Formalism
 
 * Substitution:
 ```
@@ -357,10 +373,26 @@ t2 -> t2' => (v1 t2) -> (v1 t2') # E-APP2 - second, we evaluate the right-hand s
 ```
 EX.5.3.6. HOW!?!?
 
-# Chapter 8: Typed arithmetic expressions
+### Questions for Ch5.
+* Should I implement a lambda calculus interpretor?
+* Do all the types of evaluation yield the same result all the time?
+* Can I do a better `equal`?
+* I don't know how to implement `tail` and I don't understand the one on Wikipedia.
+* call-by-name vs call-by-value. What is the difference? Eg. fix and fix'
+* Review exercises in the recursion section work.
+* How do you implement a reduce method?
+* Should we do the exercises in the formalism section?
+* How do you get to the fix combinator? Is there any process to reach it?
+* Is it true that fix f = f (fix f) ?
+* How would you make a fold function over a list?
 
-## Definitions:
+## Chapter 8: Typed arithmetic expressions
+
+### Definitions:
 - a term t is _typable_ (Or well typed) if there is a type T such that t:T.
+- What it means for a term to be ill-typed or not well-typed:
+  - terms whose evaluation reaches a stuck state. Eg. `if 0 then 1 else 2` breaks T-IF
+  - terms that behave well under evaluation but fail the static type check. Eg. `if true then 0 else false` breaks T-IF
 - a typing relation is the smallest binary relation between terms and types satisfying:
 ```
 T ::= Nat
@@ -376,24 +408,31 @@ t1:Nat -> iszero t1: Bool
 - _derivations_ are deductions based on typing rules.
 
 Ex.8.2.3. Prove that every subterm of a well typed term is well typed.
+Q: Isn't this part of the definition of the language in 8-1 and 8-2?! Isn't this preservation?
 There are three types of terms: x; \x.t; and (t1 t1). A variable term x has not subterms.
 The abstraction \x.t has type T than t is of type T because that's what \x.t returns.
 The application (t1 t2) has type T than subterm t1 has type T. Q: what can we say about t2?!
+Same as Ex.8.3.6
 
 - _Safety_ = progress + preservation. Safety - also called _soundness_ - well-typed
-systems do not "go wrong", ie. don't end up in a state that is not a value but we
+systems do not "go wrong", ie. don't end up in a wrong state: not a value but we also
 can't evaluate further based on the rules we have.
-- _Progress_ = a well-typed term is either a value or it can take a step acording to
-evaluation rules.
+- _Progress_ = a well-typed term is either a value or it can take an evaluation step
+acording to evaluation rules.
 - _Preservation_ = all intermediate terms in the evaluation of a well-typed term are
 also well-typed. Also know as _subject reduction_ or _subject evaluation_.
   Theorem: if t:T and t->t' then t':T
 
-What it means for a term to be ill-typed
-- terms whose evaluation reaches a stuck state. Eg. `if 0 then 1 else 2` breaks T-IF
-- terms that behave well under evaluation but fail the static type check. Eg. `if true then 0 else false` breaks T-IF
+### Questions for Ch8.
+* How do you know the type of t if you haven't fully evaluated t. Related to preservation.
 
-# Curry-Howard equivalence: for every proposition you can associate a type.
+## Chapter 9: Simple Typed Lambda-Calculus
+
+- introduces a type for functions: T1->T2
+- EX.9.2.1
+
+
+## Curry-Howard equivalence: for every proposition you can associate a type.
 
 +--------------------------+------------------------+
 | mathematical logic       | programming languages  |
@@ -408,25 +447,7 @@ What it means for a term to be ill-typed
 Product types == records == structs (carthesian products)
 Sum types == union types
 
-# Questions:
-
-Questions for Ch5.
-* Should I implement a lambda calculus interpretor?
-* Do all the types of evaluation yield the same result all the time?
-* Can I do a better `equal`?
-* I don't know how to implement `tail` and I don't understand the one on Wikipedia.
-* call-by-name vs call-by-value. What is the difference? Eg. fix and fix'
-* Review exercises in the recursion section work.
-* How do you implement a reduce method?
-* Should we do the exercises in the formalism section?
-* How do you get to the fix combinator? Is there any process to reach it?
-* Is it true that fix f = f (fix f) ?
-* How would you make a fold function over a list?
-
-Questions for Ch8.
-* How do you know the type of t if you haven't fully evaluated t. Related to preservation.
-
-# Resources
+## Resources
 1. Church encodings used in TaPL [wiki](https://en.wikipedia.org/wiki/Church_encoding#List_encodings)
 2. System F, a typed lambda calculus [wiki](https://en.wikipedia.org/wiki/System_F)
 3. Impl of lambda calculus in Racket [link](http://matt.might.net/articles/compiling-up-to-lambda-calculus/)
