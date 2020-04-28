@@ -236,12 +236,154 @@ let rec insert_at x n = function
  * If first argument is greater than second, produce a list in decreasing order.
  **)
 (* val range int -> int -> int list *)
-let range start stop =
-  (* val aux : int list -> int -> int -> int list *)
-  let rec aux n m =
-    if n = m then n :: []
-    else if n < m then n :: aux (n + 1) m
-    else n :: aux (n - 1) m
-  in aux start stop
+let rec range start stop =
+  if start = stop then start :: []
+  else if start < stop then start :: range (start + 1) stop
+  else start :: range (start - 1) stop
 
+(* 23. Extract a given number of randomly selected elements from a list. (medium)
+ * The selected items shall be returned in a list. We use the Random module but do
+ * not initialize it with Random.self_init for reproducibility.
+ **)
+(* val rand_select : 'a list -> int -> 'a list *)
+let rand_select ls n =
+  (* val select : 'a list -> int -> 'a list -> ('a, 'a list)
+   * Given a list and an index, it will return the value at that index plus
+   * the everything else in the list.
+   **)
+  let rec select_one acc n = function
+    | [] -> raise Not_found
+    | x :: xs ->
+        if n = 0 then (x, acc @ xs)
+        else select_one (x :: acc) (n - 1) xs
+  in let rec select_many n ls =
+    if n = 0 then []
+    else if List.length ls = 0 then []
+    else
+      let len = List.length ls in
+      let k = Random.int len in
+      let (selected, rest) = select_one [] k ls in
+      selected :: select_many (n - 1) rest
+
+  in select_many n ls
+
+(* My own implementation of the above function
+ * FIXME: if the random generator produces the same index multiple times,
+ * the output will not contain the corresponding value multiple times.
+ **)
+let rand_select_mine ls n =
+  (* val aux : int list -> int -> 'a list -> 'a list *)
+  let rec aux indices current_index ls =
+    match (indices, current_index, ls) with
+    | ([], _, _) -> []
+    | (_, _, []) -> []
+    | (i :: is, j, x :: xs) ->
+      if i = j then x :: (aux is (j + 1) xs)
+      else aux (i :: is) (j + 1) xs
+  in
+    let len = List.length ls in
+    let indices = List.init n (fun _ -> Random.int len)
+    in aux indices 0 ls
+
+(* 24. Lotto: Draw N different random numbers from the set 1..M. (easy)
+ * The selected numbers shall be returned in a list.
+ **)
+let rec lotto_select n m =
+  let rec exists x = function
+    | [] -> false
+    | y :: ys ->
+        if y = x then true
+        else exists x ys
+  in let rec select acc max_value count =
+    if count = 0 then acc
+    else
+      let k = Random.int max_value in
+      let already_exists = exists k acc in
+      if already_exists then select acc max_value count
+      else select (k :: acc) max_value (count - 1)
+  in select [] m n
+
+(* their solution to this problem *)
+let rec lotto_select_theirs n m = rand_select (range 1 m) n
+
+(* 25. Generate a random permutation of the elements of a list. (easy)
+ * val permutation : 'a list -> 'a list
+ **)
+let permutation ls =
+  (* val pluck : 'a list -> int -> ('a option, 'a list) *)
+  let rec pluck xs k rest =
+    match xs with
+    | [] -> raise Not_found
+    | x :: xss ->
+        if k = 0 then (x, rest @ xss)
+        else pluck xss (k - 1) (x :: rest)
+  (* val build_permutations : 'a list -> int -> 'a list *)
+  in let rec build_permutation xs n =
+    if n = 0 then []
+    else
+      let selected, rest = pluck xs (Random.int n) []
+      in selected :: (build_permutation rest (n - 1))
+
+  in build_permutation ls (List.length ls)
+
+(* 26. Generate the combinations of K distinct objects chosen from the N elements of a list. (medium)
+ * In how many ways can a committee of 3 be chosen from a group of 12 people?
+ * We all know that there are C(12,3) = 220 possibilities (C(N,K) denotes the
+ * well-known binomial coefficients).
+ * For pure mathematicians, this result may be great. But we want to really
+ * generate all the possibilities in a list.
+ *
+ * val extract : int -> 'a list -> 'a list list
+ **)
+let extract k ls =
+  if k = 0 then [[]] (* this is where the recursion ends, k is the number of elements to select from ls *)
+  else
+    match ls with
+    | [] -> []
+    | hd :: tl ->
+        let with_hd = List.map (fun l -> hd :: l) (extract (k - 1) tl) in
+        let without_hd = extract k tl in
+        with_hd @ without_hd
+
+(* 27. Group the elements of a set into disjoint subsets. (medium)
+ *  * In how many ways can a group of 9 people work in 3 disjoint subgroups of
+ *    2, 3 and 4 persons? Write a function that generates all the possibilities
+ *    and returns them in a list.
+ *  * Generalize the above function in a way that we can specify a list of group
+ *    sizes and the function will return a list of groups.
+ * val group : 'a list -> int list -> 'a list list list
+ *
+ * FIXME: does not work
+ **)
+let group data lengths =
+  (* val take : int -> 'a list -> 'a list *)
+  let rec take n = function
+    | [] -> []
+    | x :: xs -> if n = 0 then [] else x :: take (n - 1) xs
+
+  (* val group_by_single : 'a list -> int list -> 'a list list *)
+  in let rec group_by_single combination = function
+    | [] -> []
+    | x :: xs -> (take x combination) :: (group_by_single combination xs)
+
+  (* val group_by : 'a list list -> int list -> 'a list list list *)
+  in let rec group_by combinations lengths =
+    match combinations with
+    | [] -> []
+    | cb :: cbs -> (group_by_single cb lengths) :: (group_by cbs lengths)
+
+  in let total_length = List.fold_left (fun acc l -> acc + l) 0 lengths in
+  let combinations = extract total_length data in
+  group_by combinations lengths
+
+(* 28. Sorting a list of lists according to length of sublists. (medium)
+ * 1. We suppose that a list contains elements that are lists themselves.
+ *  The objective is to sort the elements of this list according to their length.
+ *  E.g. short lists first, longer lists later, or vice versa.
+ * 2. Again, we suppose that a list contains elements that are lists themselves.
+ *  But this time the objective is to sort the elements of this list according
+ *  to their length frequency; i.e., in the default, where sorting is done
+ *  ascendingly, lists with rare lengths are placed first, others with a more
+ *  frequent length come later.
+ **)
 
