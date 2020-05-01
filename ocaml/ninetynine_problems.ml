@@ -335,7 +335,7 @@ let permutation ls =
  *
  * val extract : int -> 'a list -> 'a list list
  **)
-let extract k ls =
+let rec extract k ls =
   if k = 0 then [[]] (* this is where the recursion ends, k is the number of elements to select from ls *)
   else
     match ls with
@@ -373,7 +373,7 @@ let group data lengths =
     | cb :: cbs -> (group_by_single cb lengths) :: (group_by cbs lengths)
 
   in let total_length = List.fold_left (fun acc l -> acc + l) 0 lengths in
-  let combinations = extract total_length data in
+  let combinations = take total_length data in
   group_by combinations lengths
 
 (* 28. Sorting a list of lists according to length of sublists. (medium)
@@ -387,3 +387,111 @@ let group data lengths =
  *  frequent length come later.
  **)
 
+(* implements bubble sort in O(n^2) time, ie. consecutively look for the smallest element *)
+let length_sort ls =
+  (* val shortest 'a list list -> 'a list option -> 'a list list -> ('a list, 'a list list) *)
+  let rec shortest acc so_far lls =
+    match (so_far, lls) with
+    | (None, []) -> (None, acc)
+    | (Some l, []) -> (Some l, acc)
+    | (None, l :: ls) -> shortest acc (Some l) ls
+    | (Some ll, l :: ls) ->
+        let len_ll = List.length ll in
+        let len_l = List.length l in
+        if len_l < len_ll then shortest (ll :: acc) (Some l) ls
+        else shortest (l :: acc) (Some ll) ls
+  in let rec length_sort_rec ls =
+    if List.length ls = 0 then []
+    else
+      let short, rest = shortest [] None ls in
+      match short with
+      | None -> raise Not_found (* should not get here *)
+      | Some l -> l :: length_sort_rec rest
+  in length_sort_rec ls
+
+(* their implementation selection sort *)
+let length_sort_theirs ls =
+  (* val insert : ('a -> 'a -> int) -> 'a -> 'a list -> 'a list
+   * Inserts e before the first element in the list that is larger.
+   **)
+  let rec insert cmp e = function
+    | [] -> [e]
+    | h :: t as l -> if cmp e h < 0 then e :: l else h :: (insert cmp e t)
+
+  in let rec sort cmp = function
+    | [] -> []
+    | h :: t -> insert cmp h (sort cmp t)
+
+  in
+    let lists_with_lengths = List.map (fun l -> (List.length l, l)) ls in
+    let sorted = sort (fun a b -> compare (fst a) (fst b)) lists_with_lengths in
+    List.map snd sorted
+
+(* Arithmetic *)
+
+(* 31. Determine whether a given integer number is prime. (medium)
+ * val is_prime : int -> bool
+ **)
+let is_prime n =
+  let rec range left right =
+    if left = right then [right]
+    else left :: range (left + 1) right
+
+  in let rec aux n = function
+    | [] -> true
+    | x :: xs ->
+        if n mod x = 0 then false
+        else aux n xs
+
+  in aux n (range 2 (n / 2))
+
+(* this version does not use the extra list *)
+let is_prime_theirs n =
+  let rec is_not_divisor n m =
+    if m * m > n then true
+    else
+      if n mod m = 0 then false
+      else is_not_divisor n (m + 1)
+  in
+    if n = 1 then true
+    else is_not_divisor n 2
+
+(* 32. Determine the greatest common divisor of two positive integer
+ * numbers. (medium) Use Euclid's algorithm.
+ * val common_denom : int -> int -> bool
+ **)
+let rec common_denom a b =
+  if b = 0 then a
+  else common_denom b (a mod b)
+
+(* 33. Determine whether two positive integer numbers are coprime. (easy)
+ * Two numbers are coprime if their greatest common divisor equals 1.
+ * val coprime : int -> int -> bool
+ **)
+let coprime a b =
+  (common_denom a b) = 1
+
+(* 34. Calculate Euler's totient function φ(m). (medium)
+ * Euler's so-called totient function φ(m) is defined as the number of positive
+ * integers r (1 ≤ r < m) that are coprime to m. We let φ(1) = 1.
+ * Find out what the value of φ(m) is if m is a prime number. Euler's totient
+ * function plays an important role in one of the most widely used public key
+ * cryptography methods (RSA).
+ * In this exercise you should use the most primitive method to calculate this
+ * function (there are smarter ways that we shall discuss later).
+ *
+ * val totient : int -> int
+ **)
+let totient m =
+  let rec totient_rec i m =
+    if m = 1 then 1
+    else if i = m then 0
+    else if coprime i m then 1 + totient_rec (i + 1) m
+    else totient_rec (i + 1) m
+  in totient_rec 1 m
+
+(* 35. Determine the prime factors of a given positive integer. (medium)
+ * Construct a flat list containing the prime factors in ascending order.
+ * var factors : int -> int list
+ **)
+let factors n =
