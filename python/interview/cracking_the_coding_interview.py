@@ -118,7 +118,7 @@ def problem_1_4(s1, s2):
             return False
         letters[c] -= 1
     for (__, count) in letters.iteritems():
-        if count > 0:
+        if count > 0: # correct because if inputs have different length it won't reach this point.
             return False
     return True
 
@@ -184,6 +184,8 @@ def problem_1_8(s1, s2):
     substring of another. Given two strings, s1 and s2, write code to check if
     s2 is a rotation of s1 using only one call to isSubstring (i.e.,
     “waterbottle” is a rotation of “erbottlewat”).
+
+    Solution: concatenate s1 to itself and run isSubscring of s2 on it.
     """
     if s1 == '' or s2 == '':
         return False
@@ -238,6 +240,9 @@ def problem_2_1(node):
 def problem_2_2(start, n):
     """ Implement an algorithm to find the nth to last element of a singly
     linked list.
+
+    FIXME inefficient: this can be done with a single pass of the list,
+    with the runner technique.
     """
     if start == None or n < 0:
         raise Exception("Incorrect input params")
@@ -278,6 +283,9 @@ def problem_2_3(node):
     if node.next == None:
         raise Exception('Cannot remove the last element from the list')
 
+    # FIXME: you simply need to move data from node.next into node and
+    # link node to node.next.next. You don't need to move all the nodes
+    # following the deleted node.
     while node.next.next != None:
         node.key = node.next.key
         node = node.next
@@ -356,6 +364,7 @@ def problem_2_5(node):
     # Advance to the meeting point or reach the end of the list.
     while n1 != None:
         n1 = n1.next
+        # This works all the time, we are given that the list has a loop.
         n2 = n2.next.next
         if n1 == n2:
             break
@@ -549,7 +558,7 @@ def problem_3_4(rod1, rod2, rod3):
 def problem_3_5():
     """ Implement a MyQueue class which implements a queue using two stacks.
 
-    Idea: on 'enqueue' use the second queue to revert the first queue, push the
+    Idea: on 'dequeue' use the second queue to revert the first queue, push the
     new element, then revert back on the first queue.
 
     |1|  | |        | |  |3|      | |  |4|      |1|  | |
@@ -561,7 +570,6 @@ def problem_3_5():
                                        |1|      |4|
                                        *-*      *-*
     """
-
     class MyQueue(object):
         """
         Attrs:
@@ -598,7 +606,7 @@ def problem_3_6(stack):
     Solution #1: use one more stack.
     Solution #2: no additional stack but using recursion, first recurse on the
         substack without the last element to bring the max to top, then compare
-        top two elements.
+        top two elements. This is bubble-sort.
     """
     def move_last(stack):
         """ Finds the max element in stack and moves it to to the top. """
@@ -744,7 +752,7 @@ def problem_4_5(tree):
     1. the node has a right subtree, in which case his immediate successor is
     the smallest node in the right subtree.
     2. if the node has an empty right subtree, then go up the ancestors until
-    you reach a right one. If you reach the root, then the node has on successor
+    you reach a right one. If you reach the root, then the node has no successor
     because it's the max node.
     """
     def get_min(node):
@@ -1155,8 +1163,8 @@ def problem_8_5(n):
         for s in subs:
             out.append('()'+s)
             out.append('('+s+')')
-            out.append(s+'()')
-        out = list(set(out))
+            if '()'+s != s+'()':
+                out.append(s+'()')
         return out
 
     return parantheses(n)
@@ -1414,7 +1422,8 @@ def problem_9_6(matrix, key):
     method to find an element in it. Matrix is size M*N such that each row is
     sorted left to right and each column is sorted top to bottom.
 
-    Solution: divide and conquer.
+    Solution: divide and conquer. Start in the top-right and go down and left as
+    you narrow down to the searched key.
     """
     m = len(matrix)
     n = len(matrix[0])
@@ -1469,7 +1478,9 @@ def problem_10_4(operator, operand1, operand2):
         return i
 
     def divide(x, y):
-        """ Implement x / y using only +. """
+        """ Implement x / y using only +.
+        Note: this assumes y < x!
+        """
         s = y
         out = 0
         while s < x:
@@ -1852,10 +1863,27 @@ def problem_19_6(n):
     return thousands(n)
 
 def problem_16_7(arr):
-    """ You are given an array of integers (both positive and negative). Find the continuous sequence with the largest sum. Return the sum.
+    """ You are given an array of integers (both positive and negative).
+    Find the continuous sequence with the largest sum. Return the sum.
+
     Example:
     Input: {2, -8, 3, -2, 4, -10}
     Output: 5 (i.e., {3, -2, 4} )
 
-    Solution: dynamic programming.
+    Solution: dynamic programming, time complexity O(n^2)
     """
+    if len(arr) == 0:
+        return []
+
+    max_sum = arr[0]
+    max_start = 0
+    max_stop = 0
+    for i in range(len(arr)):
+        tmp_sum = 0
+        for j in range(i, len(arr)):
+            tmp_sum += arr[j]
+            if tmp_sum > max_sum:
+                max_sum = tmp_sum
+                max_start = i
+                max_stop = j
+    return arr[max_start : max_stop + 1]

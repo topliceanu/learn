@@ -74,6 +74,10 @@ class CrackingTheCodeInterview(unittest.TestCase):
         s2 = 'abc'
         self.assertFalse(problem_1_4(s1, s2), 'are not anagrams')
 
+        s1 = 'zzz'
+        s2 = 'zzzz'
+        self.assertFalse(problem_1_4(s1, s2), 'found edge case where the letter was not counted correctly')
+
     def test_problem_1_5(self):
         s = '   '
         expected = '%20%20%20'
@@ -943,3 +947,34 @@ class CrackingTheCodeInterview(unittest.TestCase):
         expected = 'One Thousand, Two Hundreds and Thirty Four'
         actual = problem_19_6(num)
         self.assertEqual(actual, expected, 'should print the number in letters')
+
+    def test_problem_19_7(self):
+        arr = [2, -8, 3, -2, 4, -10]
+        expected = [3, -2, 4]
+        actual = problem_16_7(arr)
+        self.assertEqual(actual, expected, 'should return the highest sum sequence')
+
+        arr = [1, 2, 3, 4, 5]
+        expected = [1, 2, 3, 4, 5]
+        actual = problem_16_7(arr)
+        self.assertEqual(actual, expected, 'should return the highest sum sequence')
+
+        arr = [1, 2, -3, 4] # two highest sum lists: [1, 2, -3, 4] and [4]
+        expected = [1, 2, -3, 4]
+        actual = problem_16_7(arr)
+        self.assertEqual(actual, expected, 'should return the highest sum sequence')
+
+        arr = [1, -2] # only one digit in the list
+        expected = [1]
+        actual = problem_16_7(arr)
+        self.assertEqual(actual, expected, 'should return the highest sum sequence')
+
+        arr = [1, -2] # only one digit in the list
+        expected = [1]
+        actual = problem_16_7(arr)
+        self.assertEqual(actual, expected, 'should return the highest sum sequence')
+
+        arr = [-3, -1, -2] # maximum is negative
+        expected = [-1]
+        actual = problem_16_7(arr)
+        self.assertEqual(actual, expected, 'should return the highest sum sequence')
