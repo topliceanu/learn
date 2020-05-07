@@ -1,0 +1,93 @@
+8.3.4
+
+Theorem: If t : T and t -> t' then t' : T.
+
+Proof: By induction on a derivation of t -> t'. At each step of the
+induction, we assume that the desired property holds for all
+subderviations and proceed by case analysis on the final rule in the
+derivation.
+
+Case E-IF: t_1 -> t_1'  t = if t1 then t2 else t3
+
+By inspecting the form of t, t can only be derived from the T-IF
+rule. Therefore we must have t_1 : Bool, t_2 : T and t_3 : T.
+
+[Remains to show: t_1' : T]
+
+By inspecting the typing rules, t_1 only 2 rules apply: T-True and
+T-False. Both cases are similar, so we show only T-True.
+
+Subcase t_1 = true
+
+If t_1 = true then t' can only be derived from the E-IF-True rule and
+thus we must have t' = t_2 and t' : T (since t_2 : T).
+
+
+Case E-IF-True: t = if true then t_2 else t_3  t' = t2
+
+By inspecting the form of t, only t must be derived from the rule T-IF
+and we must have true : Bool, t_2 : T and t_3 : T. Since we have t' =
+t_2 and t_2 : T, we know that t' : T.
+
+Case E-IF-False: t = if false then t_2 else t_3  t' = t3
+
+Similar to the case above.
+
+
+Case E-Succ: t_1 -> t_1'  t = succ t_1
+
+By inspecting the form of t, t must be derived from T-Succ. So we have
+t_1 : Nat and t : Nat. Looking at the evaluation rules, t_1 can have
+the forms succ t or pred t.
+
+Subcase t_1 = succ t_2
+
+If t_1 = succ t then t_1' must be derived from E-Succ and we must have
+t_2 -> t_2' and t_1' = succ t_2'. By inspecting the form of t_1', we
+know it must be derived by T-Succ and therefore t_1' : Nat.
+
+Subcase t_1 = pred t_2
+
+If t_1 = pred t then t_1' must be derived from E-Pred, E-PredZero or E-PredSucc.
+
+Subcase E-PredZero:  t_1 = pred 0 t_1' = 0
+
+Follows from T-Zero that t_1' : Nat
+
+Subcase E-PredSucc:  t_1 = pred (succ nv_1) t_1' = nv_1
+
+nv_1 is either 0 : Nat or succ nv_1 : Nat.
+
+
+Case E-IsZeroZero: t = iszero 0  t' = true
+
+t must be derived by T-IsZero, so 0 : Nat and iszero 0 : Bool. By
+T-True we have t' : Bool.
+
+
+Ex. 8.3.6
+
+if t -> t' and t' : T then t : T
+
+Case T-IF: t' = if t_1' then t_2 else t_3    t_1' : Bool  t_2 : T    t_3 : T
+
+only E-IF. So there must exist some t_1 -> t_1' and t = if t_1 then
+t_2 else t_3. Then only T-IF => t : T.
+
+
+Case T-True: t'= true  T = Bool
+
+Subcase E-IsZeroZero: t = iszero 0
+
+iszero 0 : Bool by T-Zero.
+
+Subcase E-IfTrue: t' = true  t = if true then t_2 else t_3  t_2 = true
+
+Subcase E-IfFalse: t' true  t = if true then t_2 else t_3   t_3 = true
+
+Similar to the case above.
+
+Subcase E-If: t' = true  t = if t_1 then t_2 else t_3
+
+...?
+
