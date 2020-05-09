@@ -1,3 +1,12 @@
+(* Defintions:
+ *  - product types - carthesian products - multiplication - eg. structs, tuples, classes
+ *  - sum types - disjoint sum - variant types - plus
+ *
+ * Interfaces are function from modules to modules.
+ * Oleg Kiselyov
+ * The enemy of correctness is complexity.
+ **)
+
 module Ref : sig
   type t
   val create : int -> t
