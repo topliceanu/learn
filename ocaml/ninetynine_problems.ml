@@ -495,3 +495,61 @@ let totient m =
  * var factors : int -> int list
  **)
 let factors n =
+  (* val range : int -> int -> int list
+   * generates a list of integers in [m, k] inclusive.
+   **)
+  let rec range m k =
+    if m > k then []
+    else m :: range (m+1) k
+
+  (* val primes : int list -> int list
+   * filters a list of number using the sieve of Erathostenes.
+   * *)
+  in let rec primes = function
+    | [] -> []
+    | hd :: tl -> hd :: (primes (List.filter (fun x -> x mod hd <> 0) tl))
+
+  (* val factors_rec : int -> int -> int list *)
+  in let rec factors_rec n = function
+    | [] -> []
+    | hd :: tl as l ->
+        if n mod hd = 0 then hd :: factors_rec (n / hd) l
+        else factors_rec n tl
+
+  in factors_rec n (primes (range 2 (n / 2)))
+
+let factors_theirs n =
+  let rec aux d n =
+    if n = 1 then []
+    else if n mod d = 0 then d :: aux d (n / d)
+    else aux (d + 1) n
+  in aux 2 n
+
+(* 36. Determine the prime factors of a given positive integer (2). (medium)
+ * Construct a list containing the prime factors and their multiplicity.
+ * Hint: The problem is similar to problem Run-length encoding of a list
+ * (direct solution).
+ * val factors_pow : int -> (int * int) list
+ * FIXME does not work all the time, eg factors_pow 12031
+ **)
+let factors_pow n =
+  let rec collect acc = function
+    | [] -> []
+    | x :: [] -> [(x, acc + 1)]
+    | x :: y :: rest ->
+      if x <> y then (x, acc + 1) :: collect 0 (y :: rest)
+      else collect (acc + 1) (y :: rest)
+  in let fact = factors n
+  in collect 0 fact
+
+(* 37. Calculate Euler's totient function φ(m) (improved). (medium).
+ * See problem "Calculate Euler's totient function φ(m)" for the definition
+ * of Euler's totient function. If the list of the prime factors of a number
+ * m is known in the form of the previous problem then the function phi(m)
+ * can be efficiently calculated as follows
+ *
+ * Let [(p1, m1); (p2, m2); (p3, m3); ...] be the list of prime factors
+ * (and their multiplicities) of a given number m.
+ * Then φ(m) can be calculated with the following formula:
+ * φ(m) = (p1 - 1) × p1m1 - 1 × (p2 - 1) × p2m2 - 1 × (p3 - 1) × p3m3 - 1 × ...
+ **)
