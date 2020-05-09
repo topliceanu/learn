@@ -1,4 +1,4 @@
-(* The "More Ocaml" book, chapter 2: Being Lazy" *)
+(* The "More Ocaml" book, chapter 2: Being Lazy *)
 
 type 'a lazylist = Cons of 'a * (unit -> 'a lazylist)
 
@@ -117,6 +117,21 @@ let rec unleave (Cons (hd, tl)) =
   let t = tl' () in
   (Cons (hd, fun () -> fst (unleave t)),
    Cons (hd', fun () -> snd (unleave t)))
+
+(* not an exercise per-se, I wanted to create an infinite list of primes using the Sieve of Erathostene
+ * FIXME why is this not working correctly?!
+ **)
+let rec primes =
+  (* val not_divisible_by : int -> int lazylist -> int lazylist *)
+  let rec not_divisible_by k l =
+    lfilter (fun x -> x mod k <> 0) l
+
+  (* val sieve: int lazylist -> int lazylist *)
+  in let rec sieve src =
+    let Cons (hd, tl) = src in
+    Cons (hd, fun () -> sieve (not_divisible_by hd (tl ())))
+
+  in sieve (lseq 2)
 
 (* ex.6 write a lazy list which produces A, B, C .. X, Y, Z, AA, AB, AC .. AX, AY, AZ, BA, BB, ... BX, BY, BZ, ... *)
 (* ... *)
