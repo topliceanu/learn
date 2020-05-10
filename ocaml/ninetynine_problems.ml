@@ -551,5 +551,15 @@ let factors_pow n =
  * Let [(p1, m1); (p2, m2); (p3, m3); ...] be the list of prime factors
  * (and their multiplicities) of a given number m.
  * Then φ(m) can be calculated with the following formula:
- * φ(m) = (p1 - 1) × p1m1 - 1 × (p2 - 1) × p2m2 - 1 × (p3 - 1) × p3m3 - 1 × ...
+ * φ(m) = (p1 - 1) × p1^(m1 - 1) × (p2 - 1) × p2^(m2 - 1) × (p3 - 1) × p3^(m3 - 1) × ...
+ *
+ * val phi_improved : int -> int
  **)
+let phi_improved n =
+  let rec pow a b =
+    if b = 0 then 1 else a * pow a (b - 1)
+  in let rec phi_rec = function
+    | [] -> 0
+    | (p, m) :: tl -> (p - 1) * (pow p  (m - 1)) + phi_rec tl
+  in phi_rec (factors_pow n)
+

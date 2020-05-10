@@ -120,8 +120,9 @@ let rec unleave (Cons (hd, tl)) =
 
 (* not an exercise per-se, I wanted to create an infinite list of primes using the Sieve of Erathostene
  * FIXME why is this not working correctly?!
+ * val lprimes : int lazylist
  **)
-let rec primes =
+let rec lprimes =
   (* val not_divisible_by : int -> int lazylist -> int lazylist *)
   let rec not_divisible_by k l =
     lfilter (fun x -> x mod k <> 0) l
@@ -133,5 +134,50 @@ let rec primes =
 
   in sieve (lseq 2)
 
-(* ex.6 write a lazy list which produces A, B, C .. X, Y, Z, AA, AB, AC .. AX, AY, AZ, BA, BB, ... BX, BY, BZ, ... *)
-(* ... *)
+(* ex.6 write a lazy list which produces A, B, C .. X, Y, Z, AA, AB, AC .. AX, AY, AZ, BA, BB, ... BX, BY, BZ, ...
+ * val labels : string lazylist
+ **)
+
+(* generates charaters starting with 'A'
+ * val uppercase : char lazylist
+ * *)
+let uppercase =
+  let rec next c =
+    Cons (c, fun () -> next (Char.chr (Char.code c + 1)))
+  in next 'A'
+
+(* generates strings from "A" to "Z" then starts over.
+ * Note that it returns strings instead of characters!
+ * val uppercase_circular : string lazylist
+ **)
+let uppercase_circular =
+  let next_str c =
+    Char.escaped (Char.chr ((Char.code (String.get c 0)) + 1))
+  in let rec next c =
+    if c = "Z" then Cons ("Z", fun () -> next "A")
+    else Cons (c, fun () -> next (next_str c))
+  in next "A"
+
+(* merges two uppercase_circular lazy lists by going through
+ * the second one for each element of the first one
+ * val merge : string lazylist -> string lazylist -> string lazylist
+ **)
+let rec merge xs ys =
+  match (xs, ys) with
+  | ((Cons (x, xss)), (Cons (y, yss))) ->
+    if y = "Z" then Cons (x ^ y, fun () -> merge (xss ()) (yss ()))
+    else Cons (x ^ y, fun () -> merge xs (yss ()))
+
+(* lfill is a lazy list that produces the same thing parameter all the time
+ * val lfill : 'a -> 'a lazylist
+ **)
+let rec lfill x = Cons (x, fun () -> lfill x)
+
+(* fixme!!! *)
+let labels =
+  let rec labels_rec xs ys =
+    match (xs, ys) with
+    | (Cons (x, xss), Cons (y, yss)) ->
+        if y = "Z" then Cons (x ^ y, fun () -> merge (merge (xss ()) (yss ())) uppercase_circular)
+        else Cons (x ^ y, fun () -> merge xs (yss ()))
+  in labels_rec (lfill "") uppercase_circular
