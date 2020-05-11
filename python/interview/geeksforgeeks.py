@@ -470,16 +470,39 @@ def check_palindrome(data):
 def multiply_vectors(x, y):
     """ Given two very large strings, consisting of only digits, multiply the
     two strings and return the result as a string.
+
+    Trick: use Karatsuba multiplication recursive algorithm.
+    The order of magnitude has to be the same or at most different by one.
+
+    Args:
+        x, y, list of ints, numbers to multiply
+    Returns:
+        list on ints, the result
     """
-    def multiply(a, b):
+    def add(x ,y):
         pass
 
-    def add(a, b, offset):
+    def subtract(x, y):
         pass
 
-    for i in range(len(y)-1, 0, -1):
-        multiplier = y[i]
-        partial = multiply(x, multiplier)
-        offset = len(y) - i - 1
-        s = add(s, partial, offset)
-    return s
+    def multiply_rec(x, y):
+        n = len(x) / 2
+        m = len(y) / 2
+        if n == 1 and m == 1:
+            add = x[0] * y[0]
+            if add < 10:
+                return [add]
+            return [add / 10, mod(add, 10)]
+        if n == 0 and m == 1:
+            return y
+        if n == 1 and m == 0:
+            return x
+        a, b, c, d = x[:n], x[n:], y[:m], y[m:]
+        ac = multiply(a, c)
+        bd = multiply(b, d)
+        ad_plus_bc = subtract(subtract(multiply(add(a, b), add(c, d)), ac), bd)
+        return ac + ad_plus_bc + bd
+
+    result = multiply_rec(map(int, list(x)), map(int, list(y)))
+    return ''.join(map(str, result))
+
