@@ -3,8 +3,9 @@
 ## Definitions:
 - a term t is _typable_ - or _well typed_ - if there is a type T such that t:T.
 - What it means for a term to be _ill-typed_ or not well-typed:
-  - terms whose evaluation reaches a stuck state: it is not a final value but the
-  evaluation rules do not tell us what to do next. Eg. `if 0 then 1 else 2` breaks E-IF
+  - terms whose evaluation reaches a stuck state: it is not a final
+  value but the evaluation rules do not tell us what to do next.
+  Eg. `if 0 then 1 else 2` breaks E-IF
   - terms that behave well under evaluation but fail the static type check.
   Eg. `if true then 0 else false` breaks T-IF because 0 and false are of different types
 
@@ -44,6 +45,7 @@ If 0:R, then R=Nat
 If succ t1:R, then R=Nat
 If pred t1:R, then R=Nat
 If iszero t1:R, then R=Bool and t1:Nat
+```
 
 - Uniqueness of types: each term t has at most one type T: if t is typable, then its type is unique.
 - _statements_ are formal assertions about the typing of programs

@@ -1,11 +1,5 @@
 # BOOK: Types and Programming Languages
 
-## Chapter 9: Simple Typed Lambda-Calculus
-
-- introduces a type for functions: T1->T2
-- EX.9.2.1
-
-
 ## Curry-Howard equivalence: for every proposition you can associate a type.
 
 +--------------------------+------------------------+
