@@ -78,23 +78,27 @@ indicated types:
 ```
 1. f:Bool->Bool|-f (if false then true else false) : Bool
 
-                      ------------ (T-True) ------------- (T-False)
-                       |-true:Bool           |-false:Bool
-                    ---------------------------------------- (T-If)
- |-f:Bool->Bool      |-if false then true else false : Bool
--------------------------------------------------------------- (T-App)
+                                          ------------ (T-False)      ------------- (T-True)   -------------------- (T-False)
+ f:Bool->Bool in f:Bool->Bool             f:Bool->Bool |-false:Bool   f:Bool->Bool |-true:Bool f:Bool->Bool |-false:Bool
+----------------------------- (T-Var)    ---------------------------------------------------------------------- (T-If)
+ f:Bool->Bool |- f:Bool->Bool             f:Bool->Bool |-if false then true else false : Bool
+--------------------------------------------------------------------------------------------- (T-App)
     f:Bool->Bool|-f (if false then true else false) : Bool
 
 2. f:Bool->Bool|-\x:Bool.f (if x then false else x) : Bool -> Bool
 
-                                        -------------- (T-False)
-                                         |-false:Bool
-                                   -------------------------------------- (T-If)
-              |-f:Bool->Bool        x:Bool|-if x then false else x: Bool
+
+                                 ------------T-Var     ---------------- (T-False)
+   f:Bool->Bool in G_1            G_1|- x:Bool         G_1 |-false:Bool                (T-Var)
+          -------------- T-Var   ------------------------------------------------------------ (T-If)
+        G_1|-f:Bool->Bool        G_1 |- if x then false else x: Bool
              --------------------------------------------------------------- (T-App)
-x:Bool            f:Bool->Bool,x:Bool|-f (if x then false else x): Bool
+                  G_1|-f (if x then false else x): Bool
 ------------------------------------------------------------------------------ (T-Abs)
-    f:Bool->Bool,x:Bool|-\x:Bool.f (if x then false else x) : Bool -> Bool
+    G_0|-\x:Bool.f (if x then false else x) : Bool -> Bool
+
+G_0 = f:Bool->Bool
+G_1 = f:Bool->Bool, x : Bool
 ```
 
 EX.9.2.3 Find a context Γ under which the term f x y has type Bool.
