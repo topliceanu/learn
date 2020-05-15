@@ -109,6 +109,16 @@ Can you give a simple description of the set of all such contexts
 So Γ,f:T2->T1->Bool,x:T2,y:T1|-(f x y):Bool
 ```
 
+## Lemma (inversions of the typing relation)
+```
+1. If Γ|-x:R, then x:R in Γ
+2. If Γ|-\x:T1.t2:R, then R=T1->R2, for some R2 in with Γ,x:T1|-t2:R2
+3. If Γ|-t1 t2:R, then there is some type T11 such that Γ|-t1:T11->R and Γ|-t2:T11
+4. If Γ|-true:R, then R=Bool
+5. If Γ|-false:R, then R=Bool
+6. If Γ|-if t1 then t2 else t3:R, then Γ|-t1:Bool, Γ|-t2,t3:R
+```
+
 ## Questions:
 - Can a term have different types under different typing contexts?
 - Evaluation rules are left-to-right/top-to-bottom, typing rules right-to-left/bottom-up?
