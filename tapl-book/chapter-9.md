@@ -78,27 +78,29 @@ indicated types:
 ```
 1. f:Bool->Bool|-f (if false then true else false) : Bool
 
-                                          ------------ (T-False)      ------------- (T-True)   -------------------- (T-False)
- f:Bool->Bool in f:Bool->Bool             f:Bool->Bool |-false:Bool   f:Bool->Bool |-true:Bool f:Bool->Bool |-false:Bool
------------------------------ (T-Var)    ---------------------------------------------------------------------- (T-If)
- f:Bool->Bool |- f:Bool->Bool             f:Bool->Bool |-if false then true else false : Bool
+G_0 = f:Bool->Bool
+
+                                 ---------------- (T-False)      --------------- (T-True)   ---------------- (T-False)
+ f:Bool->Bool in G_0             G_0 |-false:Bool                G_0 |-true:Bool            G_0 |-false:Bool
+--------------------- (T-Var)    ------------------------------------------------------------------------------ (T-If)
+ G_0 |- f:Bool->Bool                         G_0 |-if false then true else false : Bool
 --------------------------------------------------------------------------------------------- (T-App)
-    f:Bool->Bool|-f (if false then true else false) : Bool
+                G_0|-f (if false then true else false) : Bool
 
 2. f:Bool->Bool|-\x:Bool.f (if x then false else x) : Bool -> Bool
 
-
-                                 ------------T-Var     ---------------- (T-False)
-   f:Bool->Bool in G_1            G_1|- x:Bool         G_1 |-false:Bool                (T-Var)
-          -------------- T-Var   ------------------------------------------------------------ (T-If)
-        G_1|-f:Bool->Bool        G_1 |- if x then false else x: Bool
-             --------------------------------------------------------------- (T-App)
-                  G_1|-f (if x then false else x): Bool
------------------------------------------------------------------------------- (T-Abs)
-    G_0|-\x:Bool.f (if x then false else x) : Bool -> Bool
-
 G_0 = f:Bool->Bool
 G_1 = f:Bool->Bool, x : Bool
+
+                                 ------------- (T-Var)     ---------------- (T-False)    ------------- (T-Var)
+   f:Bool->Bool in G_1            G_1|- x:Bool             G_1 |-false:Bool                G_1|- x:Bool
+  ------------------- (T-Var)    ------------------------------------------------------------------------------ (T-If)
+   G_1|-f:Bool->Bool                 G_1 |- if x then false else x: Bool
+  -------------------------------------------------------------------------- (T-App)
+                  G_1|-f (if x then false else x): Bool
+   ------------------------------------------------------------------- (T-Abs)
+        G_0|-\x:Bool.f (if x then false else x) : Bool -> Bool
+
 ```
 
 EX.9.2.3 Find a context Γ under which the term f x y has type Bool.
@@ -124,5 +126,9 @@ So Γ,f:T2->T1->Bool,x:T2,y:T1|-(f x y):Bool
 ```
 
 ## Questions:
-- Can a term have different types under different typing contexts?
-- Evaluation rules are left-to-right/top-to-bottom, typing rules right-to-left/bottom-up?
+- Can a term have different types under different typing contexts? Yes
+- Evaluation rules are left-to-right/top-to-bottom, typing rules right-to-left/bottom-up? Yes
+
+## Todo
+1. https://en.wikipedia.org/wiki/Simply_typed_lambda_calculus
+2. https://byorgey.wordpress.com/2009/01/12/abstraction-intuition-and-the-monad-tutorial-fallacy/
