@@ -7,9 +7,9 @@ from add_to_numbers import Solution, ListNode
 s = Solution()
 global s
 
-class TestLeetCode(unittest.TestCase):
+class TestAddTwoNumbers(unittest.TestCase):
 
-    def test_two_lists(self):
+    def test_solution(self):
         a = ListNode(val=2,
                 next=ListNode(val=4,
                     next=ListNode(val=3, next=None)))
