@@ -11,6 +11,7 @@ def knapsack_dynamic_programming(items, capacity):
 
     The knapsack problem is defined as follows: given a list of items with
     values and weights a knapsack with a given weight, optimize the knapsack usage,
+
     such that you maximize the value of the items in the knapsack.
 
     We assume item sizes and knapsack capacity are small integers in order to
@@ -75,7 +76,8 @@ def knapsack_dynamic_programming_memory_efficient(items, capacity):
     utilization.
 
     Memory improvements are achived by exploiting the observation that we for
-    each step of the computation we require partial results of the previous step.
+    each step of the computation we require partial results of only the previous step.
+    In other words, we don't need to keep the entire array.
 
     Args:
         items: list of tuples, format [(name: str, value: int, weight: int)]
@@ -118,7 +120,7 @@ def knapsack_three_step_heuristic(items, capacity):
     a three-step greedy heuristic:
 
     1. compute values/weight ratio for each item, then sort the items by ratio.
-    2. pack as many items as they fit in the knapsack in the order sorted in 1.
+    2. pack as many items as they fit in the knapsack given the sorted items in step 1.
     3. compare the values of the solutions picked in 2. with the item with the
     maximum value which fits in the knapsack. Pick the better one.
 

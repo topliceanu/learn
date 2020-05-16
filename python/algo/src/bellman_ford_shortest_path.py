@@ -2,13 +2,12 @@
 
 from src.graph import Graph
 
-
 def shortest_path(graph, s, return_paths=True):
     """ Implement the single source shortest path problem using the bellman-ford
     algorithm.
 
     This is usefull for graphs that may have edges with negative length.
-    Also, this algorithm is highly distributed-able.
+    Also, this algorithm is highly distributed-able. It's used in BGP.
 
     TODO: memory optimization, notice that bellman-ford only uses the results
     from the last iteration, so everything else can be thrown out.

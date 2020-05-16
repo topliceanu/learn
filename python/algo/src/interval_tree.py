@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-
 class Node(object):
     """ A node in an interval tree.
 

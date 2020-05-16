@@ -185,7 +185,7 @@ class MRUCache(Cache):
     This cache has a tendency to retain older data and as such it is usefull
     for random access patterns and repeated scans over large data sets.
 
-    Args:
+    Attrs:
         data: dict, format {key: {key, value, next, previous}}
         deque: object, format {key, value, next, previous}
     """
@@ -427,11 +427,11 @@ class ARCache(Cache):
     optimal performance in average case.
 
     Schema:
-        . . . [   b1  <-[     t1    <-!->      t2   ]->  b2   ] . .
+        . . . [   b1  <-[     t1    <-!->      t2   ]->  b2   ] . . .
               [ . . . . [ . . . . . . ! . .^. . . . ] . . . . ]
                         [   fixed cache size (c)    ]
 
-    Data is split in tow lists: t1 (a LRU cache) and t2 (a LFU cache).
+    Data is split in two lists: t1 (a LRU cache) and t2 (a LFU cache).
     Originally t1 and t2 have equal size.
     Evicted keys from t1 move into b1 (a LRU cache) with the same size.
     Evicted keys from t2 move to b2 (a LFU cache) with the same size.

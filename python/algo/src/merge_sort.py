@@ -6,6 +6,10 @@ from math import floor, ceil
 def merge (left, right):
     """ Joins two sorted lists into a third list and returns that list.
 
+    The problem with this implementation is that it creates a new "out" array.
+    Can we do this merging in place? Apparently yes, but the running time penalty
+    is significant and not worth it.
+
     Args:
         left: a sorted list of elements.
         right: a sorted list of elements.

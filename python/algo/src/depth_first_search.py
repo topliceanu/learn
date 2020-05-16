@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-
 # Const marking when a node is visited or not.
 VISITED = 1
 
@@ -50,7 +49,6 @@ def dfs_paths(graph, start, end):
     Returns:
         list, of paths from start to end, format [[vertex]]
     """
-    #import pdb; pdb.set_trace()
     paths = []
     stack = [(start, [start])]
 

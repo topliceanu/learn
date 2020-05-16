@@ -33,4 +33,6 @@ def bfs_shortest_path_distance(graph, start):
                 queue.append(neighbour)
                 graph.set_vertex_value(neighbour, vertex_level + 1)
 
+    # FIXME this does not return any path!
+    # It only calculates distances from source to all other nodes.
     return graph

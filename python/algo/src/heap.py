@@ -16,8 +16,11 @@ def heap_sort(arr):
     return out
 
 class Median(object):
-    """ Class maintains a list of elements. Whenever a new element is added
-    to the list the median value (n/2 order statistic) is recomputed.
+    """ Class maintains a list of elements stored in two heaps:
+    - a max-heap for the lower-half of the list and
+    - a min-heap for the upper-half of the list.
+    The median is either the head of the max-heap or the min of the min-heap,
+    depending on which one is larger.
 
     Note! In python's heapq implementation, max heaps are not supported, so
     we emulate them by using a min heap and inserting negated values in it!

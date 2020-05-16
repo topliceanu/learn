@@ -4,6 +4,9 @@ END = 'END'
 
 
 class TrieNode(object):
+    """ This implementation uses recursion to simplify the algorithms
+    as opposed to the Trie class below.
+    """
     def __init__(self, value=None):
         self.value = value
         self.children = {}
