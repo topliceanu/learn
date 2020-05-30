@@ -29,9 +29,8 @@ let log_entry maybe_time message =
   let time =
     match maybe_time with
     | Some x -> x
-    | None -> Core.Time.now ()
-  in
-  Time.to_string time ^ " -- " ^ message
+    | None -> Unix.time ()
+  in string_of_float time ^ " -- " ^ message
 
 (* record types *)
 type point2d = { x : float; y : float }
@@ -62,25 +61,22 @@ let is_inside_scene_element point scene_element =
   | Segment _ -> false
 
 let is_inside_scene point scene_elements =
-  List.exists scene_elements
-    ~f:(fun el -> is_inside_scene_element point el)
-(*
-let rec read_and_accumulate accum =
-  let line = In_channel.input_line In_channel.stdin in
-  match line with
-  | None -> accum
-  | Some x -> read_and_accumulate (accum +. Float.of_string x)
+  List.exists (fun el -> is_inside_scene_element point el) scene_elements
 
-let () =
-  printf "Total: %F\n" (read_and_accumulate 0.)
-*)
 let languages = "Ocaml,Perl,C++,C"
 
 let dashed_languages =
-  let languages = String.split languages ~on:',' in
-  String.concat ~sep:"-" languages
+  let languages = String.split_on_char ',' languages
+  in String.concat "-" languages
 
-let (ints, strings) = List.unzip [(1, "one"); (2, "two"); (3, "three")]
+(* val unzip : ('a * 'b) list -> 'a list * 'b list *)
+let rec unzip = function
+  | [] -> ([], [])
+  | (x, y) :: rest ->
+      let (xs, ys) = unzip rest
+      in (x :: xs, y :: ys)
+
+let (ints, strings) = unzip [(1, "one"); (2, "two"); (3, "three")]
 
 let (+!) (x1, y1) (x2, y2) = (x1+x2, y1+y2)
 
@@ -104,32 +100,20 @@ let langs = [
   ["OCaml";"Xavier Leroy"  ;"1996"] ;
 ]
 
-let max_widths header rows =
-  let lengths l = List.map ~f:String.length l in
-  List.fold rows ~init:(lengths header) ~f:(fun acc row ->
-    List.map2_exn ~f:Int.max acc (lengths row))
-
-let render_separator widths =
-  let lines = List.map widths ~f:(fun w -> String.make w '-')
-  in  "+" ^ (String.concat ~sep:"+" lines) ^ "+"
-
-let left_pad width str =
-  (String.make (width - String.length str) ' ') ^ str
-
-let render_row widths row =
-  let parts = List.map2_exn widths row ~f:left_pad
-  in "|" ^ String.concat ~sep:"|" parts ^ "|"
-
-let render_table header rows =
-  let widths = max_widths header rows in
-  let head_row = render_row widths header in
-  let sep_row = render_separator widths in
-  let rendered_rows = List.map ~f:(render_row widths) rows in
-  String.concat ~sep:"\n" (head_row :: sep_row :: rendered_rows)
-
-render_table heads langs
-
 let reduce lst pred =
   match lst with
   | [] -> None
   | hd :: tl -> Some (List.fold_left pred hd tl)
+
+(* ~foo are named arguments, ?foo is an optional argument *)
+(* val test : int option -> int -> int *)
+let test ?bar ~foo =
+  match bar with
+  | None -> foo
+  | Some baz -> foo + baz
+
+let concat ?sep x y =
+  let sep = match sep with
+      None -> ""
+    | Some x -> x
+  in x ^ sep ^ y

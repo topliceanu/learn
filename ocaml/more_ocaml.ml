@@ -173,11 +173,5 @@ let rec merge xs ys =
  **)
 let rec lfill x = Cons (x, fun () -> lfill x)
 
-(* fixme!!! *)
-let labels =
-  let rec labels_rec xs ys =
-    match (xs, ys) with
-    | (Cons (x, xss), Cons (y, yss)) ->
-        if y = "Z" then Cons (x ^ y, fun () -> merge (merge (xss ()) (yss ())) uppercase_circular)
-        else Cons (x ^ y, fun () -> merge xs (yss ()))
-  in labels_rec (lfill "") uppercase_circular
+(* FIXME *)
+(* let labels = *)
