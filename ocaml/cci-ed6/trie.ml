@@ -1,77 +1,77 @@
 (* A Trie is a tree with large branching order.
  * 'a is the value stored behind that key
+ * Inspirations:
+ * - https://gist.github.com/owainlewis/4066049
+ * - https://gist.github.com/komamitsu/6474266
  **)
 
-open Printf
+(* Trie structure where keys are strings and values can be any type 'a
+ * Invariants:
+ * - the Root has no key and no value but has children.
+ * - nodes in the tree all have a key, some don't have a value attacked - NoValueNode - some do - ValueNode.
+ * *)
 
-module String_map = Map.Make(String)
+module M = Map.Make(String)
 
 type 'a trie =
-| Empty
-| Node of { key: string option; value: string option; children: 'a trie String_map.t}
+  | Empty
+  | Node of 'a trie M.t
+  | ValueNode of string * 'a trie M.t
 
-(* val upsert : string -> 'a -> 'a trie -> 'a trie *)
-let rec upsert key value = function
-  | Empty ->
-      let root = Node { key=None; value=None; children=String_map.empty }
-      in upsert key value root
-  | Node {key=nkey; value=nvalue; children=nchildren } ->
-      let nchildren = match split_string key with
-        | (None, _) -> raise Not_found
-        (* we've reached the last character in the key, so write the value*)
-        | (Some hd, None) ->
-            (match String_map.find_opt hd nchildren with
-              (* node with hd does not exist -> create it with value, add it to the children *)
-              | None | Some Empty ->
-                  let node = Node { key=Some hd; value=Some value; children=String_map.empty }
-                  in String_map.add hd node nchildren
-              (* node with hd exists -> set/update the value on it *)
-              | Some Node { children=fchildren } ->
-                  let node = Node { key=Some hd; value=Some value; children=fchildren }
-                  in String_map.add hd node nchildren)
-        (* we're not done traversing the key characters *)
-        | (Some hd, Some rest) ->
-            (match String_map.find_opt hd nchildren with
-              (* node with hd does not exist -> create it, add it to chilren then upset in it *)
-              | None | Some Empty->
-                  let node = Node { key=Some hd; value=None; children=String_map.empty }
-                  in let node = upsert rest value node
-                  in String_map.add hd node nchildren
-              (* node with hd exists -> upsert in that node *)
-              | Some Node { value=fvalue; children=fchildren } ->
-                  let node = Node { key=Some hd; value=fvalue; children=fchildren }
-                  in String_map.add hd node nchildren)
-      in Node {key=nkey; value=nvalue; children=nchildren }
+(* val find_or_create : string -> 'a trie M.t -> 'a option *)
+let find_or_create c children value =
+  match ((M.find_opt c children), value) with
+  | (None, None) -> raise Not_found (* this is an impossible state *)
+  | (None, Some value') -> ValueNode (value', M.empty)
+  | (Some Empty, _) -> raise Not_found (* this should not be possible *)
+  | (Some (Node children'), None) -> Node children'
+  | (Some (Node children'), (Some value')) -> ValueNode (value', children')
+  | (Some (ValueNode (value', children')), None) -> ValueNode (value', children')
+  | (Some (ValueNode (value', children')), (Some value'')) -> ValueNode (value'', children')
 
-(* val print : 'a trie -> unit *)
-let print t =
-  let rec print_rec prefix = function
-    | Empty -> Printf.printf "%s  Empty" prefix
-    | Node { key; value; children } ->
-        (match (key, value) with
-        | (None, None) -> Printf.printf "root\n"
-        | (None, Some _) -> raise Not_found
-        | (Some k, None) -> Printf.printf "%s  %s:x\n" prefix k
-        | (Some k, Some v) -> Printf.printf "%s   %s:%s\n" prefix k v);
-        List.iter (fun (_, ch) -> print_rec (prefix ^ "  ") ch) (String_map.bindings children);
-  in print_rec "" t
+type key_parts =
+| Blank
+| Last of string
+| More of string * string
 
-(* val lookup : string -> 'a trie -> 'a *)
-
-(* val lookup_prefix: string -> string * 'a trie -> string * 'a list *)
-
-(* val delete : string -> string * 'a trie -> string * 'a trie *)
-
-(* val traverse : string * 'a trie -> string * 'a list *)
-
-(* Utilities *)
-
-(* val split_string : string -> string option * string option *)
-let split_string s =
+(* val split_key : string -> key_parts *)
+let split_key s =
   let n = String.length s
-  in if n = 0 then None, None
-  else if n = 1 then Some s, None
+  in if n = 0 then Blank
+  else if n = 1 then Last s
   else
     let hd = String.sub s 0 1
     in let tl = String.sub s 1 (n - 1)
-    in (Some hd, Some tl)
+    in More (hd, tl)
+
+(* val upsert : string -> 'a -> 'a trie -> 'a trie *)
+let rec upsert key value tr =
+  let parts = split_key key in
+  match (tr, parts) with
+  | (_, Blank) -> raise Not_found
+  | (Empty, Last c) ->
+      let node = ValueNode (value, M.empty) in
+      let children = M.add c node M.empty in
+      Node children (* root node *)
+  | (Node children, Last c) ->
+      let node = find_or_create c children (Some value) in
+      let children = M.add c node children in
+      Node children
+  | (ValueNode (value', children), Last c) ->
+      let node = find_or_create c children (Some value) in
+      let children' = M.add c node children in
+      ValueNode (value', children')
+  | (Empty, More (c, rest)) ->
+      let node = upsert rest value (Node M.empty) in
+      let children = M.add c node M.empty
+      in Node children
+  | (Node children, More (c, rest)) ->
+      let node = find_or_create c children None in
+      let node' = upsert rest value node in
+      let children' = M.add c node' children in
+      Node children'
+  | (ValueNode (value', children), More (c, rest)) ->
+      let node = find_or_create c children None in
+      let node' = upsert rest value node in
+      let children' = M.add c node' children in
+      ValueNode (value', children')
