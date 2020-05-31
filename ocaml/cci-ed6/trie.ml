@@ -21,7 +21,7 @@ type 'a trie =
 (* val find_or_create : string -> 'a trie M.t -> 'a option *)
 let find_or_create c children value =
   match ((M.find_opt c children), value) with
-  | (None, None) -> raise Not_found (* this is an impossible state *)
+  | (None, None) -> Node M.empty
   | (None, Some value') -> ValueNode (value', M.empty)
   | (Some Empty, _) -> raise Not_found (* this should not be possible *)
   | (Some (Node children'), None) -> Node children'
@@ -75,3 +75,32 @@ let rec upsert key value tr =
       let node' = upsert rest value node in
       let children' = M.add c node' children in
       ValueNode (value', children')
+
+(* val print : 'a trie -> unit *)
+let print tr =
+  (* val print_children : 'a trie M.t -> unit *)
+  let rec print_child prefix key value =
+    print_trie (prefix ^ key) value
+  (* val print_trie : string -> 'a trie -> unit *)
+  and print_trie prefix = function
+    | Empty -> Printf.printf "%sEmpty\n" prefix
+    | Node children -> M.iter (print_child prefix) children
+    | ValueNode (value, children) ->
+        Printf.printf "%s:%s\n" prefix value;
+        M.iter (print_child prefix) children
+  in print_trie "" tr
+
+(* val lookup : string -> 'a trie -> 'a option *)
+let rec lookup key tr =
+  let parts = split_key key in
+  match (tr, parts) with
+  | (Empty, _) -> None
+  | (_, Blank) -> None
+  | (Node children, Last c) | (ValueNode (_, children), Last c) ->
+      (match (M.find_opt c children) with
+      | None | Some Empty | Some (Node _) -> None
+      | Some (ValueNode (value, _)) -> Some value)
+  | (Node children, More (c, rest)) | (ValueNode (_, children), More (c, rest)) ->
+      (match (M.find_opt c children) with
+      | None -> None
+      | Some node -> lookup rest node)
