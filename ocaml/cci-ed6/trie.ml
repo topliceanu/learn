@@ -90,17 +90,53 @@ let print tr =
         M.iter (print_child prefix) children
   in print_trie "" tr
 
-(* val lookup : string -> 'a trie -> 'a option *)
+(* val lookup : string -> 'a trie -> 'a trie
+ * Returns a node in the trie that matches the key or Empty otherwise
+ **)
 let rec lookup key tr =
   let parts = split_key key in
   match (tr, parts) with
-  | (Empty, _) -> None
-  | (_, Blank) -> None
+  | (Empty, _) -> Empty
+  | (_, Blank) -> Empty
   | (Node children, Last c) | (ValueNode (_, children), Last c) ->
       (match (M.find_opt c children) with
-      | None | Some Empty | Some (Node _) -> None
-      | Some (ValueNode (value, _)) -> Some value)
+      | None | Some Empty -> Empty
+      | Some node -> node
   | (Node children, More (c, rest)) | (ValueNode (_, children), More (c, rest)) ->
       (match (M.find_opt c children) with
       | None -> None
       | Some node -> lookup rest node)
+
+(* val lookup_value : string -> 'a trie -> string option *)
+let lookup_value key tr =
+  match lookup key tr with
+  | Empty -> None
+  | Node _ -> None
+  | ValueNode (value, _) -> Some value
+
+(* val traverse : 'a trie -> 'a trie list *)
+let traverse tr =
+  let rec aux acc tr =
+    match tr with
+      | Empty -> acc
+      | Node children ->
+          tr :: (M.fold (fun _ child acc -> aux acc child) tr acc)
+      | ValueNode (_, children) ->
+          tr :: (M.fold (fun _ child acc -> aux acc child) tr acc)
+  in aux [] tr
+
+(* val traverse_values : 'a trie -> string list *)
+let traverse_values tr =
+  let rec values = function
+    | [] -> []
+    | Node _ :: nodes -> values nodes
+    | ValueNode (value, _) :: nodes -> value :: (values nodes)
+  in values (traverse tr)
+
+(* val lookup_prefix : string -> 'a trie -> string list *)
+let traverse_prefix prefix tr =
+  match lookup prefix tr with
+  | Empty -> []
+  | _ as node -> traverse_values node
+
+(* val remove : string -> 'a trie -> 'a trie *)
