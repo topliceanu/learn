@@ -87,6 +87,10 @@ also well-typed. Also know as _subject reduction_ or _subject evaluation_:
   If t:T and t->t' then t':T
 ```
 
+- _Canonical forms lemma_
+If v:Bool then v is either true or false
+If v:Nat, then v is either `0` or `succ n`
+
 ## Evaluation rules from Ch3:
 ```
 t ::= true | false | if t then t else t (terms)

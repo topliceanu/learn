@@ -1,6 +1,7 @@
 # Chapter 5: Lambda Calculus
 
 ## Concepts
+
 * term:
   - either a variable (x)
   - an abstraction (\x.t, or function definition, t is the body of the abstraction) - or an application (t t, t applied to t)
@@ -13,11 +14,12 @@
   Eg. in \x.\y.x y == \z.s, where z = x, x = \y.x y are metavariables
 * \x.t - the variable x is bound by the abstraction t; \x is the binder whose scope is term t.
 * \y.x y - the variable x is free. (\x.x) x - the first x is bound, the second is free.
-* a term with no free variable is closed, also called combinator
+* a term with no free variable is _closed_, also called combinator
   Eg. simplest combinator is the identity function id=\x.x
+* an _open term_ is a term that is not closed, ie. it has at least one free variable.
 * an evaluation: (\x.t1) t2 -> [x:=t2]t1 - substituting the right-hand components (t2) for the bound variable (x) in t1.
   [x:=t2]t1is a term obtained by replacing all bound occurances of x in t1 with t2
-* redex - reducible expression, eg. (\x.t1) t2 = [x:=t2] t1
+* _redex_ - reducible expression, eg. (\x.t1) t2 = [x:=t2]t1
 * beta-reduction - the operation of reducing a redex to simpler form
 * types of evaluation
 - full beta-reduction: pick any redex to evaluate first.
@@ -345,18 +347,26 @@ EX.5.3.3.|FV(t)| <= size(t) because t can have bound variables which appear in t
 
 * operational semantics
 ```
--- terms
-term = x # variable
-     | \x.t # abstraction
-     | (t1 t2) # application
------------------- values
-value = \x.t # only abstractions can be values in lambda calculus.
+Syntax:
+t ::= x - variable
+      \x.t - abstraction
+      t t - application
 
--- evaluation
-t1 -> t1' => (t1 t2) -> (t1' t2) # E-APP1 - first, we evaluate the left-hand side to a value/abstraction.
-t2 -> t2' => (v1 t2) -> (v1 t2') # E-APP2 - second, we evaluate the right-hand side to a value/abstraction.
-(\x.t12) v2 => [x->v2]t12 # A-APP-ABS - finally we perform the application itself by substition.
+Values:
+v ::= \x.t - abstraction value
+
+Evaluation:
+    t1 -> t1'
+----------------- (E-App1)
+ t1 t2 -> t1' t2
+
+    t2 -> t2'
+--------------- (E-App2)
+t1 t2 -> t1 t2'
+
+(\x.t12) v2 -> [x->v2]t12 (E-AppAbs)
 ```
+
 EX.5.3.6. HOW!?!?
 
 ## Questions for Ch5.
