@@ -1,20 +1,5 @@
 # BOOK: Types and Programming Languages
 
-## Curry-Howard equivalence: for every proposition you can associate a type.
-
-+--------------------------+------------------------+
-| mathematical logic       | programming languages  |
-+--------------------------+------------------------+
-| propositions             | types                  |
-+--------------------------+------------------------+
-| proofs                   | terms (programs)       |
-+--------------------------+------------------------+
-| simplification of proofs | evaluation of programs |
-+--------------------------+------------------------+
-
-Product types == records == structs (carthesian products)
-Sum types == union types
-
 ## Resources
 1. Church encodings used in TaPL [wiki](https://en.wikipedia.org/wiki/Church_encoding#List_encodings)
 2. System F, a typed lambda calculus [wiki](https://en.wikipedia.org/wiki/System_F)
