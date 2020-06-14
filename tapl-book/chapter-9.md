@@ -225,10 +225,37 @@ P is provable       | type P is inhabited by at least one term.
 - a term of the simply-types lambda calculus is a proof of a logical proposition corresponding to its type.
 - computation - reduction of lambda terms - corresponds to the logical operation of proof simplification by cut elimination.
 
+P ⊃ Q - a proof of Q _abstracted_ on a proof a P.
+
+## Erasure and typability
+
+- no run-time checking is done to ensure that functions are applied to arguments of appropriate types.
+
+- _erasure_ maps simply typed terms to untyped terms
+```
+erase(x) = x
+erase(\x:T1.t2) = \x.erase(t2)
+erase(t1 t2) => erase(t1) erase(t2)
+```
+
+- Theorem: evaluation commutes with erasure. It doesn't matter the order, the result is the same.
+1. If t->t' under typed evaluation, then erase(t) -> erase(t')
+2. If erase(t) -> m' under typed evaluation then there is a simply typed term t' so t->t' and erase(t') = m'
+
+- a term m is _typable_ if there exists a typed term t, a type t and a context G such that erase(t) = m and G|-t:T
+This is related to _type reconstruction_ or _type inference_.
+
+### Curry-style vs Church-style
+
+- A _Curry-style_ language definition is where sematics is prior to typing: we first define the terms,
+define a semantics showing how terms behave, then give a type system that rejects some terms we don't like.
+Aka _implicitly typed_ syntax
+- A _Church-style_ language defintion is where typing comes before semantics: we define the terms,
+then we identify well-typed terms, then give semantics just to the well-typed terms.
+We never even ask about the behavior un ill-typed terms.
+Aka _explicitly type_ syntax
 
 ## Questions:
-- Is 9.3.2 correct?
-- Is 9.4.1 correct?
 - Prove the preservation theorem
 Old
 - Can a term have different types under different typing contexts? Yes
