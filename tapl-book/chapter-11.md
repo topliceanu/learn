@@ -1,6 +1,15 @@
 # Chapter 11: Simple Extensions
 
-- _derived form_ or _syntactic sugar_ - terms that are simplified versions of equivalent terms.
+- _derived form_ or _syntactic sugar_: the typing and evaluation rules of derived
+forms must be derived from application and abstraction! Derived forms should not
+introduce new language constructs, which have to be proven.
+
+"The advantage of introducing features like sequencing as derived forms rather
+than as full-fledged language constructs is that we can exend the surface syntax
+(i.e., the language that the programmer actually uses to write programs) without
+adding any complexity to the internal language about which theorems such as type
+safety must be proved."
+
 - _base types_ or _atomic types_ - simple unstructured values - booleans, numbers, characters - with associated primitive operations.
 - _uninterpreted_ or _unknown_ base types - types that have no primitives on them at all.
 
@@ -34,7 +43,7 @@ What is the length of an expression?
 
 - _sequencing notation_ - t1;t2 - evaluates t1, throws away the result, then evaluates t2.
 - t1 has to have type Unit for the sequencing term to be legal
-- `t1;t2` can be derived as `(\x:Unit.t2) t1`
+- `t1;t2` can be derived from `(\x:Unit.t2) t1`
 ```
 Evaluation:
    t1 -> t1'
@@ -59,12 +68,20 @@ The typing an evaluation rules are the same as the simply typed lambda calculus.
 The difference is that in the case of abstractions, _ stands for a variable that does not occur in t
 
 Evaluation:
-(\_:T1.t2) v1 -> t2 (A-AppWildcard)
+(\_:T1.t2) t1 -> t2 (A-AppWildcard)
+
+OR, is this a better rule:
+       t -> t'
+-------------------- (A-AppWildcard)
+ (\_:T1.t) t1 -> t'
 ```
 
 ## Ascribing
 
-_ascribing_ written as `t as T` - verifies the type of term t is indeed T
+- _ascribing_ written as `t as T` - verifies the type of term t is indeed T at compile time.
+- it's useful for documentation, debugging, making the code more readable.
+- when a term t may have many different types - in languages with subtyping - ascribing can
+be used to restrict the set of types the compiler has to consider.
 
 ```
 Syntactic forms:
@@ -83,6 +100,60 @@ Typing:
 Γ|-t1 as T : T
 
 ```
+
+Ex.11.4.1. (1) Show how to formulate ascription as a derived form.
+Prove that the “official” typing and evaluation rules given here correspond to
+your definition in a suitable sense. (2) Suppose that, instead of the pair of
+evaluation rules E-Ascribe and E-Ascribe1, we had given an "eager" rule
+```
+t1 as T -> t1 (E-AscribeEager)
+```
+that throws away an ascription as soon as it is reached. Can ascription still
+be considered as a derived form?
+
+Solution:
+```
+The only place where we introduce new types are abstractions,
+so `t as T` can be derived from `(\x:T.x) t`
+
+For E-Ascribe, `v1 as T -> v1`
+
+(\x:T.x) v1 -> [x->v1]x -> v1 (E-AppAbs)
+
+For E-Ascribe1,
+
+     t1 -> t1'
+--------------------
+t1 as T -> t1' as T
+
+(\x:T.x) t1 -> [x->t1]x -> t1 (E-AppAbs) -> t1' (
+
+The problem here is we evaluate the ascription before the term t1!!
+
+For T-Ascribe
+   Γ|-t1:T
+-------------- (T-Ascribe)
+Γ|-t1 as T : T
+
+Given
+Γ_0 = t:T
+Γ_1 = Γ_0,x:T
+
+Type derivation is
+    x:T in Γ_1
+   ------------
+     Γ_1|-x:T                        t:T in Γ_0
+--------------------- (T-Abs)        ----------- (T-Var)
+  Γ_0|-(\x:T.x):T->T                  Γ_0|-t:T
+------------------------------------------------- (T-App)
+     Γ_0|-(\x:T.x) t : T
+
+For E-AscribeEager, t1 as T -> t1.
+To mee, these "eager" evaluation rules are just like derived forms, they don't
+introduce any new language construct, they are just syntactic sugar.
+```
+
+## Let Binding
 
 _let binding_  a let expression gives names to some of its subexpressions.
 
