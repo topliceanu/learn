@@ -70,11 +70,12 @@ Q: What can't you do?
 +--------------------------+------------------------+
 
 - The correspondence between types and formulas of logic:
+![img](./luca-cardelli-types-logic.png)
 ```
 ->  ::  ⊃
 x   ::  AND
 +   ::  OR
-⊥   ::
+⊥   ::  False formula
 ```
 
 Product types == records == structs (carthesian products)

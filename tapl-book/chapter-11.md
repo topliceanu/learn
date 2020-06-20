@@ -68,12 +68,12 @@ The typing an evaluation rules are the same as the simply typed lambda calculus.
 The difference is that in the case of abstractions, _ stands for a variable that does not occur in t
 
 Evaluation:
-(\_:T1.t2) t1 -> t2 (A-AppWildcard)
 
-OR, is this a better rule:
-       t -> t'
--------------------- (A-AppWildcard)
- (\_:T1.t) t1 -> t'
+(\_.t) t' -> t (E-AppWildcard)
+
+      Γ|-t1:T1
+-------------------- (T-Abs) ***
+Γ|-(\_:T2.t1):T2->T1
 ```
 
 ## Ascribing
@@ -121,12 +121,11 @@ For E-Ascribe, `v1 as T -> v1`
 (\x:T.x) v1 -> [x->v1]x -> v1 (E-AppAbs)
 
 For E-Ascribe1,
-
      t1 -> t1'
 --------------------
 t1 as T -> t1' as T
 
-(\x:T.x) t1 -> [x->t1]x -> t1 (E-AppAbs) -> t1' (
+t1 as T = (\x:T.x) t1 -> [x->t1]x -> t1 (E-AppAbs) -> t1'
 
 The problem here is we evaluate the ascription before the term t1!!
 
@@ -155,18 +154,40 @@ introduce any new language construct, they are just syntactic sugar.
 
 ## Let Binding
 
-_let binding_  a let expression gives names to some of its subexpressions.
+- a let expression gives names to some of its subexpressions.
+- evaluation is `call-by-value`: the let-bound term must be fully evaluated before
+evaluation of the let body can begin.
 
 ```
-Definition:
-let x=t1 in t2  ===  (\x:T1.t2) t1
+Syntax:
+t ::= ....
+      let x=t in t - let binding
+
+Evaluation:
+let x = v1 in t2 -> [x->v1]t2 (E-LetV)
+
+                t1->t1'
+------------------------------------- (E-Let)
+let x = t1 in t2 -> let x = t1' in t2
 
 Typing:
-
 Γ|-t1:T1         Γ,x:T1|-t2:T2
 ------------------------------ (T-Let)
         Γ|-let x=t1 in t2:T2
+
+Definition as a derived form:
+let x=t1 in t2  ===  (\x:T1.t2) t1
 ```
+- we can derive let's evaluation behaviour by desugaring it, but it's typing
+behaviour must be built into the internal language.
+
+EX.11.5.2  Does let x=t1 in t2 === [x->t1]t2 work?
+```
+I would say no, you can only do that with values, like in E-LetV.
+We have to evaluate t1 first, that's the key of a let expression.
+```
+
+## Pairs
 
 _pairs_ are groups of two values of any type. They only support projections,
 ie. accessing one of the elements in the pair.
