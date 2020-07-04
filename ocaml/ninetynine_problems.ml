@@ -495,30 +495,6 @@ let totient m =
  * var factors : int -> int list
  **)
 let factors n =
-  (* val range : int -> int -> int list
-   * generates a list of integers in [m, k] inclusive.
-   **)
-  let rec range m k =
-    if m > k then []
-    else m :: range (m+1) k
-
-  (* val primes : int list -> int list
-   * filters a list of number using the sieve of Erathostenes.
-   * *)
-  in let rec primes = function
-    | [] -> []
-    | hd :: tl -> hd :: (primes (List.filter (fun x -> x mod hd <> 0) tl))
-
-  (* val factors_rec : int -> int -> int list *)
-  in let rec factors_rec n = function
-    | [] -> []
-    | hd :: tl as l ->
-        if n mod hd = 0 then hd :: factors_rec (n / hd) l
-        else factors_rec n tl
-
-  in factors_rec n (primes (range 2 (n / 2)))
-
-let factors_theirs n =
   let rec aux d n =
     if n = 1 then []
     else if n mod d = 0 then d :: aux d (n / d)
@@ -559,7 +535,23 @@ let phi_improved n =
   let rec pow a b =
     if b = 0 then 1 else a * pow a (b - 1)
   in let rec phi_rec = function
-    | [] -> 0
-    | (p, m) :: tl -> (p - 1) * (pow p  (m - 1)) + phi_rec tl
+    | [] -> 1
+    | (p, m) :: tl -> (p - 1) * (pow p  (m - 1)) * (phi_rec tl)
   in phi_rec (factors_pow n)
 
+(* 38. Compare the two methods of calculating Euler's totient function. (easy)
+ * Use the solutions of problems "Calculate Euler's totient function φ(m)" and
+ * "Calculate Euler's totient function φ(m) (improved)" to compare the algorithms.
+ * Take the number of logical inferences as a measure for efficiency.
+ * Try to calculate φ(10090) as an example.
+ **)
+let timeit f arg =
+  let t0 = Unix.gettimeofday() in
+  ignore (f arg);
+  let t1 = Unix.gettimeofday() in
+  t1 -.t0
+
+(* 39. A list of prime numbers. (easy)
+ * Given a range of integers by its lower and upper limit, construct a list
+ * of all prime numbers in that range.
+ **)
