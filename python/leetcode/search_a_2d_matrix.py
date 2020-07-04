@@ -40,15 +40,35 @@ def search(mat, target, l1, l2, c1, c2):
             search(mat, target, lmid+1, l2, cmid+1, c2) or \
             search(mat, target, lmid+1, l2, c1, cmid)
 
+def search2(mat, target):
+    n = len(mat)
+    if n == 0:
+        return False
+    m = len(mat[0])
+    if m == 0:
+        return False
+    i = 0
+    j = m - 1
+    while i < n and j >= 0:
+        if mat[i][j] == target:
+            return True
+        if mat[i][j] > target:
+            j -= 1
+        if mat[i][j] < target:
+            i += 1
+    return False
+
 class Solution(object):
     def searchMatrix(self, matrix, target):
-        """
-        :type matrix: List[List[int]]
-        :type target: int
-        :rtype: bool
-        """
-        m = len(matrix)
-        if m == 0:
-            return False
-        n = len(matrix[0])
-        return search(matrix, target, 0, m-1, 0, n-1)
+        return search2(matrix, target)
+    #def searchMatrix(self, matrix, target):
+    #    """
+    #    :type matrix: List[List[int]]
+    #    :type target: int
+    #    :rtype: bool
+    #    """
+    #    m = len(matrix)
+    #    if m == 0:
+    #        return False
+    #    n = len(matrix[0])
+    #    return search(matrix, target, 0, m-1, 0, n-1)

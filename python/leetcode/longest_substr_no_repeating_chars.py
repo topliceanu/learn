@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Problem #3 from leetcode.com
+# Source: https://leetcode.com/problems/longest-substring-without-repeating-characters
 
 class Solution(object):
     def contract_left(self, s, left, right, counter, max_length):
