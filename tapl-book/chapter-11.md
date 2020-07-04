@@ -191,6 +191,8 @@ We have to evaluate t1 first, that's the key of a let expression.
 
 _pairs_ are groups of two values of any type. They only support projections,
 ie. accessing one of the elements in the pair.
+- sometimes T1xT2 is referred to as a product type or carthesian product.
+- in {t1, t2} you need to first t1 down to a value, then t2 down to a value, then you can project!
 
 ```
 Syntax:
@@ -202,9 +204,177 @@ t ::= ...
 Values:
 v ::= ...
       {v, v} - pair value
+
+Types:
+T ::= ...
+      {TxT} - product type
+
+Evaluation:
+{v1,v2}.1 -> v1 (E-PairBeta1)
+{v1,v2}.2 -> v2 (E-PairBeta2)
+
+  t1 -> t1'
+-------------- (E-PairProj1)
+t1.1 -> t1'.1
+
+  t1 -> t1'
+-------------- (E-PairProj2)
+t1.2 -> t1'.2
+
+    t1 -> t1'
+------------------- (E-Pair1)
+{t1,t2} -> {t1',t2}
+
+    t2 -> t2'
+------------------- (E-Pair2)
+{t1,t2} -> {t1,t2'}
+
+Typing
+Γ|-t1:T1   Γ|-t2:T2
+-------------------- (T-Pair) - introduction rule, introduces T1xT2
+ Γ|-{t1,t2}:T1xT2
+
+Γ|-t:T1xT2
+---------- (T-Proj1) - elimination rule
+ Γ|-t.1:T1
+
+Γ|-t:T1xT2
+---------- (T-Proj2) - elimination rule
+ Γ|-t.2:T2
 ```
 
+## Tuples
+
+- generalization on pairs
+- you can have an empty tuple, {}
+
+```
+Syntax:
+t ::= ...
+      {ti,i=1..n} - tuple
+      t.i - projection
+
+Values:
+v ::= ...
+      {vi,i=1..n} - tuple value
+
+Types:
+T ::= ...
+      {Ti,i=1..n} - tuple type
+
+Evaluation:
+{vi,i=1..n}.j -> vj (E-ProjTuple)
+
+  t1 -> t1'
+------------- (E-Proj)
+t1.i -> t1'.i
+
+                            tj -> tj'
+----------------------------------------------------------------- (E-Tuple)
+{vi,i=1..j-1, tj, vk,k=j+1..n} -> {vi,i=1..j-1, tj', vk,k=j+1..n}
+
+Typing:
+   for each i Γ|-ti:Ti
+--------------------------- (T-Tuple)
+Γ|-(ti,i=1..n):{Ti,i=1..n}
+
+Γ|-t1:{Ti,i=1..n}
+----------------- (T-Proj)
+   Γ|-t1.j:Tj
+```
+
+## Records
+
+- records are labeled tuples. Tuples can be seen as a Records where labes are positional numbers and can be omitted.
+- pairs are also records with only two elements and with numeric labels. This applies to pattern matching.
+- {x:Nat,y:Bool} != {y:Bool,x:Nat} in their definition
+
+```
+Syntax:
+t ::= ...
+      {li=ti,i=1..n} - record
+      t.l - projection
+
+Values:
+v ::= ...
+      {li=vi,i=1..n} - record value
+
+Types:
+T ::= ...
+      {li:Ti,i=1..n} - record type
+
+Evaluation:
+{li=vi,i=1..n}.j -> vj (E-ProjTuple)
+
+  t1 -> t1'
+------------- (E-Proj)
+t1.l -> t1'.l
+
+                                     tj -> tj'
+---------------------------------------------------------------------------------- (E-Record)
+{li=vi,i=1..j-1, lj=tj, lk=vk,k=j+1..n} -> {li=vi,i=1..j-1, lj=tj', lk=vk,k=j+1..n}
+
+Typing:
+      for each i Γ|-ti:Ti
+-------------------------------- (T-Rcd)
+Γ|-(li=ti,i=1..n):{li:Ti,i=1..n}
+
+Γ|-t1:{li:Ti,i=1..n}
+-------------------- (T-Proj)
+   Γ|-t1.lj:Tj
+
+```
+
+EX.11.8.1.Write E-ProjRcd more explicitly, for comparison.
+```
+{li=vi,i=1..n}.lj -> vj
+
+becomes:
+{li=vi,i=1..j-1, lj, lk=vk,k=j+1,n}.lj -> vj
+```
+
+Ex.11.8.2 (***) Pattern matching
+
+```
+Patterns:
+p ::= x - variable pattern
+      {li=pi,i=1..n} - record pattern
+
+Terms:
+t ::= ...
+      let p=t in t - pattern binding
+
+Matching:
+match (x, v) = [x->v] (M-Var) - substitute x with v
+
+              for each i match(pi,vi) = σi
+------------------------------------------------------ (M-Rcd)
+match({li=pi,i=1..n}, {li=vi,i=1..n}) = σ1.σ2.σ3...σn
+
+- if we match a record pattern against a record we get a series of substitutions.
+They need to have the same labels and same lenghts, otherwise matching will fail.
+
+New evaluation rules:
+let p=v1 in t2 -> match(p,v1) t2 (E-LetV) - apply all substitution from match(p,v1) in t2
+
+            t1 -> t1'
+---------------------------------- (E-Let)
+let p=t1 in t2 -> let p=t1' in t2
+```
+
+Add typing rules to this system
+
+## Sums and Variant types
+
+- also known as _variant types_, they are useful for heterogeneous data.
+- Sum types are variant types with only two variants.
+
 ## Questions
-- Ex.11.2.1 What?
-- Q: If Haskell a purely functional language?
 - Q: In sequencing, t1;t2, does t1 HAVE to evaluate to unit?!
+- Q: From the evaluation rule, it seems that to extract a value from a pair you have to evaluate both expressions. Why?
+Also, it seems we now evaluate arguments of an abstraction be evaluating the abstraction.
+- Q: How is the empty tuple {} different from unit?
+
+Old
+- Q: If Haskell a purely functional language? Noe
+- Ex.11.2.1 What? This is a *** ex, we decided to now work on those anymore.
