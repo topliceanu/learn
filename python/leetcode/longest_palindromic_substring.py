@@ -15,7 +15,6 @@ def maximum(l, r):
     return li, lj, False
 
 def grow(s, i, j):
-    print(">>>", i, j)
     if i < 0 or j >= len(s) or s[i] != s[j]:
         return i, j, False
     left = grow(s, i-1, j)
@@ -86,11 +85,51 @@ def longest_palindrome3(s):
     return s[min_i:max_j+1]
 
 def longest_palindrome4(s):
-    """ Manacher's algorithm: https://www.hackerrank.com/topics/manachers-algorithm
-        O(n) time and O(1) space.
+    """ Manacher's algorithm. O(n) time and O(n) space.
+    @see https://cp-algorithms.com/string/manacher.html
     """
-    se = "#"+"#".join(list(s))+"#"
+    n = len(s)
+    if n <= 1:
+        return s
+    l, r = 0, -1
+    p = [0] * n
+    max_i = 0
+    if n % 2 == 1:
+        for i in range(n):
+            k = 1
+            if i < r:
+                k = min(p[l+r-i], r-i+1)
+            while 0 <= i-k and i+k < n and s[i-k] == s[i+k]:
+                k += 1
+            p[i] = k-1
+            if i + p[i] > r:
+                l = i - p[i]
+                r = i + p[i]
+            if p[i] > p[max_i]:
+                max_i = i
+        return s[max_i - p[max_i] : max_i + p[max_i] + 1]
+    else:
+        for i in range(n):
+            k = 0
+            if i < r:
+                k = min(p[l+r-i+1], r-i+1)
+            while 0 <= i-k-1 and i+k < n and s[i-k-1] == s[i+k]:
+                k += 1
+            p[i] = k-1
+            if i + p[i] > r:
+                l = i - p[i] - 1
+                r = i + p[i]
+            if p[i] > p[max_i]:
+                max_i = i
+        return s[max_i - p[max_i] - 1 : max_i + p[max_i] + 1]
 
+def expand(s, c, r=0):
+    """ Expands the palindrome in s centered in c starting with starting radius of r.
+    Returns the radius of the largest palindrome in s centered in c.
+    """
+    while c-r >= 0 and c+r < len(s) and s[c+r] == s[c-r]:
+        r += 1
+    return r - 1
 
 class Solution(object):
 
@@ -99,4 +138,4 @@ class Solution(object):
         :type s: str
         :rtype: str
         """
-        return longest_palindrome(s)
+        return longest_palindrome4(s)
