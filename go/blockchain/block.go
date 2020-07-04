@@ -1,9 +1,10 @@
 package main
 
 import (
-	"time"
 	"bytes"
+	"crypto/sha256"
 	"encoding/gob"
+	"time"
 )
 
 type Block struct {
@@ -14,7 +15,6 @@ type Block struct {
 	Nonce int
 }
 
-// TODO data should really be []byte
 func NewBlock(transactions []*Transaction, prevBlockHash []byte) *Block {
 	block := &Block{
 		Timestamp: time.Now().Unix(),

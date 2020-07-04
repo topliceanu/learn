@@ -2,6 +2,8 @@
 
 [blog](https://jeiwan.net/) and [source](https://github.com/Jeiwan/blockchain_go/tree/master)
 
+The code in this section is mostly copied from https://github.com/Jeiwan/blockchain_go
+
 !!! Pick up from Chapter 4
 
 ## Concepts

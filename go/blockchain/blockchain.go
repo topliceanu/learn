@@ -1,12 +1,16 @@
 package main
 
 import (
+	"encoding/hex"
+	"os"
+	"fmt"
+
 	bolt "go.etcd.io/bbolt"
 )
 
 const dbFile = "./blockchain.db"
-
 const blocksBucket = "blocks"
+const genesisCoinbaseData = "Genesis block"
 
 type Blockchain struct {
 	tip []byte // hash of the latest block in the chain.
@@ -44,6 +48,10 @@ func (bc *Blockchain) MineBlock(transactions []*Transaction) {
 }
 
 func NewBlockchain() *Blockchain {
+	if !dbExists() {
+		fmt.Println("no blockchain exists. create one first")
+		os.Exit(1)
+	}
 	var tip []byte
 	db, err := bolt.Open(dbFile, 0600, nil)
 	if err != nil {
@@ -51,6 +59,7 @@ func NewBlockchain() *Blockchain {
 	}
 	err = db.Update(func(tx *bolt.Tx) error {
 		bucket := tx.Bucket([]byte(blocksBucket))
+		tip := b.Get([]byte{'1'})
 		if bucket == nil {
 			genesis := NewGenesisBlock()
 			bucket, err := tx.CreateBucket([]byte(blocksBucket))
@@ -108,5 +117,86 @@ func (bc *Blockchain) Iterator() *BlockchainIterator {
 	}
 }
 
+func (bc *Blockchain) FindUnspentTransactions(address string) []Transaction {
+	var unspentTXs []Transaction
+	spentTXOs := make(map[string][]int)
+	bci := bc.Iterator()
 
+	for block := bci.Next(); block != nil; block = bci.Next() {
+		for _, tx := range block.Transactions {
+			txID := hex.EncodeToString(tx.ID)
 
+			Outputs:
+				for outIdx, out := range tx.Vout {
+					// Was the output spent?
+					if spentTXOs[txID] != nil {
+						for _, spentOut := range spentTXOs[txID] {
+							if spentOut == outIdx {
+								continue Outputs
+							}
+						}
+					}
+
+					if out.CanBeUnlockedWith(address) {
+						unspentTXs = append(unspentTXs, *tx)
+					}
+				}
+
+				if tx.IsCoinbase() == false {
+					for _, in := range tx.Vin {
+						if in.CanUnlockOutputWith(address) {
+							inTxID := hex.EncodeToString(in.Txid)
+							spentTXOs[inTxID] = append(spentTXOs[inTxID], in.Vout)
+						}
+					}
+				}
+		}
+	}
+
+	return unspentTXs
+}
+
+func (bc *Blockchain) FindUTXO(address string) []TXOutput {
+	var UTXO []TXOutput
+	unspentTransactions := bc.FindUnspentTransactions(address)
+	for _, tx := range unspentTransactions {
+		for _, out := range tx.Vout {
+			if out.CanBeUnlockedWith(address) {
+				UTXO = append(UTXO, out)
+			}
+		}
+	}
+	return UTXO
+}
+
+// FindSpendableOutputs finds and returns unspent outputs to reference in inputs
+func (bc *Blockchain) FindSpendableOutputs(address string, amount int) (int, map[string][]int) {
+	unspentOutputs := make(map[string][]int)
+	unspentTXs := bc.FindUnspentTransactions(address)
+	accumulated := 0
+
+	Work:
+		for _, tx := range unspentTXs {
+			txID := hex.EncodeToString(tx.ID)
+
+			for outIdx, out := range tx.Vout {
+				if out.CanBeUnlockedWith(address) && accumulated < amount {
+					accumulated += out.Value
+					unspentOutputs[txID] = append(unspentOutputs[txID], outIdx)
+
+					if accumulated >= amount {
+						break Work
+					}
+				}
+			}
+		}
+
+	return accumulated, unspentOutputs
+}
+
+func dbExists() bool {
+	if _, err := os.Stat(dbFile); os.IsNotExist(err) {
+		return false
+	}
+	return true
+}
