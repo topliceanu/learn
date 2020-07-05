@@ -2,10 +2,7 @@
 
 import unittest
 
-from add_to_numbers import Solution, ListNode
-
-s = Solution()
-global s
+from add_to_numbers import add_lists, ListNode
 
 class TestAddTwoNumbers(unittest.TestCase):
 
@@ -39,7 +36,7 @@ class TestAddTwoNumbers(unittest.TestCase):
             (a, zero, a),
         ]
         for test in tests:
-            actual = s.addTwoNumbers(test[0], test[1])
+            actual = add_lists(test[0], test[1], 0)
             expected = test[2]
             self.assertEqual(actual.to_list(), expected.to_list(), \
                     'failed {} + {} expected {}, got {}'.format( \
