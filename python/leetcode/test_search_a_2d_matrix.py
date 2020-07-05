@@ -2,10 +2,7 @@
 
 import unittest
 
-from search_a_2d_matrix import Solution
-
-global s
-s = Solution()
+from search_a_2d_matrix import search2
 
 class TestLongestSubstrNoRepeatingChars(unittest.TestCase):
     def test_search(self):
@@ -62,7 +59,7 @@ class TestLongestSubstrNoRepeatingChars(unittest.TestCase):
              ], 5, True),
         ]
         for test in tests:
-            actual = s.searchMatrix(test[0], test[1])
+            actual = search2(test[0], test[1])
             expected = test[2]
             self.assertEqual(actual, expected, \
                 'failed test={} with actual={}'.format(test, actual))
