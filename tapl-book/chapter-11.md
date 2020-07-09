@@ -364,16 +364,120 @@ let p=t1 in t2 -> let p=t1' in t2
 
 Add typing rules to this system
 
-## Sums and Variant types
+## Sums types
 
-- also known as _variant types_, they are useful for heterogeneous data.
 - Sum types are variant types with only two variants.
+- we say that `inl` and `inr` _inject_ types T1 and T2 into type T1+T2.
+They are not functions, but tags.
+- the only way to use sum types is through a case expression which strips the tags.
+- sums break unique typing unless ascribing is used.
+
+```
+Syntax:
+t ::= ...
+      inl t as T - left tagging or injecting
+      inr t as T - right tagging or injecting
+v ::= ...
+      inl v as T - tagged value (left)
+      inr v as T - tagged value (right)
+T ::= ...
+      T+T - sum type
+Evaluation:
+case (inl v0 as T0) of inl x1 => t1 | inr x2 => t2 -> [x1->v0]t1 (E-CaseInl)
+
+case (inr v0 as T0) of inl x1 => t2 | inr x2 => t2 -> [x2->v0]t2 (E-CaseInr)
+
+                    t0 -> t0'
+------------------------------------------------ (E-Case)
+case (inl t0 as T0) of inl x1 => t1 | inr x2 => t2 ->
+case (inl t0' as T0) of inl x1 => t1 | inr x2 => t2
+
+          t1 -> t1'
+----------------------------- (E-Inl)
+inl t1 as T1 -> inl t1' as T1
+
+          t1 -> t1'
+----------------------------- (E-Inr)
+inr t1 as T1 -> inr t1' as T1
+
+Typing:
+      Γ|-t1:T1
+--------------------- (T-Inl)
+inl t1 as T1+T1:T1+T2
+
+      Γ|-t2:T2
+--------------------- (T-Inr)
+inr t2 as T1+T2:T1+T2
+
+        Γ|-t0:T1+T2      Γ,x1:T1|-t1:T      Γ,x2:T2|-t2:T
+----------------------------------------------------------------- (T-Case)
+ Γ|- case t0 of inl x1 as T1+T2 => t1 | inr x2 as T1+T2 => t2 : T
+```
+
+EX.11.9.1 Derive true, false and if from sums and Unit.
+```
+True = inl unit : Unit+Unit
+False = inr unit : Unit+Unit
+
+case (inl unit) of inl x1 => t1 | inr x2 => t2 -> [x1->unit]t1, where x1 not bound in t1
+case (inr unit) of inl x1 => t2 | inr x2 => t2 -> [x2->unit]t2, where x2 not bound in t2
+```
+
+## Variant types
+- generalize sum types to multiple user-defined labels.
+- also called _disjoint unions_
+
+```
+Syntax:
+t ::= ...
+      <l=t> as T                       - tagging
+      case t of <li=xi> => ti,i=1..n   - case expression
+T ::= ...
+      <li:Ti,i=1..n>                   - type of variants
+
+Evaluation:
+case (<lj=vj> as T) of <li=xi> => ti,i=1..n -> [xi -> vj]tj  (E-CaseVariant)
+
+            t0 -> t0'
+------------------------------------ (E-Case)
+case t0  of <li=xi> => ti, i=1..n ->
+case t0' of <li=xi> => ti, i=1..n
+
+          ti -> ti'
+------------------------------ (E-Variant)
+<li=ti> as T -> <li=ti'> as T
+
+Typing:
+                  Γ|-tj:Tj
+---------------------------------------------- (T-Variant)
+Γ|- <lj=tj> as <li:Ti,i=1..n> : <li:Ti,i=1..n>
+
+       Γ|- t0:<li:Ti,i=1..n>
+     for each i  Γ,xi:Ti|-ti:T
+--------------------------------------- (T-Case)
+Γ|- case t0 of <li=xi> => ti,i=1..n : T
+
+```
+
+- degenerate cases:
+ - Options: one variant wraps a type, the other variant marks the absense of it
+ - Enumeration: multiple labels of type Unit,
+ - Single-field variants: tagging an existing type, like aliases
+ - Dynamic: an infinite disjoint union, whose labels are types!
+
+
+## General Recursion
+
+Ex.11.11.1 Define equal, plus, times, and factorial using fix.
 
 ## Questions
 - Q: In sequencing, t1;t2, does t1 HAVE to evaluate to unit?!
 - Q: From the evaluation rule, it seems that to extract a value from a pair you have to evaluate both expressions. Why?
 Also, it seems we now evaluate arguments of an abstraction be evaluating the abstraction.
 - Q: How is the empty tuple {} different from unit?
+- Q: Where is the intuition behind the sum types
+- Q: Can I have a sum of the same two types, eg Bool+Bool?
+- Q: I have never seen this Dynamic type?
 
 Old
 - Q: If Haskell a purely functional language? Noe
