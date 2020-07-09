@@ -330,7 +330,7 @@ EX.11.8.1.Write E-ProjRcd more explicitly, for comparison.
 {li=vi,i=1..n}.lj -> vj
 
 becomes:
-{li=vi,i=1..j-1, lj, lk=vk,k=j+1,n}.lj -> vj
+{li=vi,i=1..j-1, lj=vj, lk=vk,k=j+1,n}.lj -> vj
 ```
 
 Ex.11.8.2 (***) Pattern matching
