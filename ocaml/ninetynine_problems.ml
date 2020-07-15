@@ -554,4 +554,113 @@ let timeit f arg =
 (* 39. A list of prime numbers. (easy)
  * Given a range of integers by its lower and upper limit, construct a list
  * of all prime numbers in that range.
+ *
+ * val all_primes : int -> int -> int list
  **)
+let all_primes left right =
+  let rec is_prime_aux n d =
+    if d > n / 2 then true
+    else if n mod d == 0 then false
+    else is_prime_aux n (d+1)
+  in let rec all_primes_aux l r =
+    if l > r then []
+    else if is_prime_aux l 2 then l :: all_primes_aux (l+1) r
+    else all_primes_aux (l+1) r
+  in all_primes_aux left right
+
+(* 40. 40. Goldbach's conjecture. (medium)
+ * Goldbach's conjecture says that every positive even number greater than 2 is
+ * the sum of two prime numbers. Example: 28 = 5 + 23.
+ * It is one of the most famous facts in number theory that has not been proved
+ * to be correct in the general case. It has been numerically confirmed up to
+ * very large numbers. Write a function to find the two prime numbers that
+ * sum up to a given even integer.
+ * val goldbach : int -> int * int option
+ **)
+let goldbach n =
+  let rec is_prime_aux n d =
+    if d > n / 2 then true
+    else if n mod d == 0 then false
+    else is_prime_aux n (d+1)
+  in let rec goldbach_aux p n =
+    if (is_prime_aux p 2) && (is_prime_aux (n-p) 2) then Some (p, n-p)
+    else goldbach_aux (p+1) n
+  in goldbach_aux 2 n
+
+(* 41. A list of Goldbach compositions. (medium)
+ * Given a range of integers by its lower and upper limit,
+ * print a list of all even numbers and their Goldbach composition.
+ * In most cases, if an even number is written as the sum of two prime numbers,
+ * one of them is very small. Very rarely, the primes are both bigger than say 50.
+ * Try to find out how many such cases there are in the range 2..3000.
+ * val goldbach_list : int -> int -> (int * (int * int))
+ **)
+let goldbach_list low high =
+  let rec goldbach_list_aux l h =
+    if l > h then []
+    else if l mod 2 != 0 then goldbach_list_aux (l+1) h
+    else (l, goldbach l) :: goldbach_list_aux (l+2) h
+  in goldbach_list_aux low high
+
+(* val goldbach_limit : int -> int -> int -> (int * (int * int)) *)
+let goldbach_limit low high thresh =
+  let max_aux a b =
+    if a >= b then a
+    else b
+  in let rec goldbach_limit_aux l h =
+    if l > h then []
+    else if l mod 2 != 0 then goldbach_limit_aux (l+1) h
+    else
+      (match goldbach l with
+        | None -> goldbach_limit_aux (l+2) h
+        | Some (p1, p2) ->
+          if p1 > thresh && p2 > thresh then (l, (p1, p2)) :: goldbach_limit_aux (l+2) h
+          else goldbach_limit_aux (l+2) h)
+  in goldbach_limit_aux (max_aux low thresh) (max_aux thresh high)
+
+(* Logic and Codes *)
+
+type bool_expr =
+  Var of string
+| Not of bool_expr
+| And of bool_expr * bool_expr
+| Or of bool_expr * bool_expr
+
+(* 46 & 47. Truth tables for logical expressions (2 variables). (medium)
+ * Define a function, table2 which returns the truth table of a given logical
+ * expression in two variables (specified as arguments).
+ * The return value must be a list of triples containing
+ * (value_of_a, value_of_b, value_of_expr).
+ *
+ * - generate all combinations [true, false] for (a, b)
+ * - evaluate expression with bool inputs
+ * var table2 : string -> string -> bool_expr -> (bool * bool * bool) list
+ **)
+let table2 a b expr =
+  (* val eval_aux : string -> bool -> string -> bool -> bool_expr -> bool *)
+  let rec eval_aux a a_val b b_val = function
+    | Var x ->
+        if x = a then a_val
+        else if x = b then b_val
+        else raise Not_found
+    | Not expr ->
+        let expr_val = eval_aux a a_val b b_val expr in not expr_val
+    | And (left, right) ->
+        let left_val = eval_aux a a_val b b_val left
+        in let right_val = eval_aux a a_val b b_val right
+        in left_val && right_val
+    | Or (left, right) ->
+        let left_val = eval_aux a a_val b b_val left
+        in let right_val = eval_aux a a_val b b_val right
+        in left_val || right_val
+  (* val vals : bool * bool list *)
+  in let vals = [(true, true); (true, false); (false, true); (false, false)]
+  (* val apply_aux : bool_expr -> bool * bool list -> (bool * bool * bool) list *)
+  in let rec apply_aux expr = function
+    | [] -> []
+    | (a_val, b_val) :: xs -> (a_val, b_val, (eval_aux a a_val b b_val expr)) :: apply_aux expr xs
+  in apply_aux expr vals
+
+
+
+
