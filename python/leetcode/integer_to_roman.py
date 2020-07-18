@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 # Source: https://leetcode.com/problems/integer-to-roman/
 
 encoding = [
