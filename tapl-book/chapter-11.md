@@ -333,26 +333,26 @@ becomes:
 {li=vi,i=1..j-1, lj=vj, lk=vk,k=j+1,n}.lj -> vj
 ```
 
-Ex.11.8.2 (***) Pattern matching
+Ex.11.8.2 Pattern matching
 
 ```
 Patterns:
-p ::= x - variable pattern
+p ::= x              - variable pattern
       {li=pi,i=1..n} - record pattern
 
 Terms:
 t ::= ...
-      let p=t in t - pattern binding
+      let p=t in t   - pattern binding
 
 Matching:
-match (x, v) = [x->v] (M-Var) - substitute x with v
+match(x, v) = [x->v]  (M-Var)               - match is a substitution of x with v
 
               for each i match(pi,vi) = σi
 ------------------------------------------------------ (M-Rcd)
 match({li=pi,i=1..n}, {li=vi,i=1..n}) = σ1.σ2.σ3...σn
 
 - if we match a record pattern against a record we get a series of substitutions.
-They need to have the same labels and same lenghts, otherwise matching will fail.
+- the pattern and the record must have the same labels and same length, otherwise matching will fail!
 
 New evaluation rules:
 let p=v1 in t2 -> match(p,v1) t2 (E-LetV) - apply all substitution from match(p,v1) in t2
@@ -362,7 +362,15 @@ let p=v1 in t2 -> match(p,v1) t2 (E-LetV) - apply all substitution from match(p,
 let p=t1 in t2 -> let p=t1' in t2
 ```
 
-Add typing rules to this system
+Add typing rules to this system.
+
+```
+- Typing rules are supposed to prevent bad evaluation situations.
+
+Γ|-p:T1       Γ|-v1:T1        Γ|-t2:T2
+-------------------------------------- (T-LetV)
+      Γ|- let p=v1:T1 in t2 : T2
+```
 
 ## Sums types
 
@@ -419,8 +427,7 @@ EX.11.9.1 Derive true, false and if from sums and Unit.
 True = inl unit : Unit+Unit
 False = inr unit : Unit+Unit
 
-case (inl unit) of inl x1 => t1 | inr x2 => t2 -> [x1->unit]t1, where x1 not bound in t1
-case (inr unit) of inl x1 => t2 | inr x2 => t2 -> [x2->unit]t2, where x2 not bound in t2
+if t0 then t1 else t2 === \t0:Unit+Unit.\t1:T.\t2:T.case t0 of inl _ => t1 | inr _ => t2 : T
 ```
 
 ## Variant types
@@ -468,17 +475,140 @@ Typing:
 
 ## General Recursion
 
+- `fix` cannot be defined in simply typed lambda calculus, because it doesn't type check.
+Instead we define it as a language construct.
+- `PCF` = simply typed lambda calculus with numbers and fix.
+
+```
+Syntax:
+t ::= ....
+      fix t  - fixed point of t
+
+Evaluation:
+fix (\x:T1.t2) -> [x->(fix (\x:T1.t2))]t2 (E-FixBeta)
+
+    t1 -> t1'
+----------------- (E-Fix)
+fix t1 -> fix t1'
+
+Typing:
+ Γ|- t1: T1->T1
+---------------- (T-Fix)
+Γ|- fix t1 : T1
+
+Derived forms:
+letrec x:T1 = t1 in t2 === let x = fix (\x:T1.t1) in t2
+```
+
+For example, the `iseven` recursive method is:
+```
+ff = \ie:Nat->Bool.
+        \x.Nat.
+            if iszero x then true
+            else if iszero (pred x) then false
+            else ie (pred (pred x))
+iseven = fix ff
+```
+
 Ex.11.11.1 Define equal, plus, times, and factorial using fix.
+```
+equal' = \ie:{Nat, Nat} -> Bool.
+          \p:{Nat, Nat}.
+            if (iszero p.1) then (iszero p.2)
+            else if (iszero p.2) then (iszero p.1)
+            else ie {(pred p.1), (pred p.2)}
+equal = fix equal'
+
+plus' = \ie:{Nat, Nat} -> Nat.
+          \p:{Nat, Nat}.
+            if (equal p.2 0) then p.1
+            else ie {(succ p.1), (pred p.2)}
+plus = fix plus'
+
+times' = \ie:{Nat, Nat} -> Nat.
+            \p:{Nat, Nat}.
+              if (equal p.2 1) then p.1
+              else ie {(plus p.1 p.1), (pred p.2)}
+times = fix times'
+
+factorial' = \ie:Nat -> Nat.
+               \n.Nat.
+                 if or (equal n 0) (equal n 1) then 1
+                 else times n (ie (pred n))
+factorial = fix factorial'
+```
+
+EX.11.11.2 Rewrite your definitions of plus, times, and factorial from Exercise 11.11.1 using letrec instead of fix.
+```
+letrec equal:{Nat, Nat} -> Nat =
+  \p:{Nat, Nat}.
+    if (iszero p.1) then (iszero p.2)
+    else if (iszero p.2) then (iszero p.1)
+    else equal {pred(p.1), pred(p.2)}
+
+letrec plus:{Nat, Nat} -> Nat =
+  \p:{Nat, Nat}.
+    if (equal p.2 0) then p.1
+    else plus {(succ p.1), (pred p.2)}
+
+letrec times:{Nat,Nat} -> Nat =
+  \p:{Nat, Nat}.
+    if (equal p.2 1) then p.1
+    else times {(plus {p.1, p.1}), (pred p.2)}
+
+letrec factorial:Nat -> Nat =
+  \n:Nat.
+    if (equal n 0) then 1
+    else times n (factorial (pred n))
+```
+
+## List
+- constructor is `List T`, it defines the type of all finite lists with elements of type T.
+- the empty list that contains instances of T is `nil[T]`
+
+```
+Syntax:
+t ::= ...
+      nil[T]            - empty list
+      cons[T] t t       - list constructor
+      isnil[T] t        - test for empty list
+      head[T] t         - head of a list
+      tail[T] t         - tail of a list
+v ::= ...
+      nil[T] - empty list
+      const[T] v v - list constructor
+T ::= ...
+      List T  - type of lists
+
+Evaluation:
+            t1 -> t1'
+--------------------------------- (E-Cons1)
+const[T] t1 t2 -> const[T] t1' t2
+```
+
+EX.11.12.2. Which typing rule is cannot be derived from the context?
+I think it's (T-Cons), there's nothing in the conclussion to suggest t2 is a List T.
 
 ## Questions
-- Q: In sequencing, t1;t2, does t1 HAVE to evaluate to unit?!
-- Q: From the evaluation rule, it seems that to extract a value from a pair you have to evaluate both expressions. Why?
-Also, it seems we now evaluate arguments of an abstraction be evaluating the abstraction.
-- Q: How is the empty tuple {} different from unit?
-- Q: Where is the intuition behind the sum types
-- Q: Can I have a sum of the same two types, eg Bool+Bool?
-- Q: I have never seen this Dynamic type?
+- Q: Why don't all mainstream languages have variants if it's soo fundamental and easy to implement?
+- Q: Any other way to represent equal plus and times without using pairs?
+- Q: How do you get from fix to letrec?
+- Q: Why is there so much new syntax for lists? Surely we can defined them using Sums already? (ie. type a list = Empty | Cons (a, a list)) Is it because we don't have recursive types yet?
+- Q: How do we know for sure that every recursive expression that uses the `fix` operator will halt if it type checks? What makes this `fix` different from the one in chapter 5?
 
-Old
-- Q: If Haskell a purely functional language? Noe
-- Ex.11.2.1 What? This is a *** ex, we decided to now work on those anymore.
+Old:
+- Q: I have never seen this Dynamic type?
+  A: It's similar to the `interface{}` type.
+- Q: Can I have a sum of the same two types, eg Bool+Bool?
+  A: Yes, that is permitted.
+- Q: Where is the intuition behind the sum types
+  A: they are more common than you might originally think.
+- Q: How is the empty tuple {} different from unit () ?
+  A: they are differen types
+- Q: From the evaluation rule, it seems that to extract a value from a pair you have to evaluate both expressions.
+  A: Yes, it's eager evaluation of data structures.
+  Also, it seems we now evaluate arguments of an abstraction before we evaluate the abstraction.
+- Q: In sequencing, t1;t2, does t1 HAVE to evaluate to unit?!
+  A: The way we defined ';' it won't typecheck. If t1 can be any other type, the compiler should complain.
+- Q: If Haskell a purely functional language? A: No
+- Ex.11.2.1 What!?!? This is a *** exercise, we decided to now work on those anymore.

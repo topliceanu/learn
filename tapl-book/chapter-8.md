@@ -72,8 +72,8 @@ Case T-IsZero: similar to T-Succ
 ```
 
 - _Safety_ = progress + preservation. Safety - also called _soundness_ - well-typed
-systems do not "go wrong", ie. don't end up in a wrong state: not a value but we also
-can't evaluate further based on the rules we have.
+systems do not "go wrong", ie. don't end up in a wrong state: eiter they don't evaluate to a value
+or can't evaluate further given on the rules we have.
 
 - _Progress_ = a well-typed term is either a value or it can take an evaluation step
 acording to evaluation rules:
