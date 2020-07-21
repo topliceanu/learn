@@ -1,4 +1,5 @@
 (* Logic and Codes *)
+open Format
 
 type bool_expr =
   Var of string
@@ -49,19 +50,57 @@ let table2 a b expr =
  *
  * val table : string list -> bool_expr -> ((string * bool list) * bool) list
  **)
-
-let combinations n =
-  let rec append x = function
-    | [] -> []
-    | xs :: xss -> (x :: xs) :: append x xss
-  in let rec aux n =
-    if n = 0 then []
-    else if n = 1 then [ [true]; [false] ]
-    else
-      let xs = aux (n-1)
-      in List.append (append true xs) (append false xs)
-  in aux n
-
 let table symbols expr =
-  let comb = combinations (List.length symbols)
-  let groups = List.map (fun c -> List.zip symbols c) comb
+  (* val combinations : int -> bool list list*)
+  let combinations n =
+    let rec append x = function
+      | [] -> []
+      | xs :: xss -> (x :: xs) :: append x xss
+    in let rec aux n =
+      if n = 0 then []
+      else if n = 1 then [ [true]; [false] ]
+      else
+        let xs = aux (n-1)
+        in List.append (append true xs) (append false xs)
+    in aux n
+  (* val lookup : string -> (string * bool) list -> bool *)
+  in let rec lookup symbol table =
+    match table with
+    | [] -> failwith "symbol not found"
+    | (s, v) :: tl ->
+        if s = symbol then v
+        else lookup symbol tl
+  (* val evaluate : bool_expr -> (string * bool) list -> bool *)
+  in let rec evaluate expr table =
+    match expr with
+      | Var symbol -> lookup symbol table
+      | Not e1 -> not (evaluate e1 table)
+      | And (e1, e2) -> (evaluate e1 table) && (evaluate e2 table)
+      | Or (e1, e2) -> (evaluate e1 table) || (evaluate e2 table)
+  in let comb = combinations (List.length symbols)
+  in let tables = List.map (fun c -> List.combine symbols c) comb
+  in List.map (fun t -> (t, evaluate expr t)) tables
+
+(* 49. Gray code. (medium). An n-bit Gray code is a sequence of n-bit strings
+ * constructed according to certain rules:
+ * n = 1: C(1) = ['0','1']
+ * n = 2: C(2) = ['00','01','11','10'] - 0 1 3 2
+ * n = 3: C(3) = ['000','001','011','010',´110´,´111´,´101´,´100´] - 0 1 3 2 6 7 5 4
+ * Find out the construction rules and write a function with the following
+ * specification: gray n returns the n-bit Gray code.
+ *
+ * val gray : int -> string list
+ **)
+let gray n =
+  (* val append : int -> string list -> string list *)
+  let rec append i = function
+    | [] -> []
+    | x :: xs ->
+        if i mod 2 = 0 then (x^"0") :: (x^"1") :: append (i+1) xs
+        else (x^"1") :: (x^"0") :: append (i+1) xs
+  (* val iter : int -> string list *)
+  in let rec iter n =
+    if n == 1 then ["0"; "1"]
+    else append 0 (iter (n-1))
+  in iter n
+
