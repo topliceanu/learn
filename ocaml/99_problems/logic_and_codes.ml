@@ -104,3 +104,57 @@ let gray n =
     else append 0 (iter (n-1))
   in iter n
 
+(* 50 Huffman code (hard)
+ **)
+
+type tree = Empty | Node of tree * string * int * tree
+
+(* val huffman : string * int list -> string * string list *)
+let huffman probabilities =
+  let build_min_heap pairs =
+    let sorted = List.sort (fun (s1, p1) (s2, p2) -> compare p1 p2) pairs in
+    List.map (fun (x, p) -> Node (Empty, x, p, Empty)) sorted
+
+  in let get_prob = function
+    | Empty -> raise Not_found
+    | Node (_, _, prob, _) -> prob
+
+  in let rec insert_min_heap tree heap =
+    let cmp t1 t2 =
+      let p1, p2 = (get_prob t1), (get_prob t2) in compare p1 p2
+    in List.sort cmp (tree :: heap)
+
+  in let merge left right =
+    match (left, right) with
+      | (Empty, Empty) -> Empty
+      | (Empty, (Node _ as node)) -> node
+      | ((Node _ as node), Empty) -> node
+      | (Node (_, lstr, lprob, _), Node (_, rstr, rprob, _)) ->
+          if lprob >= rprob then
+            Node(left, lstr ^ rstr, lprob + rprob, right)
+          else
+            Node(right, rstr ^ lstr, rprob + lprob, left)
+
+  in let rec build_tree = function
+    | [] -> []
+    | hd :: [] -> hd :: []
+    | hd1 :: hd2 :: rest ->
+        let merged = merge hd1 hd2 in
+        let new_heap = insert_min_heap merged rest in
+        build_tree new_heap
+
+  in let rec encoding prefix output = function
+    | Empty -> output
+    | Node (Empty, str, prob, Empty) ->
+        (str, prefix) :: output
+    | Node (left, str, prob, right) ->
+        let left_enc = encoding (prefix^"1") output left in
+        let right_enc = encoding (prefix^"0") output right in
+        left_enc @ right_enc
+
+  in let heap = build_min_heap probabilities
+  in let result = build_tree heap
+  in let encodings = encoding "" [] (List.hd result)
+  in encodings
+
+(* TODO val huffman_encode : string * string list -> string -> string *)
