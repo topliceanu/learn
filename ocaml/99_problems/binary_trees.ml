@@ -76,5 +76,34 @@ let is_symmetric tr =
   | Node (_, l, r) -> is_symmetric_aux l r
 
 
+(* 57. Binary search trees (dictionaries). (medium)
+ * Construct a binary search tree from a list of integer numbers.
+ *
+ * val construct : 'a list -> 'a binary_tree
+ **)
+let construct xs =
+  (* val add : 'a binary_tree -> 'a -> 'a binary_tree *)
+  let rec add tr x =
+    match tr with
+    | Empty -> Node (x, Empty, Empty)
+    | Node (y, left, right) ->
+        if x > y then
+          let new_right = add right x
+          in Node (y, left, new_right)
+        else
+          let new_left = add left x
+          in Node (y, new_left, right)
 
+  in let rec aux tr = function
+    | [] -> tr
+    | x :: xs -> aux (add tr x) xs
 
+  in aux Empty xs
+
+(* 58. Generate-and-test paradigm. (medium)
+ * Apply the generate-and-test paradigm to construct all symmetric, completely balanced binary trees with a given number of nodes.
+ **)
+let sym_cbal_trees n =
+  List.filter is_symmetric t (cbal_tree n)
+
+(* 59.
