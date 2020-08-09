@@ -103,7 +103,49 @@ let construct xs =
 (* 58. Generate-and-test paradigm. (medium)
  * Apply the generate-and-test paradigm to construct all symmetric, completely balanced binary trees with a given number of nodes.
  **)
+(* val syn_cbal_trees : int -> 'a binary_tree list *)
 let sym_cbal_trees n =
-  List.filter is_symmetric t (cbal_tree n)
+  List.filter is_symmetric (cbal_tree n)
 
-(* 59.
+(* 59. Construct height-balanced binary trees. (medium)
+ * In a height-balanced binary tree, the following property holds for every node:
+ * The height of its left subtree and the height of its right subtree are almost
+ * equal, which means their difference is not greater than one.
+ * Write a function hbal_tree to construct height-balanced binary trees for a
+ * given height. The function should generate all solutions via backtracking.
+ * Put the letter 'x' as information into all nodes of the tree.
+ **)
+(* val hbal_tree : int -> 'a binary_tree list *)
+let hbal_tree n =
+  (* val combine : 'a binary_tree list -> 'a binary_tree list -> 'a binary_tree list *)
+  let combine lefts rights =
+    List.flatten (List.map (fun l -> List.map (fun r -> Node ('x', l, r)) rights) lefts)
+
+  (* val hbal_tree_aux : int -> 'a binary_tree list *)
+  in let rec hbal_tree_aux n =
+    if n = 0 then [ Empty ]
+    else if n = 1 then [ Node ('x', Empty, Empty) ]
+    else
+      let n1 = hbal_tree_aux (n - 1) in
+      let n2 = hbal_tree_aux (n - 2) in
+      List.concat [
+        (combine n1 n1);
+        (combine n1 n2);
+        (combine n2 n1)
+      ]
+
+  in hbal_tree_aux n
+
+(* 60. Construct height-balanced binary trees with a given number of nodes. (medium) *)
+(* 60.a. What is the minimum number min_nodes? This question is more difficult.
+ * Try to find a recursive statement and turn it into a function min_nodes defined
+ * as follows: min_nodes h returns the minimum number of nodes in a height-balanced
+ * binary tree of height h.
+ **)
+let max_nodes h =
+  1 lsl h - 1
+
+let min_nodes h =
+  if h = 0 then 0
+  else if h = 1 then 1
+  else min_nodes (h-1) + min_nodes (h-2) + 1
