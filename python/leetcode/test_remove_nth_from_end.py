@@ -3,19 +3,7 @@
 import unittest
 
 from remove_nth_from_end import remove_nth_from_end, ListNode
-
-def make_linked_list(ls):
-    if len(ls) == 0:
-        return None
-    hd, tl = ls[0], ls[1:]
-    return ListNode(hd, make_linked_list(tl))
-
-def from_linked_list(ll):
-    if ll == None:
-        return []
-    rest = from_linked_list(ll.next)
-    rest.insert(0, ll.val)
-    return rest
+from helpers import make_linked_list, from_linked_list
 
 class TestRemoveNthFromEnd(unittest.TestCase):
     def test_remove_nth_from_end(self):
@@ -33,4 +21,3 @@ class TestRemoveNthFromEnd(unittest.TestCase):
             expected = test[2]
             self.assertEqual(actual, expected, \
                 'failed test={} with actual={}'.format(test, actual))
-

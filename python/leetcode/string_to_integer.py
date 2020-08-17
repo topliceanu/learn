@@ -1,10 +1,6 @@
 # -*- coding: utf-8 -*-
 
-"""
-Source: https://leetcode.com/problems/string-to-integer-atoi/
-
-Implement atoi which converts a string to an integer.
-"""
+# Source: https://leetcode.com/problems/string-to-integer-atoi/
 
 max_int = pow(2, 31) - 1
 min_int = -pow(2, 31)
