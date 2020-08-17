@@ -4,7 +4,8 @@ import unittest
 
 from trees_and_graphs import Vertex, BinaryTreeNode, TreeNode, LinkedListNode, \
     is_route_between_nodes, minimal_tree, list_of_depths, is_balanced, is_bst, \
-    successor, build_order
+    successor, build_order, first_common_ancestor, bst_sequence, check_subtree, \
+    random_node, path_with_sums
 
 class TestTreesAndGraphs(unittest.TestCase):
     def test_is_route_between_nodes(self):
@@ -99,6 +100,104 @@ class TestTreesAndGraphs(unittest.TestCase):
                     'failed test={} with actual={}'
                     .format(test, actual))
 
+    def test_find_first_common_ancestor(self):
+        tree = TreeNode('a', [
+            TreeNode('b', [
+                TreeNode('d', []),
+                TreeNode('e', []),
+            ]),
+            TreeNode('c', [
+                TreeNode('f', []),
+                TreeNode('g', []),
+            ]),
+        ])
+        tests = [
+            (tree, tree, tree), # 'a' and 'a' -> 'a'
+            (tree[0], tree, tree), # 'd' and 'a' -> 'a'
+            (tree, tree[0][0], tree), # 'a' and 'd' -> 'a'
+            (tree[0][1], tree[0], tree[0]), # 'e' and 'b' -> 'b'
+            (tree[0][1], tree[1], tree), # 'e' and 'c' -> 'a'
+            (tree[0][0], tree[1][1], tree), # 'd' and 'g' -> 'a'
+        ]
+        for test in tests:
+            actual = first_common_ancestor(test[0], test[1])
+            expected = test[2]
+            self.assertEqual(actual, expected,
+                    'failed test={} with actual={}'
+                    .format(test, actual))
+
+    def test_bst_sequence(self):
+        tests = [
+            (
+                BinaryTreeNode(2, BinaryTreeNode(1), BinaryTreeNode(3)),
+                [[2, 1, 3], [2, 3, 1]]
+            ),
+            (
+                BinaryTreeNode(4, BinaryTreeNode(2, BinaryTreeNode(1), BinaryTreeNode(3)), BinaryTreeNode(5)),
+                [
+                    [4, 2, 1, 3, 5],
+                    [4, 2, 1, 5, 3],
+                    [4, 2, 5, 1, 3],
+                    [4, 5, 2, 1, 3],
+                    [4, 2, 3, 1, 5],
+                    [4, 2, 3, 5, 1],
+                    [4, 2, 5, 3, 1],
+                    [4, 5, 2, 3, 1]
+                ]
+            )
+        ]
+        for test in tests:
+            actual = bst_sequence(test[0])
+            expected = test[1]
+            for a in actual:
+                self.assertIn(a, expected, 'expected {} to be in {}'.format(a, expected))
+
+    def test_check_subtree(self):
+        tree = BinaryTreeNode(1,
+                    BinaryTreeNode(2,
+                        BinaryTreeNode(3),
+                        BinaryTreeNode(4)),
+                    BinaryTreeNode(5,
+                        BinaryTreeNode(6),
+                        BinaryTreeNode(7)))
+        tests = [
+            (tree, None, True),
+            (None, None, True),
+            (tree, tree, True),
+            (tree, tree.left, True), # '2' is a subtree
+            (tree, tree.left.left, True), # '3' is a subtree
+        ]
+        for test in tests:
+            actual = check_subtree(test[0], test[1])
+            expected = test[2]
+            self.assertEqual(actual, expected,
+                    'failed test={} with actual={}'
+                    .format(test, actual))
+
+    def test_random_node(self):
+        values = [1,2,3,4,5,6,7,8]
+        tree = minimal_tree(values)
+        actual = random_node(tree)
+        self.assertNotEqual(actual, None, 'should not be none')
+        self.assertIn(actual.value, values,
+                'value {} does not exist in {}'.format(actual.value, values))
+
+    def test_path_with_sums(self):
+        tree = BinaryTreeNode(10,
+                BinaryTreeNode(5,
+                    BinaryTreeNode(3,
+                        BinaryTreeNode(3),
+                        BinaryTreeNode(-2)),
+                    BinaryTreeNode(1,
+                        None,
+                        BinaryTreeNode(2))),
+                BinaryTreeNode(-3,
+                    None,
+                    BinaryTreeNode(11)))
+        actual = path_with_sums(tree, 8)
+        expected = 3
+        self.assertEqual(actual, expected, 'should find the correct number of sums')
+
 # HELPERS
 
 def make_graph(edges, extra_vertices, directed=False):
@@ -146,6 +245,7 @@ def linked_list_to_list(node):
     rest = linked_list_to_list(node.next)
     rest.insert(0, node.value)
     return rest
+
 
 #class TestRecapGraphAlgorithsm(unittest.TestCase):
 #    def test_build_order(self):
