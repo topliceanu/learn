@@ -1,9 +1,104 @@
 package main
 
 import (
+	"math/rand"
+)
+
+type board struct {
+	id uint64
+	pins map[uint64]*pin
+}
+
+type user struct {
+	id uint64
+	history *pinLRU
+}
+
+type pin struct {
+	id uint64
+	boards map[uint64]*board
+	weight float64
+}
+
+func basicRandomWalk(query *pin, alpha float64, maxSteps uint16 /*N*/) map[int64]uint32 {
+	totSteps := 0
+	pinVisits := make(map[uint64]uint32) // V
+	currPin := query
+	for totSteps < maxSteps {
+		currSteps := sampleWalkLength(alpha)
+		for i := 0; i < currSteps; i ++ {
+			currBoard := pickRandBoard(currPin.boards)
+			currPin := pickRandPin(currBoard.pins)
+			incrVisit(pinVisits, currPin.id)
+		}
+		totSteps += currSteps
+	}
+	return pinVisists
+}
+
+func pixieRandomWalk(query *pin, usr *user, alpha float64, maxSteps uint64 /*N*/, nv, np uint32) map[uint64]uint32 {
+	totSteps := 0
+	pinVisits := make(map[uint64]uint32) // V
+	nHighVisited := 0
+	currPin := query
+	for totSteps < maxSteps || nHighVisited > np{
+		currSteps := sampleWalkLength(alpha)
+		for i := 0; i < currSteps; i ++ {
+			currBoard := pickPersonalisedBoard(currPin.boards, usr)
+			currPin := pickPersonalisedPin(currBoard.pins, usr)
+			incrVisit(pinVisits, currPin.id)
+			if pinVisits[currPin.id] == nv {
+				nHighVisited += 1
+			}
+		}
+		totSteps += currSteps
+	}
+	return pinVisits
+}
+
+func pixieRandomWalkMultiple(query []*pin, usr *User, alpha float64, maxSteps uint64 /*N*/) {
+	pinVisits := make(map[uint64]uint32)
+	for i := 0; i < len(query); i ++ {
+		q := query[i]
+		interimVisits := pixieRandomWalk(q, usr, alpha, nv, np)
+		pinVisits = mergeVisits(pinVisits, interimVisits)
+	}
+}
+
+
+// Helpers
+
+func pickRandBoard(boards map[uint64]*board) *board {
+	// ..
+}
+
+func pickRandPins(pins map[uint64]*pins) *pins {
+	// ..
+}
+
+func pickPersonalisedBoard(boards map[uint64]*board, _ *user) *board {
+	// ...
+	return pickRandBoard(boards)
+}
+
+func pickPersonalisedPin(pins map[uint64]*pin, _ *user) *pin {
+	// ...
+	return pickRandPin(pins)
+}
+
+func inrcVisit(visits map[uint64]uint32, pinId uint64) {
+	// ..
+}
+
+func mergeVisits(v1 v2 map[uint64]uint32) map[uint64]uint32
+
+/*
+import (
 	"math"
 	"math/rand"
 )
+
+
 
 // SampleWalkLength computes the number of steps for a random walk given a parameter alpha.
 func SampleWalkLength(alpha float64) int {
@@ -245,3 +340,4 @@ func (g *graph) CountNeighbours(id int) int {
 	}
 	return g.offsets[id+1] - g.offsets[id]
 }
+*/
