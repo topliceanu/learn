@@ -2,34 +2,79 @@
 
 # Source: https://leetcode.com/problems/median-of-two-sorted-arrays/
 
-def median_sorted_arrays(nums1, l1, r1, nums2, l2, r2):
+def median_sorted_arrays(nums1, nums2):
+    return rec_median(nums1, 0, len(nums1), nums2, 0, len(nums2))
+
+
+def rec_median(arr1, l1, r1, arr2, l2, r2):
     s1, s2 = r1 - l1, r2 - l2
-    if s1 <= 1 and s2 <= 1:
-        if s1 + s2 == 1:
-            return nums1[r1] if s1 == 1 else nums2[r2]
-        else: # n + m == 2
-            return (nums1[r1] + nums2[r2])/2
-    if s1 == 0:
-        return nums2[l2 + (s2+1)/2]
-    if s2 == 0:
-        return nums1[l1 + (s1+1)/2]
+    m = (s1 + s2 + 1) / 2 # TODO even len
+    if m == 0:
+        return
 
-    m1, m2 = (s1+1)/2, (s2+1)/2
-    target = m1 + m2
 
-    lv1, rv1, lv2, rv2 = nums1[l1], nums1[r1], nums2[l2], nums2[r2]
 
-    if lv1 < rv1 < lv2 < rv2:
-        if s1 < target:
-            return median_sorted_arrays(nums1, 0, 0, nums2, l2, l2 + (target - s1))
-    elif lv1 < lv2 < rv1 < rv2:
-        pass
-    elif lv1 < lv2 < rv2 < rv1:
-        pass
-    elif lv2 < lv1 < rv2 < rv1:
-        pass
-    elif lv2 < rv2 < lv1 < rv1:
-        pass
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#def median_sorted_arrays(nums1, l1, r1, nums2, l2, r2):
+#    s1, s2 = r1 - l1, r2 - l2
+#    if s1 <= 1 and s2 <= 1:
+#        if s1 + s2 == 1:
+#            return nums1[r1] if s1 == 1 else nums2[r2]
+#        else: # n + m == 2
+#            return (nums1[r1] + nums2[r2])/2
+#    if s1 == 0:
+#        return nums2[l2 + (s2+1)/2]
+#    if s2 == 0:
+#        return nums1[l1 + (s1+1)/2]
+#
+#    m1, m2 = (s1+1)/2, (s2+1)/2
+#    target = m1 + m2
+#
+#    lv1, rv1, lv2, rv2 = nums1[l1], nums1[r1], nums2[l2], nums2[r2]
+#
+#    if lv1 < rv1 < lv2 < rv2:
+#        if s1 < target:
+#            return median_sorted_arrays(nums1, 0, 0, nums2, l2, l2 + (target - s1))
+#    elif lv1 < lv2 < rv1 < rv2:
+#        pass
+#    elif lv1 < lv2 < rv2 < rv1:
+#        pass
+#    elif lv2 < lv1 < rv2 < rv1:
+#        pass
+#    elif lv2 < rv2 < lv1 < rv1:
+#        pass
 
 
 #def median_sorted_arrays(nums1, l1, r1, nums2, l2, r2):
