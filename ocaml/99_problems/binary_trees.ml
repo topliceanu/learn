@@ -149,3 +149,10 @@ let min_nodes h =
   if h = 0 then 0
   else if h = 1 then 1
   else min_nodes (h-1) + min_nodes (h-2) + 1
+
+(* 60.b. What are the minimum (resp. maximum) height H a height-balanced binary
+ * tree with N nodes can have?
+ **)
+let min_height n =
+
+let max_height n =

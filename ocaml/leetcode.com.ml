@@ -14,7 +14,7 @@
  **)
 type 'a linked_list =
   Empty
-| Node of 'a * 'a linked_list
+| Cons of 'a * 'a linked_list
 
 (* val add_linked_lists : int linked_list -> int linked_list -> int linked_list *)
 let add_linked_lists l1 l2 =
@@ -28,13 +28,13 @@ let add_linked_lists l1 l2 =
     match (l1, l2) with
     | (Empty, Empty) ->
         if carry = 0 then Empty
-        else Node (carry, Empty)
-    | (Empty, Node (x, xs)) | (Node (x, xs), Empty) ->
+        else Cons (carry, Empty)
+    | (Empty, Cons (x, xs)) | (Cons (x, xs), Empty) ->
         let carry, new_x = add_10 [x; carry]
-        in Node (new_x, (add_lists Empty xs carry))
-    | (Node (x, xs), Node (y, ys)) ->
+        in Cons (new_x, (add_lists Empty xs carry))
+    | (Cons (x, xs), Cons (y, ys)) ->
       let carry, z = add_10 [x; y; carry]
-      in Node (z, (add_lists xs ys carry))
+      in Cons (z, (add_lists xs ys carry))
 
   in add_lists l1 l2 0
 
@@ -77,7 +77,6 @@ let letter_combinations digits =
 (* Source: https://leetcode.com/problems/remove-nth-node-from-end-of-list/
  * Given a linked list, remove the n-th node from the end of list and return its head.
  * *)
-type 'a linked_list = Empty | Cons of 'a * 'a linked_list
 
 (* val remove_nth_from_end : 'a linked_list -> int -> 'a linked_list *)
 let remove_nth_from_end ls n =
@@ -97,3 +96,15 @@ let remove_nth_from_end ls n =
   in
     if len - n < 0 then ls
     else remove (len - n) ls
+
+(* Source: https://leetcode.com/problems/swap-nodes-in-pairs/ *)
+(* let swap_pairs : 'a linked_list -> 'a linked_list *)
+
+let rec swap_pairs node =
+  match node with
+  | Empty -> Empty
+  | Cons (_, Empty) -> node
+  | Cons (x, Cons(y, rest)) -> Cons (y, Cons (x, (swap_pairs rest)))
+
+
+(* Source: https://leetcode.com/problems/median-of-two-sorted-arrays/ *)
