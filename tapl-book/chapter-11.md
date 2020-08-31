@@ -432,7 +432,7 @@ if t0 then t1 else t2 === \t0:Unit+Unit.\t1:T.\t2:T.case t0 of inl _ => t1 | inr
 
 ## Variant types
 - generalize sum types to multiple user-defined labels.
-- also called _disjoint unions_
+- also called _disjoint unions_, because their elements include all the elements of the containing types.
 
 ```
 Syntax:
@@ -467,11 +467,10 @@ Typing:
 ```
 
 - degenerate cases:
- - Options: one variant wraps a type, the other variant marks the absense of it
- - Enumeration: multiple labels of type Unit,
- - Single-field variants: tagging an existing type, like aliases
- - Dynamic: an infinite disjoint union, whose labels are types!
-
+ - _Options_: one variant wraps a type, the other variant marks the absense of it
+ - _Enumerations_ or _enumerated types_: multiple labels over the type Unit. It's not the wrapped type that's important, it's the label.
+ - _Single-field variants_: tagging an existing type - like aliases - operations on the unpacked type cannot be applied on the packed one.
+ - _Dynamic_: an infinite disjoint union, whose labels are types! It's useful when parsing data from the network or disk.
 
 ## General Recursion
 
