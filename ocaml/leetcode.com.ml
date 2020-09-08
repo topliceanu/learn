@@ -108,3 +108,32 @@ let rec swap_pairs node =
 
 
 (* Source: https://leetcode.com/problems/median-of-two-sorted-arrays/ *)
+(* TODO *)
+
+(* Source: https://leetcode.com/problems/next-permutation/ *)
+let rec next_perm nums =
+  match nums with
+  | [] -> ([], false)
+  | x :: [] -> ([x], false)
+  | x :: y :: [] ->
+      if y * 10 + x > x * 10 + y then ([y; x], true)
+      else ([x; y], false)
+  | hd :: tl ->
+      next, found = next_perm tl
+      if found then (next, true)
+      else reshuffle hd tl
+
+
+(* Source: https://leetcode.com/problems/symmetric-tree/ *)
+type 'a tree = Empty | Node of 'a * 'a tree * 'a tree
+
+let is_symmetric t =
+  let rec aux left right =
+    match (left, right) with
+    | Empty, Empty -> true
+    | Empty, None _ | Node _, Empty -> false
+    | (Node (v1, l1, r1)), (Node (v2, l2, r2)) ->
+        v1 = v2 and (aux l1 r2) and (aux r1 l2)
+
+
+
