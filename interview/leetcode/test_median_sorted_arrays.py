@@ -7,6 +7,9 @@ from median_sorted_arrays import median_sorted_arrays
 class TestMedianSortedArrays(unittest.TestCase):
     def test_median_sorted_arrays(self):
         tests = [
+                ([], [], None),
+                ([1], [], 1),
+                ([1], [2], 1.5),
                 ([1,3], [2], 2),
                 ([1,2], [3,4], 2.5),
         ]
