@@ -20,12 +20,21 @@ func newMessageNewEpoch(ePrime, id int) *MessageNewEpoch {
   }
 }
 
-type MessageObserveRequest struct {
+type MessageObserveReq struct {
   Pj int // ID of the source peer
   RPrime int // Round number
 }
 
+func newMessageObserveReq(pj, rPrime int) MessageObserveReq {
+  return MessageObserveReq{
+    Pj: pj,
+    RPrime: rPrime,
+  }
+}
+
 type MessageObserve struct {
+  Pj int // id of the source of the message
+  // TODO in the reporting leader algo, Rf is called RPrime.
   Rf int // current round of observation
   Value int // observation value
   Signature string // message signature
@@ -39,6 +48,13 @@ func newMessageObserve(rf, value, signature) *MessageObserve {
   }
 }
 
+type MessageReport struct {
+  Pj int // id of the source node of the message
+  RPrime int // round number
+  R Report // report
+  Tau int // Q: what is this tau?
+}
+
 type MessageReportRequest struct {
   Pj int // id of the source of the message
   RPrime int // round number
@@ -49,16 +65,36 @@ type Report struct {
   Measurements []Measurement
 }
 
+func (r Report) Compressed() []NonSignedMeasurement {
+}
+
+type NonSignedMeasurement struct {
+  W, K int
+}
+
 type Measurement struct {
-  W int
-  K int
+  W, K int
   Signature []byte
 }
 
 type MessageFinal struct {
+  Pj int
+  RPrime int
+  O int
 }
 
 type MessageFinalEcho struct {
+  Pj int
+  RPrime int
+  O int
+}
+
+func newMessageFinalEcho(id, r, O int) MessageFinalEcho {
+  return MessageFinalEcho{
+    Pj: id,
+    RPrime: r,
+    O: O,
+  }
 }
 
 type Network interface {
