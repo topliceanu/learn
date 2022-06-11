@@ -1,3 +1,16 @@
+#[macro_use] extern crate rocket;
+
+#[get("/")]
+fn index() -> &'static str {
+    "Hi"
+}
+
+#[launch]
+fn rocket() -> _ {
+    rocket::build().mount("/", routes![index])
+}
+
+/*
 use std::io::{Read, Write, BufReader, BufRead};
 use std::net::{TcpListener, TcpStream};
 
@@ -43,3 +56,4 @@ fn send_response(line: String, mut stream: TcpStream) {
     let response = format!("HTTP/1.1 200 OK\n\n{}", num);
     stream.write_all(response.as_bytes()).unwrap();
 }
+*/

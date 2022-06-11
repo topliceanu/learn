@@ -16,45 +16,8 @@
 // There are at least two ways to implement this that are both correct-- but
 // one is a lot shorter! Execute `rustlings hint errors2` for hints to both ways.
 
-pub fn total_cost(item_quantity: &str) -> Result<i32, String> {
-    let processing_fee = 1;
-    let cost_per_item = 5;
-    let qty = item_quantity.parse::<i32>();
-    match qty {
-        Ok(cnt) =>
-            if cnt > 0 {
-                Ok(cnt * cost_per_item + processing_fee)
-            } else {
-                Err("item_quantity must be positive".to_string())
-            },
-        Err(err) => Err(err.to_string()),
-    }
-}
+// I AM NOT DONE
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn item_quantity_is_a_valid_number() {
-        assert_eq!(total_cost("34"), Ok(171));
-    }
-
-    #[test]
-    fn item_quantity_is_a_positive_integer() {
-        assert_eq!(total_cost("-12"), Err("item_quantity must be positive".to_string()))
-    }
-
-    #[test]
-    fn item_quantity_is_an_invalid_number() {
-        assert_eq!(
-            total_cost("beep boop").unwrap_err().to_string(),
-            "invalid digit found in string"
-        );
-    }
-}
-
-/*
 use std::num::ParseIntError;
 
 pub fn total_cost(item_quantity: &str) -> Result<i32, ParseIntError> {
@@ -82,4 +45,3 @@ mod tests {
         );
     }
 }
-*/

@@ -7,7 +7,7 @@ if [ -x "$(command -v git)" ]
 then
     echo "SUCCESS: Git is installed"
 else
-    echo "WARNING: Git does not seem to be installed."
+    echo "ERROR: Git does not seem to be installed."
     echo "Please download Git using your package manager or over https://git-scm.com/!"
     exit 1
 fi
@@ -16,7 +16,7 @@ if [ -x "$(command -v rustc)" ]
 then
     echo "SUCCESS: Rust is installed"
 else
-    echo "WARNING: Rust does not seem to be installed."
+    echo "ERROR: Rust does not seem to be installed."
     echo "Please download Rust using https://rustup.rs!"
     exit 1
 fi
@@ -25,8 +25,24 @@ if [ -x "$(command -v cargo)" ]
 then
     echo "SUCCESS: Cargo is installed"
 else
-    echo "WARNING: Cargo does not seem to be installed."
+    echo "ERROR: Cargo does not seem to be installed."
     echo "Please download Rust and Cargo using https://rustup.rs!"
+    exit 1
+fi
+
+# Look up python installations, starting with 3 with a fallback of 2
+if [ -x "$(command -v python3)" ]
+then
+    PY="$(command -v python3)"
+elif [ -x "$(command -v python)" ]
+then
+    PY="$(command -v python)"
+elif [ -x "$(command -v python2)" ]
+then
+    PY="$(command -v python2)"
+else
+    echo "ERROR: No working python installation was found"
+    echo "Please install python and add it to the PATH variable"
     exit 1
 fi
 
@@ -71,11 +87,11 @@ function vercomp() {
 }
 
 RustVersion=$(rustc --version | cut -d " " -f 2)
-MinRustVersion=1.31
+MinRustVersion=1.39
 vercomp $RustVersion $MinRustVersion
 if [ $? -eq 2 ]
 then
-    echo "WARNING: Rust version is too old: $RustVersion - needs at least $MinRustVersion"
+    echo "ERROR: Rust version is too old: $RustVersion - needs at least $MinRustVersion"
     echo "Please update Rust with 'rustup update'"
     exit 1
 else
@@ -86,17 +102,46 @@ Path=${1:-rustlings/}
 echo "Cloning Rustlings at $Path..."
 git clone -q https://github.com/rust-lang/rustlings $Path
 
-Version=$(curl -s https://api.github.com/repos/rust-lang/rustlings/releases/latest | python -c "import json,sys;obj=json.load(sys.stdin);print(obj['tag_name']);")
-echo "Checking out version $Version..."
 cd $Path
-git checkout -q tags/$Version
+
+Version=$(curl -s https://api.github.com/repos/rust-lang/rustlings/releases/latest | ${PY} -c "import json,sys;obj=json.load(sys.stdin);print(obj['tag_name']);")
+CargoBin="${CARGO_HOME:-$HOME/.cargo}/bin"
+
+if [[ -z ${Version} ]]
+then
+    echo "The latest tag version could not be fetched remotely."
+    echo "Using the local git repository..."
+    Version=$(ls -tr .git/refs/tags/ | tail -1)
+    if [[ -z ${Version}  ]]
+    then
+        echo "No valid tag version found"
+        echo "Rustlings will be installed using the main branch"
+        Version="main"
+    else
+        Version="tags/${Version}"
+    fi
+else
+    Version="tags/${Version}"
+fi
+
+echo "Checking out version $Version..."
+git checkout -q ${Version}
 
 echo "Installing the 'rustlings' executable..."
 cargo install --force --path .
 
 if ! [ -x "$(command -v rustlings)" ]
 then
-    echo "WARNING: Please check that you have '~/.cargo/bin' in your PATH environment variable!"
+    echo "WARNING: Please check that you have '$CargoBin' in your PATH environment variable!"
+fi
+
+# Checking whether Clippy is installed.
+# Due to a bug in Cargo, this must be done with Rustup: https://github.com/rust-lang/rustup/issues/1514
+Clippy=$(rustup component list | grep "clippy" | grep "installed")
+if [ -z "$Clippy" ]
+then
+    echo "Installing the 'cargo-clippy' executable..."
+    rustup component add clippy
 fi
 
 echo "All done! Run 'rustlings' to get started."
