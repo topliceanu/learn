@@ -190,7 +190,7 @@ Uses:
 
 * AEAD (authenticated encryption with associated data) - use this!
   - similar to AES-CBC-HMAC + confidentiality + authentication for associated data (think IV, authentication tag)
-  - the most used AEAD is _AES-GCM_ (Galois/Counter Mode) and _ChaCha20-Poly1305_
+  - the most used AEAD is `AES-GCM` (Galois/Counter Mode) and `ChaCha20-Poly1305`
   - Nonces should never be re-used for these two! AES-GCM-SIV is nonce misuse resistant.
   - AES-GCM:
 ```
@@ -345,6 +345,7 @@ The signature that Peggy sends to Victor is a pair of (R, s) where R is a commit
 and s is a value computed with the help of the commitment R, the witness x acting as a private key and the message.
 
   - digital signature can be seen as just non-interractive ZKPs.
+- "A digital signature does not uniquely identify a key or a message"
 
 * RSA for signatures
   - hash the message, (optionally pad the hash) then ecrypt it with RSA.
