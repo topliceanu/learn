@@ -42,13 +42,27 @@ it won't know the private key of.
 - Bob decrypts the value that matches his choice sigma using h(sigma) private key.
 
 ## ElGamal encryption
+- secret key: random a
+- public key: h = g^a
+- encrypt m: choose random r, compute `(u, v) = (g^r, h^r*m)`. The encryption is (u, v). h^r acts as a mask for m!
+- decrypting (u, v): compute m = v/(u^a)
 
-## Blum's two party coin tossing algorithm
+## Semi-honest OT
+- Bob choses two public keys, for which he knows the secret key just to one; the one corresponding to this choice of alice's inputs.
+- Bob sends both keys to Alice
+- Alice encrypts her two inputs with Bob's public keys and sends back the cyphertexts to Bob.
+- Bob decrypts only the input he's interested in.
+
+## OT with malicious adversary
+- Alice sends a random group element w
+- Bob picks h0, h1 such that `h0 * h1 = w`. h0=g^a and h1=w/h0. Bob cannot know the DLOG of both h0 and h1.
+
+## Blum's two party coin tossing algorithm (hardest coin toss in the world)
 - using ElGamal encryption instead of commitment schemes
 - challenge: how to generate a random, unbiased, random bit, given two mutually distrustful parties.
 - party P1 chooses a random big b in {0,1} and two random number r and s.
   - computes h = g^r, u = g^s and v = h^s * g^b (v is the product of r and s in the group)
-  - send (h, u, v) to party P2. This works like a commitment.
+  - send (h, u, v) to party P2. This works like a *commitment*.
 - party P2 chooses a random bit b' in {0, 1}
   - send b' to P1
 - party P1 sends r, s, b to P2
