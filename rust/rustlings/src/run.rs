@@ -1,58 +1,60 @@
-use crate::exercise::{Exercise, Mode};
-use crate::verify::test;
-use indicatif::ProgressBar;
+use anyhow::Result;
+use crossterm::{
+    style::{Color, ResetColor, SetForegroundColor},
+    QueueableCommand,
+};
+use std::{
+    io::{self, Write},
+    process::ExitCode,
+};
 
-// Invoke the rust compiler on the path of the given exercise,
-// and run the ensuing binary.
-// The verbose argument helps determine whether or not to show
-// the output from the test harnesses (if the mode of the exercise is test)
-pub fn run(exercise: &Exercise, verbose: bool) -> Result<(), ()> {
-    match exercise.mode {
-        Mode::Test => test(exercise, verbose)?,
-        Mode::Compile => compile_and_run(exercise)?,
-        Mode::Clippy => compile_and_run(exercise)?,
+use crate::{
+    app_state::{AppState, ExercisesProgress},
+    exercise::{solution_link_line, RunnableExercise, OUTPUT_CAPACITY},
+};
+
+pub fn run(app_state: &mut AppState) -> Result<ExitCode> {
+    let exercise = app_state.current_exercise();
+    let mut output = Vec::with_capacity(OUTPUT_CAPACITY);
+    let success = exercise.run_exercise(Some(&mut output), app_state.cmd_runner())?;
+
+    let mut stdout = io::stdout().lock();
+    stdout.write_all(&output)?;
+
+    if !success {
+        app_state.set_pending(app_state.current_exercise_ind())?;
+
+        stdout.write_all(b"Ran ")?;
+        app_state
+            .current_exercise()
+            .terminal_file_link(&mut stdout)?;
+        stdout.write_all(b" with errors\n")?;
+
+        return Ok(ExitCode::FAILURE);
     }
-    Ok(())
-}
 
-// Invoke the rust compiler on the path of the given exercise
-// and run the ensuing binary.
-// This is strictly for non-test binaries, so output is displayed
-fn compile_and_run(exercise: &Exercise) -> Result<(), ()> {
-    let progress_bar = ProgressBar::new_spinner();
-    progress_bar.set_message(format!("Compiling {}...", exercise).as_str());
-    progress_bar.enable_steady_tick(100);
+    stdout.queue(SetForegroundColor(Color::Green))?;
+    stdout.write_all("✓ Successfully ran ".as_bytes())?;
+    stdout.write_all(exercise.path.as_bytes())?;
+    stdout.queue(ResetColor)?;
+    stdout.write_all(b"\n")?;
 
-    let compilation_result = exercise.compile();
-    let compilation = match compilation_result {
-        Ok(compilation) => compilation,
-        Err(output) => {
-            progress_bar.finish_and_clear();
-            warn!(
-                "Compilation of {} failed!, Compiler error message:\n",
-                exercise
-            );
-            println!("{}", output.stderr);
-            return Err(());
-        }
-    };
-
-    progress_bar.set_message(format!("Running {}...", exercise).as_str());
-    let result = compilation.run();
-    progress_bar.finish_and_clear();
-
-    match result {
-        Ok(output) => {
-            println!("{}", output.stdout);
-            success!("Successfully ran {}", exercise);
-            Ok(())
-        }
-        Err(output) => {
-            println!("{}", output.stdout);
-            println!("{}", output.stderr);
-
-            warn!("Ran {} with errors", exercise);
-            Err(())
-        }
+    if let Some(solution_path) = app_state.current_solution_path()? {
+        stdout.write_all(b"\n")?;
+        solution_link_line(&mut stdout, &solution_path)?;
+        stdout.write_all(b"\n")?;
     }
+
+    match app_state.done_current_exercise::<false>(&mut stdout)? {
+        ExercisesProgress::NewPending | ExercisesProgress::CurrentPending => {
+            stdout.write_all(b"Next exercise: ")?;
+            app_state
+                .current_exercise()
+                .terminal_file_link(&mut stdout)?;
+            stdout.write_all(b"\n")?;
+        }
+        ExercisesProgress::AllDone => (),
+    }
+
+    Ok(ExitCode::SUCCESS)
 }

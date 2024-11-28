@@ -1,0 +1,13 @@
+{
+  "project": {
+    "homepage": "https://rustlings.cool",
+    "repository": "https://github.com/rust-lang/rustlings"
+  },
+  "marketing": {
+    "analytics": {
+      "plausible": {
+        "domain": "rustlings.cool"
+      }
+    }
+  }
+}

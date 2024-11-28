@@ -1,23 +1,91 @@
+[workspace]
+resolver = "2"
+exclude = [
+  "tests/test_exercises",
+  "dev",
+]
+
+[workspace.package]
+version = "6.4.0"
+authors = [
+  "Mo Bitar <mo8it@proton.me>", # https://github.com/mo8it
+  "Liv <mokou@fastmail.com>", # https://github.com/shadows-withal
+  # Alumni
+  "Carol (Nichols || Goulding) <carol.nichols@gmail.com>", # https://github.com/carols10cents
+]
+repository = "https://github.com/rust-lang/rustlings"
+license = "MIT"
+edition = "2021" # On Update: Update the edition of the `rustfmt` command that checks the solutions.
+rust-version = "1.80"
+
+[workspace.dependencies]
+serde = { version = "1.0.214", features = ["derive"] }
+toml_edit = { version = "0.22.22", default-features = false, features = ["parse", "serde"] }
+
 [package]
 name = "rustlings"
-version = "4.6.0"
-authors = ["anastasie <ana@ana.st>", "Carol (Nichols || Goulding) <carol.nichols@gmail.com>"]
-edition = "2018"
+description = "Small exercises to get you used to reading and writing Rust code!"
+version.workspace = true
+authors.workspace = true
+repository.workspace = true
+license.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+keywords = [
+  "exercise",
+  "learning",
+]
+include = [
+  "/src/",
+  "/exercises/",
+  "/solutions/",
+  # A symlink to be able to include `dev/Cargo.toml` although `dev` is excluded.
+  "/dev-Cargo.toml",
+  "/README.md",
+  "/LICENSE",
+]
 
 [dependencies]
-argh = "0.1.4"
-indicatif = "0.10.3"
-console = "0.7.7"
-notify = "4.0.15"
-toml = "0.4.10"
-regex = "1.1.6"
-serde = {version = "1.0.10", features = ["derive"]}
+anyhow = "1.0.93"
+clap = { version = "4.5.20", features = ["derive"] }
+crossterm = { version = "0.28.1", default-features = false, features = ["windows", "events"] }
+notify = "7.0.0"
+os_pipe = "1.2.1"
+rustlings-macros = { path = "rustlings-macros", version = "=6.4.0" }
+serde_json = "1.0.132"
+serde.workspace = true
+toml_edit.workspace = true
 
-[[bin]]
-name = "rustlings"
-path = "src/main.rs"
+[target.'cfg(not(windows))'.dependencies]
+rustix = { version = "0.38.38", default-features = false, features = ["std", "stdio", "termios"] }
 
 [dev-dependencies]
-assert_cmd = "0.11.0"
-predicates = "1.0.1"
-glob = "0.3.0"
+tempfile = "3.14.0"
+
+[profile.release]
+panic = "abort"
+
+[profile.dev]
+panic = "abort"
+
+[package.metadata.release]
+pre-release-hook = ["./release-hook.sh"]
+pre-release-commit-message = "Release 🎉"
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+unstable_features = "forbid"
+
+[workspace.lints.clippy]
+empty_loop = "forbid"
+disallowed-types = "deny"
+disallowed-methods = "deny"
+infinite_loop = "deny"
+mem_forget = "deny"
+dbg_macro = "warn"
+todo = "warn"
+# TODO: Remove after the following fix is released: https://github.com/rust-lang/rust-clippy/pull/13102
+needless_option_as_deref = "allow"
+
+[lints]
+workspace = true
