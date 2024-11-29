@@ -5,11 +5,31 @@
 // different _semantics_. We'll cover those differences later in the course when we talk about ordered
 // collections (e.g. BTreeMap).
 
+use std::cmp::PartialOrd;
+use std::fmt::Debug;
+
 /// Return the minimum of two values.
-pub fn min<T>(left: T, right: T) -> T {
+pub fn min<T>(left: T, right: T) -> T
+where
+    T: PartialOrd + Debug,
+{
     if left <= right {
         left
     } else {
         right
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_min() {
+        let a = 1;
+        let b: i32 = 2;
+        let actual = min(a, b);
+        let expected = 1;
+        assert_eq!(expected, actual);
     }
 }
