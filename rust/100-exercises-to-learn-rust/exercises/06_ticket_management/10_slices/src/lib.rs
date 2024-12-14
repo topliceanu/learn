@@ -1,13 +1,17 @@
 // TODO: Define a function named `sum` that takes a reference to a slice of `u32` and returns the sum of all
 //  elements in the slice.
 
+fn sum(xs: &[i32]) -> i32 {
+    xs.iter().sum()
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
     fn empty() {
-        let v = vec![];
+        let v: Vec<i32> = vec![];
         assert_eq!(sum(&v), 0);
     }
 
