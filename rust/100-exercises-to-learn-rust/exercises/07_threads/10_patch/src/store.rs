@@ -23,6 +23,7 @@ impl TicketStore {
         self.counter += 1;
         let ticket = Ticket {
             id,
+            version: 1, // The initial version of the ticket.
             title: ticket.title,
             description: ticket.description,
             status: Status::ToDo,

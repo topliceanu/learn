@@ -96,6 +96,10 @@ pub fn server(receiver: Receiver<Command>) {
             }) => {
                 let ticket_maybe = store.get_mut(patch.id);
                 if let Some(ticket) = ticket_maybe {
+                    if ticket.version != patch.current_version {
+                        response_channel.send(()).unwrap();
+                        return;
+                    }
                     if let Some(new_title) = patch.title {
                         ticket.title = new_title;
                     }
@@ -105,6 +109,7 @@ pub fn server(receiver: Receiver<Command>) {
                     if let Some(new_status) = patch.status {
                         ticket.status = new_status;
                     }
+                    ticket.version += 1;
                 }
                 response_channel.send(()).unwrap();
             }

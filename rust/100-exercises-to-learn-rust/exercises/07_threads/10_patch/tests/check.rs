@@ -13,12 +13,14 @@ fn works() {
 
     let ticket = client.get(ticket_id).unwrap().unwrap();
     assert_eq!(ticket_id, ticket.id);
+    assert_eq!(ticket.version, 1);
     assert_eq!(ticket.status, Status::ToDo);
     assert_eq!(ticket.title, draft.title);
     assert_eq!(ticket.description, draft.description);
 
     let patch = TicketPatch {
         id: ticket_id,
+        current_version: 1,
         title: None,
         description: None,
         status: Some(Status::InProgress),
@@ -28,4 +30,5 @@ fn works() {
     let ticket = client.get(ticket_id).unwrap().unwrap();
     assert_eq!(ticket.id, ticket_id);
     assert_eq!(ticket.status, Status::InProgress);
+    assert_eq!(ticket.version, 2);
 }

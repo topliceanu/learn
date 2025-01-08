@@ -7,6 +7,7 @@ pub struct Ticket {
     pub title: TicketTitle,
     pub description: TicketDescription,
     pub status: Status,
+    pub version: u32,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -18,6 +19,7 @@ pub struct TicketDraft {
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct TicketPatch {
     pub id: TicketId,
+    pub current_version: u32,
     pub title: Option<TicketTitle>,
     pub description: Option<TicketDescription>,
     pub status: Option<Status>,
