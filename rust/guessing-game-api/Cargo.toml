@@ -1,7 +1,0 @@
-[package]
-name = "guessing-game-api"
-version = "0.1.0"
-authors = ["alexandru topliceanu"]
-
-[dependencies]
-rocket = "0.5.0-rc.1"
