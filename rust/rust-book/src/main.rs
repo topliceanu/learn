@@ -1,24 +1,20 @@
-struct HasDrop;
 
-impl Drop for HasDrop {
-    fn drop(&mut self) {
-        println!("Dropping HasDrop!");
-    }
-}
+use std::{sync::mpsc, thread};
 
-struct HasTwoDrops {
-    one: HasDrop,
-    two: HasDrop,
-}
-
-impl Drop for HasTwoDrops {
-    fn drop(&mut self) {
-        println!("Dropping HasTwoDrops!");
-    }
+#[derive(Debug)]
+enum Msg {
+    Str(String),
+    Usize(usize),
 }
 
 fn main() {
-    let mut _x = HasTwoDrops { one: HasDrop, two: HasDrop };
-    _x.drop();
-    println!("Running!");
+    let (tx, rx) = mpsc::channel::<Msg>();
+    thread::spawn(move || {
+        let s = String::from("Hello world");
+        tx.send(Msg::Str(s.clone())).unwrap();
+        tx.send(Msg::Usize(s.len())).unwrap();
+    });
+    let s = rx.recv().unwrap();
+    let n = rx.recv().unwrap();
+    println!("{s:?} {n:?}");
 }
