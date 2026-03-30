@@ -1,34 +1,34 @@
+use std::cell::RefCell;
 use std::ops::Deref;
 use std::rc::Rc;
-use std::cell::RefCell;
 use std::rc::Weak;
 
 pub enum List<T> {
     Nil,
-    Cons(T, Box<List< T>>),
+    Cons(T, Box<List<T>>),
 }
 
 pub enum List1<'a, T> {
     Nil1,
-    Cons1(T,  Box<&'a List1<'a, T>>),
+    Cons1(T, Box<&'a List1<'a, T>>),
 }
 
 pub enum List2<T> {
     Nil2,
-    Cons2(T,  Rc<List2<T>>),
+    Cons2(T, Rc<List2<T>>),
 }
 
 pub enum List3<T> {
     Nil3,
-    Cons3(Rc<RefCell<T>>, Rc<List3<T>>)
+    Cons3(Rc<RefCell<T>>, Rc<List3<T>>),
 }
 
 #[derive(Debug)]
 pub enum List4<T> {
-    Nil4, 
-    Cons4(T, RefCell<Rc<List4<T>>>)
+    Nil4,
+    Cons4(T, RefCell<Rc<List4<T>>>),
 }
- 
+
 impl<T> List4<T> {
     pub fn tail(&self) -> Option<&RefCell<Rc<List4<T>>>> {
         match self {
@@ -44,7 +44,6 @@ pub struct Node<T> {
     pub parent: RefCell<Weak<Node<T>>>,
     pub children: RefCell<Vec<Rc<Node<T>>>>,
 }
-
 
 pub struct MyBox<T>(T);
 
@@ -136,8 +135,7 @@ mod tests {
 }
 
 pub struct DLNode<T> {
-    pub value:T, 
+    pub value: T,
     pub prev: Option<Rc<RefCell<DLNode<T>>>>,
     pub next: Option<Rc<RefCell<DLNode<T>>>>,
 }
-
