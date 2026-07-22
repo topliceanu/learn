@@ -1,5 +1,7 @@
 # Stanford's Algorithms I Class on Coursera
 
+[Source on Prof Roughgarden's website](https://timroughgarden.org/videos.html)
+
 `src` contains all the source code.
 
 `test` contains fixtures and test cases.

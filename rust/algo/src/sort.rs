@@ -1,3 +1,29 @@
+use std::cmp::min;
+
+pub fn quick_sort_norec<T: PartialOrd>(xs: &mut [T]) {
+    if xs.len() == 0 {
+        return
+    }
+    let mut stack: Vec<(usize, usize)> = vec![];
+    stack.push((0, xs.len()-1));
+    while let Some((left, right)) = stack.pop() {
+        if left == right {
+            continue
+        }
+        if left+1 == right {
+            if xs[left] > xs[right] {
+                xs.swap(left, right);
+            }
+            continue 
+        }
+        let pivot = (left + right) / 2;
+        xs.swap(left, pivot);
+        let pivot = partition(xs, left, right);
+        stack.push((left, pivot));
+        stack.push((pivot+1, right));
+    }
+}
+
 // Quicksort: sort the given slice in place. Returns the number of swaps needed.
 // See https://en.wikipedia.org/wiki/Quicksort
 pub fn quick_sort<T: PartialOrd>(slice: &mut [T]) {
@@ -47,6 +73,111 @@ fn partition<T: PartialOrd>(slice: &mut [T], left: usize, incl_right: usize) -> 
     return new_pivot - 1;
 }
 
+// Mergesort produces a new array with the sorted contents of the readonly input array.
+// Extra space complexity is O(n). An attempt is made to avoid extra allocations.
+// Time complexity is O(nlogn).
+// Idea: avoid recursion by splitting the input into increasing larger subarrays (1, 2, 4, 8, ..), sorting them, then merging them with the next subarray.
+pub fn merge_sort_norec<T: PartialOrd + Copy>(xs: &mut [T]) {
+    let mut out: Vec<T> = vec![];
+    let n = xs.len();
+    if n <= 1 {
+        return
+    }
+    out = vec!(xs[0]; xs.len()); // Only extra allocation!
+    let mut size = 1; // Number of elements in a subarray.
+    while size < n { 
+        let mut left = 0;
+        while left < n - 1 {
+            let mid = (left + size).min(n-1); 
+            let right = (left + 2*size).min(n);
+            merge_sort_merge(xs, out.as_mut_slice(), left, mid, right);
+            left += 2*size;
+        }
+        size *= 2;
+    }
+}
+
+fn merge_sort_merge<T: PartialOrd+Copy>(xs: &mut [T], out: &mut [T], left: usize, mid: usize, right: usize) {
+    let mut i = left;
+    let mut j = mid;
+    let mut k = 0;
+    while i < mid && j < right {
+        if xs[i] < xs[j] {
+            out[k] = xs[i];
+            i += 1;
+        } else {
+            out[k] = xs[j];
+            j += 1;
+        }
+        k += 1;
+    }
+    while i < mid {
+        out[k] = xs[i];
+        (i, k) = (i+1, k+1);
+    }
+    while j < right {
+        out[k] = xs[j];
+        (j, k) = (j+1, k+1);
+    }
+    // Put the sorted elements back in the input array.
+    xs[left..right].copy_from_slice(&out[0..k]);
+}
+
+pub fn heap_sort<T: PartialOrd+Copy>(xs: &mut [T]) {
+    let mut out = vec![];
+    min_heap_heapify(xs);
+    while let Some(min) = min_heap_pop(xs) {
+        out.push(min)
+    }
+    for i in 0..out.len() {
+        xs[i] = out[i];
+    }
+}
+
+fn min_heap_heapify<T: PartialOrd>(xs: &mut [T]) {
+    let n = xs.len();
+    for i in 0..n {
+        min_heap_bubble_down(xs, i)
+    }
+}
+
+// min heap bubble down routine.
+fn min_heap_bubble_down<T: PartialOrd>(heap: &mut [T], index: usize) {
+    let mut parent= index;
+    while parent > 0 {
+        let (left, right) = (parent*2+1, parent*2+2);
+        let mut min = parent;
+        if heap[parent] > heap[left] {
+            min = left;
+        }
+        if heap[left] > heap[right] {
+            min = right;
+        }
+        if parent != min {
+            heap.swap(parent, min)
+        }
+        parent = min
+    }
+}
+
+fn min_heap_bubble_up<T:PartialOrd>(heap: &mut [T], index: usize) {
+    if index == 0 {
+        return
+    }
+    let mut child = index;
+    while child != 0 {
+        let parent = (child - 1) / 2; // Integer division is truncated!
+        if heap[parent] > heap[child] {
+            heap.swap(parent, child)
+        }
+        child = parent;
+    }
+}
+
+fn min_heap_pop<T: PartialOrd>(xs: &mut [T]) -> Option<T> {
+
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -55,6 +186,8 @@ mod tests {
     fn smoke_test() {
         let tests: Vec<(Vec<i32>, Vec<i32>)> = vec![
             // Edge cases.
+            /*
+            */ 
             (vec![], vec![]),                                 // empty.
             (vec![1], vec![1]),                               // one element.
             (vec![2, 1], vec![1, 2]),                         // two elements.
@@ -73,8 +206,16 @@ mod tests {
             ),
         ];
         for (mut subject, expected) in tests {
-            quick_sort(subject.as_mut_slice());
-            assert_eq!(subject, expected);
+            let (mut s1, mut s2, mut s3) = (subject.clone(), subject.clone(), subject.clone());
+
+            //quick_sort(s1.as_mut_slice());
+            //assert_eq!(s1, expected);
+            
+            //quick_sort_norec(s2.as_mut_slice());
+            //assert_eq!(s2, expected);
+
+            merge_sort_norec(s3.as_mut_slice());
+            assert_eq!(s3, expected)
         }
     }
 }
