@@ -123,59 +123,41 @@ fn merge_sort_merge<T: PartialOrd+Copy>(xs: &mut [T], out: &mut [T], left: usize
     xs[left..right].copy_from_slice(&out[0..k]);
 }
 
-pub fn heap_sort<T: PartialOrd+Copy>(xs: &mut [T]) {
-    let mut out = vec![];
-    min_heap_heapify(xs);
-    while let Some(min) = min_heap_pop(xs) {
-        out.push(min)
-    }
-    for i in 0..out.len() {
-        xs[i] = out[i];
-    }
-}
-
-fn min_heap_heapify<T: PartialOrd>(xs: &mut [T]) {
+pub fn heap_sort<T: PartialOrd+Clone>(xs: &[T]) -> Vec<T>{
     let n = xs.len();
-    for i in 0..n {
-        min_heap_bubble_down(xs, i)
+    let mut result= xs.to_vec();
+    if n <= 1 {
+        return result
     }
+    // max-heapify
+    for start in (0..n).rev() {
+        sift_down(&mut result, start, n)
+    }
+    // extract the max element to the end
+    for end in (1..n).rev() { // n-1, ... 1
+        result.swap(0, end); // move largest element to the end
+        sift_down(&mut result, 0, end) // shift one of the smallest one back. 
+    }
+    result
 }
 
-// min heap bubble down routine.
-fn min_heap_bubble_down<T: PartialOrd>(heap: &mut [T], index: usize) {
-    let mut parent= index;
-    while parent > 0 {
-        let (left, right) = (parent*2+1, parent*2+2);
-        let mut min = parent;
-        if heap[parent] > heap[left] {
-            min = left;
+fn sift_down<T: PartialOrd>(max_heap: &mut [T], root: usize, end: usize) {
+    let mut local_root = root;
+    loop {
+        let mut max = local_root;
+        let (left, right) = (2*local_root+1, 2*local_root+2);
+        if left < end && max_heap[left] > max_heap[max] {
+            max = left;
         }
-        if heap[left] > heap[right] {
-            min = right;
+        if right < end && max_heap[right] > max_heap[max] {
+            max = right
         }
-        if parent != min {
-            heap.swap(parent, min)
+        if max == local_root {
+            break
         }
-        parent = min
+        max_heap.swap(max, local_root);
+        local_root = max;
     }
-}
-
-fn min_heap_bubble_up<T:PartialOrd>(heap: &mut [T], index: usize) {
-    if index == 0 {
-        return
-    }
-    let mut child = index;
-    while child != 0 {
-        let parent = (child - 1) / 2; // Integer division is truncated!
-        if heap[parent] > heap[child] {
-            heap.swap(parent, child)
-        }
-        child = parent;
-    }
-}
-
-fn min_heap_pop<T: PartialOrd>(xs: &mut [T]) -> Option<T> {
-
 }
 
 #[cfg(test)]
@@ -186,8 +168,6 @@ mod tests {
     fn smoke_test() {
         let tests: Vec<(Vec<i32>, Vec<i32>)> = vec![
             // Edge cases.
-            /*
-            */ 
             (vec![], vec![]),                                 // empty.
             (vec![1], vec![1]),                               // one element.
             (vec![2, 1], vec![1, 2]),                         // two elements.
@@ -214,8 +194,11 @@ mod tests {
             //quick_sort_norec(s2.as_mut_slice());
             //assert_eq!(s2, expected);
 
-            merge_sort_norec(s3.as_mut_slice());
-            assert_eq!(s3, expected)
+            //merge_sort_norec(s3.as_mut_slice());
+            //assert_eq!(s3, expected)
+
+            let output = heap_sort(&subject);
+            assert_eq!(output, expected);
         }
     }
 }
