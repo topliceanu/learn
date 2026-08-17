@@ -3,7 +3,8 @@
 (* 1. Write a function last : 'a list -> 'a option that returns the last element of a list. (easy) *)
 let rec last xs =
   match xs with
-  | [] -> None | [x] -> Some x
+  | [] -> None 
+  | [x] -> Some x
   | _ :: t -> last t
 
 (* 2. Find the last but one (last and penultimate) elements of a list. (easy) *)
@@ -31,10 +32,9 @@ let rec len lst =
   in aux 0 lst
 
 (* 5. Reverse a list. (easy) *)
-let rec rev l =
-  match l with
+let rec rev = function
   | [] -> []
-  | x :: t -> List.append (rev t) [x]
+  | first :: rest -> List.append (rev rest) [first]
 
 (* 6. Find out whether a list is a palindrome. (easy) *)
 let is_palindrome l =

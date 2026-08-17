@@ -116,11 +116,13 @@ let phi_improved n =
  * Take the number of logical inferences as a measure for efficiency.
  * Try to calculate φ(10090) as an example.
  **)
+(*
 let timeit f arg =
   let t0 = Unix.gettimeofday() in
   ignore (f arg);
   let t1 = Unix.gettimeofday() in
   t1 -.t0
+*) 
 
 (* 39. A list of prime numbers. (easy)
  * Given a range of integers by its lower and upper limit, construct a list

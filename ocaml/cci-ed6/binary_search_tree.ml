@@ -120,7 +120,7 @@ let rec depth = function
   | Node (left, _, right) -> 1 + max (depth left) (depth right)
 
 (* val height : 'a tree -> int
- * Returns the lenght of the longest path to a Leaf from the current node.
+ * Returns the length of the longest path to a Leaf from the current node.
  **)
 let rec height = function
   | Leaf -> 0
@@ -150,10 +150,10 @@ let rec merge t1 t2 =
       let right_and_left_and_t2 = merge right left_and_t2 in
         insert x right_and_left_and_t2
 
-(* val is_ballanced : 'a tree -> bool
+(* val is_balanced : 'a tree -> bool
  * CCI book, 5th edition, problem 4.1
  **)
-let is_ballanced t =
+let is_balanced t =
   let rec get_min_max_height = function
     | Leaf -> (0, 0)
     | Node (left, x, right) ->
