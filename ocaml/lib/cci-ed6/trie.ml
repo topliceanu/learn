@@ -95,7 +95,7 @@ let print tr =
  **)
 let rec lookup key tr =
   let parts = split_key key in
-  match (tr, parts) with
+  match (tr, parts) with (* Empty | Node | ValueNode * Blank | Last | More*)
   | (Empty, _) -> Empty
   | (_, Blank) -> Empty
   | (Node children, Last c) | (ValueNode (_, children), Last c) ->
@@ -104,7 +104,7 @@ let rec lookup key tr =
       | Some node -> node
   | (Node children, More (c, rest)) | (ValueNode (_, children), More (c, rest)) ->
       (match (M.find_opt c children) with
-      | None -> None
+      | None -> Empty 
       | Some node -> lookup rest node)
 
 (* val lookup_value : string -> 'a trie -> string option *)

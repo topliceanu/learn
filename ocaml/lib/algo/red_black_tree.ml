@@ -48,32 +48,3 @@ let insert x subtree =
     in match insert_aux x subtree with 
         | Node (_, value, left, right) -> Node (Black, value, left, right)
         | Leaf -> failwith "Cannot insert in leaf. Guaranteed not to happen"
-
-
-
-(*
-(* val balance : 'a rbtree -> 'a rbtree *)
-let balance = function 
-  | Black, z, Node (Red, y, Node (Red, x, a, b), c), d)
-  | Black, z, Node (Red, x, a, Node (Red, y, b, c)), d)
-  | Black, x, a, Node (Red, z, Node (Red, y, b, c), d))
-  | Black, x, a, Node (Red, y, b, Node (Red, z, c, d)) ->
-    Node (Red, y, Node (Black, x, a, b), Node (Black, z, c, d))
-  | a, b, c, d -> Node (a, b, c, 
-
-(* val insert_auh : 'a -> 'a rbtree -> 'a rbtree *)
-let insert_aux v = function
-    | Leaf -> Node (Red, Leaf, v, Leaf)
-    | Node (c, l, u, r) as n ->
-        if v < u then balance (c, insert_aux v l, u, r)
-        else if v > u then balance (c, l, u, insert_aux v r)
-        else n
-
-(* val insert : 'a -> 'a tree -> 'a tree *)
-let insert v t = 
-    match insert_aux v t with 
-        | Leaf -> failwith "impossible"
-        | Node (_, l, u, r) -> Node (Black, l, u, r)
-
-
-*)

@@ -89,6 +89,70 @@ let pred x t =
       else pred_aux (Some y) right
   in pred_aux None t
 
+(* CCI Book, ed. 6, ch.4, problem 7: Build order *)
+(* You are given a list of projects and a list of dependencies (which is a list of pairs of projects, where the second project is dependent on the first project). 
+ * All of a project's dependencies must be built before the project is. Find a build order that will allow the projects to be built. 
+ * If there is no valid build order, return an error.
+ *)
+
+(* undirected or directed graph. *)
+type 'a graph = ('a list * ('a * 'a) list) (* vertices X edges *)
+
+(* var sync_vertices : 'a graph -> 'a list *)
+let sync_vertices = function 
+  | (vertices, edges) -> List.fold_left (
+    fun acc v -> 
+      match List.find_opt (fun (_, e) -> e == v) edges with
+        | Some _ -> v :: acc
+        | _ -> acc
+  ) [] vertices
+
+(* adjacents : 'a -> ('a * 'a) list -> 'a list *)
+let adjacents v edges =
+  List.fold_left (fun adjs (x, y) -> if x == v then y :: adjs else adjs ) [] edges
+ 
+(* val bfs : 'a graph -> 'a -> 'a list *)
+(* assumes undirected graph where edges are only represented once. So a->b and not b->a *)
+let bfs src g =
+  let rec bfs_aux vertex edges visited =
+    if (List.mem vertex visited) then visited
+    else
+      let adj = adjacents vertex edges in 
+      let visited = visited @ adj in (* TODO eliminate dups *)
+      List.fold_left (fun acc vertex -> bfs_aux vertex edges acc) visited adj
+  in let (_, edges) = g in bfs_aux src edges []
+
+(* val dfs : 'a graph -> 'a -> 'a list *)
+(* the difference between bfs and dfs is when the a node's adjacency list is added to the output:
+ * - in bfs it's added before recursing through it.
+ * - in dfs it's added after recursing through it
+ *)
+let dfs src g =
+  let rec dfs_aux vertex edges visited =
+    if (List.mem vertex visited) then visited
+    else
+      let visited = vertex :: visited in
+      let adj = adjacents vertex edges in 
+      List.fold_left (fun acc vertex -> dfs_aux vertex edges acc) visited adj
+  in let (_, edges) = g in dfs_aux src edges []
+
+(* val topological_sort: 'a graph -> 'a list *)
+(* A directed graph needs to not have a cycle in order to have a topological ordering and fully connected.
+ * Every directed acyclic graph has a sync verted, ie. a vertex with no outgoing edges. *)
+let topological_sort (edges, vertexes) =
+  (* val dfs_ignore_visited : 'a list -> 'a -> ('a * 'a) list -> 'a list *)
+  let rec dfs_ignore_visited visited v edges output =
+    let adj = adjacents v edges in
+    let not_visited = List.filter (fun a -> List.mem a visited) adj in
+    List.fold_left (fun acc v -> dfs_ignore_visited visited v edges acc) visited not_visited
+  in List.fold_left (fun visited v ->  
+    (dfs_ignore_visited visited v edges []) @ visited
+  ) [] vertexes
+
+(* val build_order : 'a list -> ('a * 'a) list -> 'a list *)
+let build_order projects dependencies =
+  topological_sort (projects, dependencies)
+
 (* CCI Book, ed.6, ch.4, problem 9: BST sequences *)
 (* BST Sequences: A binary search tree was created by traversing through an array from left to right and inserting each element. 
 * Given a binary search tree with distinct elements, print all possible arrays that could have led to this tree.
@@ -194,32 +258,12 @@ and aux sum = function
       else if v == sum then 1
       else (aux (sum-v) l) + (aux (sum-v) r)
 
-(* undirected or directed graph *)
-type 'a graph = {
-  vertices: 'a list;
-  edges: ('a * 'a) list;
-}
+(* CCI Book, ed.6, ch.4, problem 1: route between nodes *)
+(* Given a directed graph, design an algorithm to find out whether there is a
+route between two nodes. *)
+(* val is_route_between_nodes : 'a graph -> 'a -> 'a -> bool *)
+let is_route_between_nodex g src dst =
+  let visited = dfs src g in 
+  List.mem dst visited
 
-(* val dfs : 'a graph -> 'a -> 'a list *)
-(* FIXME *)
-let dfs { vertices; edges } src =
-  (* adjacent : 'a -> ('a * 'a) list -> 'a list *)
-  let rec adjacent vertex = function
-    | [] -> []
-    | (hd, tl) :: rest ->
-        if vertex == hd then tl :: adjacent vertex rest
-        else if vertex == tl then hd :: adjacent vertex rest
-        else adjacent vertex rest
-
-  (* val rdfs : 'a list -> ('a * 'a) list -> 'a -> 'a list *)
-  in let rec rdfs visited edges vertex =
-    if (List.mem vertex visited) then visited
-    else
-      List.fold_left
-        (fun visited adjacent_vertex -> rdfs visited edges adjacent_vertex )
-        (vertex :: visited)
-        (adjacent vertex edges)
-
-  in rdfs [] edges src
-
-(* let g = { vertices=[1; 2; 3; 4; 5]; edges=[(1, 2); (1, 3); (2, 3); (4, 5)] } ;; *)
+  

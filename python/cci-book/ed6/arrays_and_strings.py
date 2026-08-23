@@ -13,7 +13,9 @@ def is_unique(sentence):
     return True
 
 def is_unique_no_ds(sentence):
-    """ Complexity: O(n) time, O(1) space """
+    """ Complexity: O(n) time, O(1) space.
+    Assumes that the characters are ASCII and uses a 64 bit integer as a bitmap 
+    """
     x = 0
     for c in sentence:
         if x & (1 << ord(c)) != 0:
@@ -41,7 +43,9 @@ def check_permutation(str1, str2):
     return True
 
 def check_permutation_sort(str1, str2):
-    """Complexity: O(nlogn) time, O(1) space"""
+    """Complexity: O(nlogn) time, O(1) space
+    Assumes we are allowd to modify the input strings. Idea: sort the string then compare.
+    """
     str1 = sorted(str1)
     str2 = sorted(str2)
     if len(str1) != len(str2):
@@ -58,7 +62,8 @@ def urlify(sentence):
     EXAMPLE
     Input: "Mr John Smith"
     Output: "Mr%20John%20Smith"
-
+    Idea: first counts the total number of spaces and "extend" the string by 3 (%20) times number of spaces. 
+    Then iterate from the last character and move it to the back of the extended string.
     Complexity: O(n) time, O(1) space
     """
     sentence = list(sentence)
@@ -91,7 +96,7 @@ def palindrome_permutation(sentence):
 
     EXAMPLE
     Input: Tact Coa
-    Output: True (permutations: "taco cat", "atco eta", etc.)
+    Output: True (permutations: "taco cat", "atco cta", etc.)
 
     Complexity: O(n) in time, O(n) in space
     """

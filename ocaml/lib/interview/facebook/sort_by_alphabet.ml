@@ -44,3 +44,12 @@ let is_sorted words alphabet =
         else is_sorted_aux rest alphabet
 
   in is_sorted_aux (List.map list_of_string words) alphabet
+
+let is_sorted' words alphabet =
+  let is_sorted = true in
+  let compare w1 w2 = 
+  let _ = List.sort (fun w1 w2 -> 
+    let c = compare w1 w2 in
+    if c == 1 then is_sorted = false; c
+  ) words 
+  in is_sorted

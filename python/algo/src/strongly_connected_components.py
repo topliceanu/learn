@@ -13,7 +13,7 @@ def scc(g):
     1. reverse all the edges in a graph.
     2. run DFS on the reverse graph to compute finishing times for each
        vertex ie. an ordering of the vertices.
-    3. run DFS on the normal graph in reverse order of finisihing times.
+    3. run DFS on the normal graph in reverse order of finishing times.
 
     Args:
         g: instance of src.graph.Graph, a data structure encapsulating graphs.

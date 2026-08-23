@@ -4,6 +4,7 @@ import random
 
 # Topological ordering is used in scheduling tasks with respect to their dependent tasks.
 # Topological ordering is only possible if the graph has no directed cycles ie. it's a DAG (directed acyclic graph).
+# A DAG will have at least one sync vertex (ie. a verted with no outgoing edges).
 
 VISITED = 0x100
 
