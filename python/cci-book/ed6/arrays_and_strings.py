@@ -97,7 +97,8 @@ def palindrome_permutation(sentence):
     EXAMPLE
     Input: Tact Coa
     Output: True (permutations: "taco cat", "atco cta", etc.)
-
+    Idea: the input needs to have examley one letter that shows up an odd number of times, 
+    otherwise, all letters should show up an even number of times.
     Complexity: O(n) in time, O(n) in space
     """
     sentence = sentence.lower().replace(" ", "")
@@ -116,7 +117,10 @@ def palindrome_permutation(sentence):
     return True
 
 def palindrome_permutation_no_ds(sentence):
-    """ Complexity: O(nlogn) in time, O(1) in space """
+    """ Complexity: O(nlogn) in time, O(1) in space 
+    Idea: sort the characters in the input and check that each character shows up an 
+    even number of times and only one character shows up an odd number of times if the empty has odd length.
+    """
     sentence = sorted(list(sentence.lower().replace(" ", "")))
     has_odd_count = False
     char_count = 1

@@ -164,9 +164,8 @@ fn sift_down<T: PartialOrd>(max_heap: &mut [T], root: usize, end: usize) {
 mod tests {
     use super::*;
 
-    #[test]
-    fn smoke_test() {
-        let tests: Vec<(Vec<i32>, Vec<i32>)> = vec![
+    fn test_cases() -> Vec<(Vec<i32>, Vec<i32>)> {
+        vec![
             // Edge cases.
             (vec![], vec![]),                                 // empty.
             (vec![1], vec![1]),                               // one element.
@@ -184,19 +183,35 @@ mod tests {
                 vec![4, 6, 5, 3, 7, 8, 1, 9, 2, 0],
                 vec![0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
             ),
-        ];
-        for (mut subject, expected) in tests {
-            let (mut s1, mut s2, mut s3) = (subject.clone(), subject.clone(), subject.clone());
+        ]
+    }
 
-            //quick_sort(s1.as_mut_slice());
-            //assert_eq!(s1, expected);
-            
-            //quick_sort_norec(s2.as_mut_slice());
-            //assert_eq!(s2, expected);
+    #[test]
+    fn test_quick_sort() {
+        for (mut subject, expected) in test_cases() {
+            quick_sort(subject.as_mut_slice());
+            assert_eq!(subject, expected);
+        }
+    }
+    #[test]
+    fn test_quick_sort_norec() {
+        for (mut subject, expected) in test_cases() {
+            quick_sort_norec(subject.as_mut_slice());
+            assert_eq!(subject, expected);
+        }
+    }
 
-            //merge_sort_norec(s3.as_mut_slice());
-            //assert_eq!(s3, expected)
+    #[test]
+    fn test_merge_sort_norec() {
+        for (mut subject, expected) in test_cases() {
+            merge_sort_norec(subject.as_mut_slice());
+            assert_eq!(subject, expected);
+        }
+    }
 
+    #[test]
+    fn test_heap_sort() {
+        for (subject, expected) in test_cases() {
             let output = heap_sort(&subject);
             assert_eq!(output, expected);
         }

@@ -2,7 +2,8 @@
 
 (* Medium *)
 
-(* 2. Add Two Numbers
+(* Problem 2: Add Two Numbers
+ * Source: https://leetcode.com/problems/add-two-numbers/description/
  * You are given two non-empty linked lists representing two non-negative integers.
  * The digits are stored in reverse order and each of their nodes contain a single digit.
  * Add the two numbers and return it as a linked list.
@@ -11,7 +12,7 @@
  *  Input: (2 -> 4 -> 3) + (5 -> 6 -> 4)
  *  Output: 7 -> 0 -> 8
  *  Explanation: 342 + 465 = 807.
- **)
+ *)
 type 'a linked_list =
   Empty
 | Cons of 'a * 'a linked_list
@@ -38,9 +39,10 @@ let add_linked_lists l1 l2 =
 
   in add_lists l1 l2 0
 
-(* Source: https://leetcode.com/problems/letter-combinations-of-a-phone-number/
+(* Problem 17: Letter combinations of a phone number
+ * Source: https://leetcode.com/problems/letter-combinations-of-a-phone-number/
  * var letter_combinations : char list -> string list
- **)
+ *)
 let letter_combinations digits =
   let mapping = [
      ('1', []);
@@ -74,7 +76,8 @@ let letter_combinations digits =
 
   in rec_let_comb digits
 
-(* Source: https://leetcode.com/problems/remove-nth-node-from-end-of-list/
+(* Problem 19: Remove nth noded from end of list
+ * Source: https://leetcode.com/problems/remove-nth-node-from-end-of-list/
  * Given a linked list, remove the n-th node from the end of list and return its head.
  * *)
 
@@ -111,6 +114,7 @@ let rec swap_pairs node =
 (* TODO *)
 
 (* Source: https://leetcode.com/problems/next-permutation/ *)
+(*
 let rec next_perm nums =
   match nums with
   | [] -> ([], false)
@@ -119,21 +123,45 @@ let rec next_perm nums =
       if y * 10 + x > x * 10 + y then ([y; x], true)
       else ([x; y], false)
   | hd :: tl ->
-      next, found = next_perm tl
-      if found then (next, true)
+      let next, found = next_perm tl
+      in if found then (next, true)
       else reshuffle hd tl
-
+*)
 
 (* Source: https://leetcode.com/problems/symmetric-tree/ *)
 type 'a tree = Empty | Node of 'a * 'a tree * 'a tree
 
 let is_symmetric t =
-  let rec aux left right =
+  let rec is_sym left right =
     match (left, right) with
     | Empty, Empty -> true
-    | Empty, None _ | Node _, Empty -> false
-    | (Node (v1, l1, r1)), (Node (v2, l2, r2)) ->
-        v1 = v2 and (aux l1 r2) and (aux r1 l2)
+    | Empty, Node _  | Node _ , Empty -> false
+    | (Node (lv, ll, lr)), (Node (rv, rl, rr)) ->
+      lv == rv && (is_sym ll rr) && (is_sym lr rl)
+    in match t with
+    | Empty -> true
+    | Node (_, left, right) -> is_sym left right
 
+(* Problem 42: Trapping rain water
+ * Source: https://leetcode.com/problems/trapping-rain-water/
+ *)
+let trapping_rain_water height =
+  let rec left_max max_so_far = function
+    | [] -> []
+    | x :: xs -> 
+        if x > max_so_far then x :: (left_max x xs)
+        else max_so_far :: (left_max max_so_far xs)
+  in let rec reverse = function 
+  | [] -> []
+  | x::xs -> (reverse xs) @ [x]
+  in let rec aux = function 
+    | (x::xs, left_max::left_maxs, right_max::right_maxs) -> 
+      let min_height = min left_max right_max in
+      let add = if min_height > x then min_height - x else 0
+      in add + aux (xs, left_maxs, right_maxs)
+    | _ -> 0
+  in let left_maxs = left_max 0 height
+  in let right_maxs = reverse (left_max 0 (reverse height))
+  in aux (height, left_maxs, right_maxs)
 
 

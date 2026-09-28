@@ -5,7 +5,7 @@ type 'a graph = 'a list * ('a * 'a) list (* vertices x edges *)
 * Kosaraju's algorithm: https://en.wikipedia.org/wiki/Kosaraj u
 * My understading of the idea:
 *  - step 1. topologically sort vertices in the inverted graph (ie. edges are inverted). 
-*        Note, it's not an actually topological sort because that doesn't work on graphs with cycles. Instead the graph we already visited are ignored.
+*        Note, it's not an actually topological sort because that doesn't work on graphs with cycles. Instead the vertices we already visited are ignored.
 *        This identifies the sinks in the condensation graph (ie. the graph where each CC becomes a node).
 *  - step 2. pick the first sink, and run DFS. this will identify the first SCC, which is the sink node in the condensed graph.
 *        Recurse until there are no more nodes in the list from 1.
