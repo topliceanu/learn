@@ -35,3 +35,23 @@ let sublist first second =
     | [] -> false
     | _::rest -> (is_prefix xs ys) || (is_sublist rest ys)
   in (is_equal first second) || (is_sublist first second) || (is_sublist second first)
+
+(* See https://exercism.org/tracks/rust/exercises/acronym/edit *) 
+let abbreviate phrase = 
+  let is_lowercase = function
+    | 'a'..'z' -> true
+    | _ -> false
+  in let is_uppercase = function 
+    | 'A'..'Z' -> true
+    | _ -> false
+  in let is_alphabetic ch = is_lowercase ch || is_uppercase ch
+  in let is_separator c = c == ' ' || c == '-' 
+  in let rec aux select is_prev_lower_alphabetic = function
+  | [] -> []
+  | ch::chars -> 
+    if select && (is_alphabetic ch) then Char.uppercase_ascii(ch) :: (aux false (is_lowercase ch) chars)
+    else if is_separator ch then aux true false chars
+    else if is_lowercase ch then aux select true chars
+    else if is_prev_lower_alphabetic && (is_uppercase ch) then ch :: (aux false false chars)
+    else aux select is_prev_lower_alphabetic chars
+  in aux true false phrase

@@ -35,7 +35,7 @@
 A: There are 4 functions: `always_false :: _ = false`; `always_true :: _ = true`; `inv true = false; inv false = true`; `id true = true; id false = false`.
 
 ## Chapter 3: Categories Great and Small
-- a "free category" (aka a "path category"): if the set is a graph, the morphisms are all the possible directed paths through the graph.
+- a "free category" (aka a "path category") is a category generated entired from a directed graph: the vertices are the objects, the morphisms are all the possible directed paths through the graph.
   - Formally, for any two values in the set, take all the dirrect and indirect paths between the two values.
 
 - orders 
@@ -50,14 +50,31 @@ where:
 
 - **monoid**: a set + a binary operation (has associativity and reflexivity)
   Eg. natural number form a monoid under addition (the neutral element being 0)
-  - it's called a monoid because it has a single operation (as opposed to rings/fields which have two!). Also, because a monoid can be seen as a category with a single object.
+  - it's called a monoid because it has a single operation (as opposed to rings/fields which have two!).
+    - Also, because a monoid can be seen as a category with a single object; that's because the object is the operation and the morphisms correspond to the values in the set.
   - monoids are useful in parallel processing of data, because individual datum processed by different processes can be combined in any order they arrive at the aggregator.
   - two methods: `mempty :: m` and `mappend :: m -> m -> m`
 
 - arguments of function are sometimes called `points`, as in the evaluation of a function f at point x. Function equality without specifying the arguments is called `point free`.
 - monoid can be seen as category with a single object `*` and an infinite number of loop arrows from * to *; eg. the arrow `5` is a loop from * to * five times. Similar to Church numerals, a number is a behaviour.
 
-TODO: challenges in chapter 3
+** Challenges **
+1. Generate a free category from:
+  1. a graph with one vertex and no edges.
+    - Objects: just one object, the vertex. Morphisms: there is only the identity arrow. It's a monoid.
+  2. a graph with one vertex and one directed edge to itself.
+    - Again it's a monoid that maps to (N, +, 0). Objects: the single vertex; Morphisms: the identity arrow; Rule for composition maps to addition: id corresponds to 1, id . id = id corresponds to 2.
+  3. a graph with two nodes and a single arrow between them
+    - (known as Interval category) Objects: two objects the vertices A and B; Morphisms: idA, idB and f : A -> B
+  4. a graph with a single node and 26 arrows marked with the letters a, b, ..z
+    - Objects: one object called *; Morphisms: arrows; id is "" (empty string). This category corresponds to forming workds, called the free monoid of Strings (or Kleene Star, or the set of all possible text words).
+2. What kind of order is this:
+  1. a set of sets with the inclusion relation: A is included in B if every element of A is also an element of B. 
+    - A: total order.
+  2. C++ types with the following subtyping: T1 is a subtype of T2 if a pointer to T1 can be passed to a function that expects a pointer to T2 without triggering a compile-time error.
+    - A: partial order
+3. Consider that Bool is a set of two values True and False, show that it forms two (set-theoretical) monoids with respect to operators && (AND) and || (OR)
+  - The (bool, &&) monoid is called All-true/conjunction; the (bool, ||) monoid is called Any-true/disjunction.
 
 ## Chapter 4: Composition of logs
 

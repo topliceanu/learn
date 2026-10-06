@@ -15,3 +15,4 @@ mod sublist;
 mod flower_field;
 mod luhn;
 mod run_length_encoding;
+mod acronym;

@@ -1,25 +1,28 @@
 package main
 
+import "math"
+
+// See https://en.wikipedia.org/wiki/Van_Emde_Boas_tree
 type VEBNode struct {
-	size uint
+	size     uint
 	min, max uint
-	summary []bool
+	summary  []bool
 	clusters []*VEBNode
 }
 
 func NewVEBNode(size uint) *VEBNode {
 	return &VEBNode{
-		size: size,
-		min: 256,
-		max: 0,
+		size:    size,
+		min:     256,
+		max:     0,
 		summary: make([math.Sqrt(size)]uint),
-		clusters: make
 	}
 }
 
 func (v *VEBNode) Insert(val uint) {
 	if v.isEmpty() {
-		v.min = v.max = val
+		v.min = val
+		v.max = val
 		return
 	}
 	if val < v.min {
@@ -28,5 +31,3 @@ func (v *VEBNode) Insert(val uint) {
 		v.max = val
 	}
 }
-
-
