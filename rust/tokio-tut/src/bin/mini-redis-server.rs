@@ -1,3 +1,4 @@
+use core::num;
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
 
@@ -6,12 +7,23 @@ use tokio::net::{TcpListener, TcpStream};
 use mini_redis::{Connection, Frame};
 use mini_redis::Command::{self, Get, Set};
 
+type ShardedDb = Arc<Vec<Mutex<HashMap<String, Vec<u8>>>>>;
+
+fn new_sharded_db(num_shards: usize) -> ShardedDb {
+    let mut db = Vec::with_capacity(num_shards);
+    for _ in 0..num_shards {
+        db.push(Mutex::new(HashMap::new()));
+    }
+    Arc::new(db)
+}
+
 #[tokio::main]
 async fn main() {
     // Bind the listener to the address
     let listener = TcpListener::bind("127.0.0.1:6379").await.unwrap();
 
     let db = Arc::new(Mutex::new(HashMap::new()));
+    //let db = new_sharded_db(10);
 
     loop {
         // The second item contains the IP and port of the new connection.
