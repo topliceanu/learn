@@ -1,5 +1,7 @@
 #!/bin/python
 
+# Problem: Forming a magic square 
+# We define a magic square to be an  matrix of distinct positive integers from  to  where the sum of any row, column, or diagonal of length  is always equal to the same number: the magic constant.
 # Source: https://www.hackerrank.com/challenges/magic-square-forming/problem (you need to be logged in!)
 
 import math
@@ -66,21 +68,7 @@ def closest_magic_square(mat):
             break
     return smallest_diff, to_mat(closest_square)
 
-# Complete the formingMagicSquare function below.
-def formingMagicSquare(s):
+def forming_magic_square(s):
     diff, mat = closest_magic_square(s)
     return diff
 
-if __name__ == '__main__':
-    fptr = open(os.environ['OUTPUT_PATH'], 'w')
-
-    s = []
-
-    for _ in xrange(3):
-        s.append(map(int, raw_input().rstrip().split()))
-
-    result = formingMagicSquare(s)
-
-    fptr.write(str(result) + '\n')
-
-    fptr.close()
