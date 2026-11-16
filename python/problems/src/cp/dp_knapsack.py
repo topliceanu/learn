@@ -1,8 +1,6 @@
-#/bin/python3
+#/bin/python
 
-from typing import List, Set, Dict, Tuple
-
-def knapsack_0_1(capacity: int, weights: List[int], values: List[int]) -> List[int]:
+def knapsack_0_1(capacity: int, weights: list[int], values: list[int]) -> list[int]:
     n:int = len(weights)
     m:List[List[int]] = [[0] * (capacity+1)] * (n+1)
     for i in range(1, n+1):
