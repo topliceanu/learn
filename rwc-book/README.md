@@ -3,33 +3,32 @@
 ## Ch1. Introduction
 
 * Secret-key cryptography OR Symmetric cryptography
-- both users know the key and they keep it secret
-- AES - Advanced Encryption Standard - symmetric encryption standard (based on a block cipher)
-- block cipher is a deterministic algorithm operating on fixed-length groups of bits, called blocks.
-- Kerckhoff's Principle; a system should be secure even if everything about the system (except the key) is public knowledge.
-- _Ars ipsi secreta magistro_ - an art secret even for the master.
-- problem: key distribution
+  - both users know the key and they keep it secret
+  - AES - Advanced Encryption Standard - symmetric encryption standard (based on a block cipher)
+  - block cipher is a deterministic algorithm operating on fixed-length groups of bits, called blocks.
+  - Kerckhoff's Principle; a system should be secure even if everything about the system (except the key) is public knowledge.
+  - _Ars ipsi secreta magistro_ - an art secret even for the master.
+  - problem: key distribution
 
 * Public-key cryptography OR Asymmetric cryptography
-- Diffie-Helman key exchange - key exchange protocol
-  - transports a secret key between two parties through an insecure channel.
-  - sussceptible to man-in-the-middle attacks.
-- RSA - Ron Rivest, Adi Shamir, Leonard Adleman
-  - contains the spec for a public key encryption algorithm and a digital signature scheme.
-  - Alice disseminates her public key, anyone wishing to talk to Alice uses her public
-  key to encrypt messages that only Alice can decrypt with her private key.
-  - Alice uses her private key to sign messages that can be verified with the public key
+  - Diffie-Helman key exchange - key exchange protocol
+    - transports a secret key between two parties through an insecure channel.
+    - sussceptible to man-in-the-middle attacks.
+  - RSA - Ron Rivest, Adi Shamir, Leonard Adleman
+    - contains the spec for a public key encryption algorithm and a digital signature scheme.
+    - Alice disseminates her public key, anyone wishing to talk to Alice uses her public
+    key to encrypt messages that only Alice can decrypt with her private key.
+    - Alice uses her private key to sign messages that can be verified with the public key
 
 * Hybrid encryption
-- asymetric encryption only works for small messages as it's expensive and slow.
-- encrypt a symetric key using asymetric encryption in order to distribute it to the peer you want to talk to.
-- then communicate using symetric key cryptography.
+  - asymetric encryption only works for small messages as it's expensive and slow.
+  - encrypt a symetric key using asymetric encryption in order to distribute it to the peer you want to talk to.
+  - then communicate using symetric key cryptography.
 
 * Goals of cryptography:
-- confidentiality: protect information from attackers.
-- authentication: identify the party you are talking to.
-
-- Schnorr signature algorithm is far better than anything else.
+  - confidentiality: protect information from attackers.
+  - authentication: identify the party you are talking to.
+  - Schnorr signature algorithm is far better than anything else.
 
 ## Ch2. Hash functions
 
@@ -41,35 +40,36 @@ $ echo -n "hello" | openssl dgst -sha256
 ```
 
 * Properties:
-- first _pre-image resistance_:
-  - Given a hash function and the output digest, it is impossible to recover the input
-  - Note: you can't hash something that is too small or predictable. This is vulnerable to brute-force attacks.
-- hash functions have the _second pre-image resistance_ property:
-  - Given an input and the corresponding hash (pre-image pair), the attacker is unable to find a
-  different input with the same digest.
-- _collision resistance_ property:
-  - Given a hash function, the attacker is unable to produce two different inputs with the same digest.
+  - first _pre-image resistance_:
+    - Given a hash function and the output digest, it is impossible to recover the input
+    - Note: you can't hash something that is too small or predictable. This is vulnerable to brute-force attacks.
+  - hash functions have the _second pre-image resistance_ property:
+    - Given an input and the corresponding hash (pre-image pair), the attacker is unable to find a
+    different input with the same digest.
+  - _collision resistance_ property:
+    - Given a hash function, the attacker is unable to produce two different inputs with the same digest.
 
 * Considerations
-- theoretically, there are an infinite number of inputs that hash to one digest.
-- birthday bounds: given a space of 2^N possibilities, you can expect a collision with a 50% probability after generating 2^(N/2) posibilities.
-  - use 256bit hashes for collision resistance.
-  - use 128bit hashes for pre-image and second pre-image resistance.
+  - theoretically, there are an infinite number of inputs that hash to one digest so an infinite number of collisions for every output.
+  - birthday bounds: given a space of 2^N possibilities, you can expect a collision with a 50% probability after generating 2^(N/2) posibilities.
+    - use 256bit hashes for collision resistance.
+    - use 128bit hashes for pre-image and second pre-image resistance.
 
-* Uses:
-- commitments: you can hash a commitment about the future, distribute the hash,
-then, at a future time, reveal the commitment and prove it by hashing it to
-match what you distributed in the past. (first and second pre-image resistance).
-- resource integrity: associate a digest to resources you serve to insure they were not tampered with.
-- distributed ledgers (blockchains)
-- content-addressable networks (like bittorrent) files are split into chunks, each chunk is hashed, the client uses the hashes to find peers that store the chunks.
+* Use cases:
+  - commitments: you can hash a commitment about the future, distribute the hash,
+  then, at a future time, reveal the commitment and prove it by hashing it to
+  match what you distributed in the past. (first and second pre-image resistance).
+  - resource integrity: associate a digest to resources you serve to insure they were not tampered with.
+  - distributed ledgers (blockchains)
+  - content-addressable networks (like bittorrent) files are split into chunks, each chunk is hashed, the client uses the hashes to find peers that store the chunks.
 
 * Standards
-- SHA stands for Secure Hash Algorithm
-- MD5 and SHA-1 are considered broken: faults were discovered in the hash functions + advances in computing.
+  - SHA stands for Secure Hash Algorithm
+  - MD5 and SHA-1 are considered broken: faults were discovered in the hash functions + advances in computing.
 
 * SHA-2 - designed by Ralph Merkle and Ivan Damgard independently
   - four versions based on the output size in bits: SHA-224, SHA-256, SHA-384, SHA-512
+
 ```
 $ echo -n "hello world" | openssl dgst -sha224
 $ echo -n "hello world" | openssl dgst -sha256
@@ -91,52 +91,53 @@ iv-->(CP)-->(CP)-->(CP)-->output
   - vulnerable to length-extension attacks, so **don't use for secrets hashing!**
 
 * SHA-3 - Keccak
-- not vulnerable to lenght-extensions and can be used to hash secrets
-- variants: SHA-3-224, SHA-3-256, SHA-3-384, SHA-3-512 each specifying the output
+  - not vulnerable to lenght-extensions and can be used to hash secrets
+  - variants: SHA-3-224, SHA-3-256, SHA-3-384, SHA-3-512 each specifying the output
 
 * XOFs: extendable output functions
-- like hashes but produce a configurable variable length digest - XOF (zof)
-- Eg: SHAKE, cSHAKE
-- If you use multiple cryptographic primitives, do not use the same key and apply _domain separation_!
+    - like hashes but produce a configurable variable length digest - XOF (zof)
+    - Eg: SHAKE, cSHAKE
+    - If you use multiple cryptographic primitives, do not use the same key and apply _domain separation_!
+    - Without _domain separation_ an attacher can take a value value (eg. signature, hash, or derived key) from one part of a protocol and trick the system into accepting it somwhere else.
 
 * Ambigous hashing of tuples
-- if you are hashing a data structure - say and array or a tuple - you need to make sure
-it is serialised in a way that is unambiguous
-  - Eg: ("Alice", "Bob", 1000, 15) -> "Alice||Bob||1000||15" -> hash
-    If you do "AliceBob100015" this becomes ambiguous.
+  - if you are hashing a data structure - say and array or a tuple - you need to make sure it is serialised in a way that is unambiguous.
+    - Eg: ("Alice", "Bob", 1000, 15) -> "Alice||Bob||1000||15" -> hash
+      If you do "AliceBob100015" this becomes ambiguous.
 
-"Defence in depth" - layering imperfect defenses in the hope that an attacker will not defeat them all.
-- Q: How do you monitor these layers? It would be nice to see what layer an attacker is at.
+- "Defence in depth" - layering imperfect defenses in the hope that an attacker will not defeat them all.
+- Q: How do you monitor these layers? It would be nice to see what layer an attacker is at. 
 
 * Hashing passwords
-- salts are random numbers used in conjunction with passwords to produce hashes
-- state of the art, recommendation for hashing passwords: [Argon2](https://password-hashing.net/)
-- others used: BPKDF2, bcrypt, scrypt. These can be used with insecure parameters!
+  - salts are random numbers used in conjunction with passwords to produce hashes
+  - state of the art, recommendation for hashing passwords: [Argon2](https://password-hashing.net/)
+  - others used: BPKDF2, bcrypt, scrypt. These can be used with insecure parameters!
 
 ## Ch 3. Message authentication codes (MACs)
+
 - the goal is to protect the integrity of data.
-Q: Is it the same as a signature? A: yes, but a signature uses asymetric encryption and provides authenticat#ion, while MACs don't.
-- a MAC takes in an input messages and a secret key and produces an authentication tag.
-- since hash functions are public, a MAC is like a private hash function that only the owner of the secret key can compute.
-- a popular implementatin is HMAC - hash-based message authentication code
-Properties:
-- MACs are resistant against forgery as long as the key remains secret!
-- the authentication tag needs to be of a minimum length to be secure, usually 128bit
-- MACs are vulnerable to replay. The solution is to add a counter. Counters should never be variable length to prevent ambiguous attacks.
-- verifying an authentication tag needs to be done in constant time otherwise it's vulnerale to timing attacks.
-  Always use the library provided verification function!
-Uses:
-- can be used to generate random numbers deterministically.
-"Many major applications use a MAC with a random key in place of the non-cryptographic hash function."
-- HMACs are used to derive private keys. See Ch. 7
+- Q: Is it the same as a signature? A: yes, but a signature uses asymetric encryption and provides authentication, while MACs don't.
+  - a MAC takes in an input messages and a secret key and produces an authentication tag.
+  - since hash functions are public, a MAC is like a private hash function that only the owner of the secret key can compute.
+  - a popular implementatin is HMAC - hash-based message authentication code
+- _authentication_ is the process of proving the origin, integrity and identity of a message and sender.
+- Properties:
+  - MACs are resistant against forgery as long as the key remains secret!
+  - the authentication tag needs to be of a minimum length to be secure, usually 128bit
+  - MACs are vulnerable to replay. The solution is to add a counter. Counters should never be variable length to prevent ambiguous attacks.
+  - verifying an authentication tag needs to be done in constant time otherwise it's vulnerale to timing attacks. Always use a library for the verification function!
+- Uses:
+  - can be used to generate random numbers deterministically.
+  - "Many major applications use a MAC with a random key in place of the non-cryptographic hash function."
+  - HMACs are used to derive private keys. See Ch. 7
 
 * HMAC:
-- uses SHA2 which is vulnerable to length-extension attacks, thus it needs to split the key.
-  ! Never hash secrets with sha2 dirrectly, use HMAC.
-- creates two keys from the main key using two constants: k1 = k XOR ipad, k2 = k XOR opad
-```
-  auth_tag = hash(hash(message + k1) + k2), k1 = key XOR ipad, k2 = key XOR opad
-```
+  - uses SHA2 which is vulnerable to length-extension attacks, thus it needs to split the key.
+    ! Never hash secrets with sha2 dirrectly, use HMAC.
+  - creates two keys from the main key using two constants: k1 = k XOR ipad, k2 = k XOR opad
+  ```
+    auth_tag = hash(hash(message + k1) + k2), k1 = key XOR ipad, k2 = key XOR opad
+  ```
 - HS256 (HMAC with SHA-256) is used in JWT.
 
 * KMAC:
@@ -150,7 +151,7 @@ Uses:
 - _encryption algorithm_ aka _cipher_. The input is a _plaintext_ and a _secret key_ and the output is a _ciphertext_.
 
 * AES (Advanced encryption standard) block cipher - don't use!
-  - Variants: AES-128 (16bytes), AES-196 (24byte), AES-256 (32bytes). Use 128, it's enough
+  - Variants: AES-128 (16bytes), AES-196 (24byte), AES-256 (32bytes). Use 128, it's enough!
   - AES is a _pseudorandom permutation_
   - it arranges the 16byte input in a 4x4 byte array, then iterates over a _round_ function several times.
 ```
@@ -185,7 +186,7 @@ Uses:
 ( Chunk#1 )            ( Chunk#2 )         ( Chunk#3 )
 ```
   - IV is public, so it needs to be unique (cannot repeat) and unpredictable (trully random). Don't generate the IV yourself!
-  - The IV and the ciphertext can be modified by an attacker, so we add an integrity mechanism: AES-CBC-HMAC
+  - The IV and the ciphertext can be modified by an attacker, so we add an integrity mechanism: AES-CBC-HMAC (CBC stands for Cipher Block Chaining)
   - Don't use AES-CBC-HMAC in practice!
 
 * AEAD (authenticated encryption with associated data) - use this!
@@ -212,7 +213,7 @@ Uses:
 
 ```
   - both use a _stream cipher_ (instead of block ciphers). They generate a keystream that is XORed with the plaintext to give the ciphertext.
-  - There are limits on how many messages can be encrypted under a single key, before the key become vulnerable.
+  - There are limits on how many messages can be encrypted under a single key, before the key become vulnerable!
   - chacha20-poly1305:
 ```
 (key) (Nonce) (counter=0)      (key) (Nonce) (counter=1)
@@ -232,9 +233,9 @@ Uses:
                                     +---+----+
                                         |
                                 (authentication tag)
-* Phones and laptops do disk encryption using unauthenticated encryption in wide blocks - _wide-block cipher_ - to protect agains _bitflip attacks_.
-* Database encryption means encrypting data at rest on disk, to query the data, it must be decrypted by the DB.
 ```
+  - Phones and laptops do disk encryption using unauthenticated encryption in wide blocks - _wide-block cipher_ - to protect agains _bitflip attacks_.
+  - Database encryption means encrypting data at rest on disk, to query the data, it must be decrypted by the DB.
 
 ## Ch 5. Key Exchanges
 * Group theory
@@ -264,7 +265,7 @@ Uses:
     - the prime modulus p is large (2048bits) generator g is 2 because is makes multiplication fast on computers. The group order is q=(p-1)/2
     - disadvantage: private and public keys are large 2kb
 
-* Eliptic curve Diffie-Hellman (ECDH) key exchange - use this! (or ECDHE)
+* Eliptic curve Diffie-Hellman (ECDH) key exchange - use this! (or ECDH)
   - advantage: keys are small for the same level of security.
   - based on the _eliptic curve dicrete logarithm problem_
   - the two curves to use are P-256 (aka. secp256r1) and Curve25519.
@@ -276,6 +277,7 @@ Uses:
 TODO: review attacks on DH and ECDH
 
 ## Ch 6. Asymmetric encryption and hybrid encryption
+
 - Basic asymmetric cryptography does not provide authentication. Bob doesn't know if he's using Alice's
   public key and Alice doesn't know who sent the encrypted message because everyone has access to her public key.
 - Limitations: length of messages that it can encrypt (currently, 500 characters) and speed of encryption/decryption.
@@ -313,14 +315,15 @@ TODO read how RSA works!
   - ECIES - eliptic curve integrated encryption scheme - popular hybrid encryption standard.
 
 ## Ch 7. Signatures and zero-knowledge proofs
+
 - signatures are good for authenticating the origin and the integrity of messages
 - popular signature scheme: ED25519.
 - (use case) Authenticated key exchange: Alice sends her public key to Bob along with a signature of the public key using her private key.
 
 * Public key infrastructure
   - based on the idea of transitivity of trust: authorities maintain a mapping of ids and public keys that they trust.
-    - Eg. PKI - Web Public Key Infrastructure - a system of certificate authorities that maintain a mapping beetween website
-  domains and thir signing key. Clients (browsers) trusts an authority to certify that some domain is linked to the public key presented by the website.
+    - Eg. PKI - Web Public Key Infrastructure - a system of certificate authorities that maintain a mapping beetween website domains and their signing key.
+    - Clients (browsers) trusts an authority to certify that some domain is linked to the public key presented by the website.
 
 * Zero Knowledge Proof
   - _witness_ is the hidden information (secret) based on which statements are made.
@@ -344,8 +347,8 @@ She generates a random k, computes a commitment R = g^k. Does not send it to Vic
 The signature that Peggy sends to Victor is a pair of (R, s) where R is a commitment to some secret random value
 and s is a value computed with the help of the commitment R, the witness x acting as a private key and the message.
 
-  - digital signature can be seen as just non-interractive ZKPs.
-- "A digital signature does not uniquely identify a key or a message"
+- digital signature can be seen as just non-interractive ZKPs.
+  - "A digital signature does not uniquely identify a key or a message"
 
 * RSA for signatures
   - hash the message, (optionally pad the hash) then ecrypt it with RSA.
@@ -402,13 +405,14 @@ TODO read about Schnorr signatures.
 * Attacks:
   - most signature schemes are malleable: given a valid signature, it can be modified to create another valid signature (with a different, unknown private key).
   - do not rely on uniqueness of signatures!
-  - key substitution attack: craft a different a different public key that validates an existing (message, signature).
+  - key substitution attack: craft a different public key that validates an existing (message, signature).
   - message key substitution attack: craft a different (message, public key) that validates an existing signature.
 
 ## Ch 8. Randomness and secrets
 - sources for hardware randomness: thermal noise, the photoelectric effect, quantum effect, etc.
 - ASLR - address space layout randomization - randomize the memory layout of a process every time it runs.
 - Acronyms:
+
   PRNG - pseudorandom number generator;
   CSPRNG - cryptographically secure PRNG,
   DRBG - deterministic random bit generator.
@@ -430,8 +434,7 @@ TODO read about Schnorr signatures.
   Don't use the current timestamp as a seed! Reason: very little entropy, the top bits are always the say during the course of the day and the bottom bits are mostly 0 (usually increments are in ms instead of ns)
 
 * Public randomness
-
-- two types: on-to-many (VRFs) and many-to-many (Beacons - a set of participants want to produce randomness together)
+  - two types: on-to-many (VRFs) and many-to-many (Beacons - a set of participants want to produce randomness together)
 
 - A _VRF_ - verifiable random functions use asymetric cryptography to publish randomness
   - generate a key pair and publish the verifying key (public key). Also publish a seed.

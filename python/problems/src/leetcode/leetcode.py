@@ -1,5 +1,7 @@
 #!/bin/python
 
+import typing as t
+
 # Problem 14: Longest Common Prefix
 # Source: https://leetcode.com/problems/longest-common-prefix/
 def longestCommonPrefix(strs: list[str]) -> str:
@@ -102,6 +104,8 @@ def reverse_k_group_2(head: ListNode, k: int) -> ListNode:
 
     return new_head 
 
+# Problem 23: Merge K Sorted Lists
+# See: https://leetcode.com/problems/merge-k-sorted-lists/
 def merge_k_lists(lists: list[ListNode]) -> ListNode:
     out = None
     for l in lists:
@@ -145,3 +149,91 @@ def merge_2_lists(l1: ListNode, l2: ListNode) -> ListNode:
         prev.next = l2
     return new_head.next # Ignore fake first node.
 
+
+# Problem 36: Valid Sudoku
+# Source: https://leetcode.com/problems/valid-sudoku/description/
+
+def is_valid_sudoku(board: list[list[str]]) -> bool:
+    for i in range(9):
+        if not check(line(board, i)):
+            return False
+        if not check(column(board, i)):
+            return False
+    for i in range(3):
+        for j in range(3):
+            if not check(square(board, i, j)):
+                return False
+    return True
+
+def line(board: list[list[str]], i: int) -> t.Iterator[str]:
+    for j in range(9):
+        yield board[i][j]
+
+def column(board: list[list[str]], j: int) -> t.Iterator[str]:
+    for i in range(9):
+        yield board[i][j]
+
+def square(board: list[list[str]], i: int, j: int) -> t.Iterator[str]:
+    for l in range(i*3, (i+1)*3):
+        for c in range(j*3, (j+1)*3):
+            yield board[l][c]
+
+def check(values: t.Iterator[str]) -> bool:
+    mask = 0;
+    for value in values:
+        if value == ".":
+            continue
+        ivalue = int(value)
+        if mask & (1 << ivalue): 
+            return False
+        mask += 1 << ivalue
+    return True
+
+# Problem 18: 4Sum
+# Source: https://leetcode.com/problems/4sum/description/  
+def four_sum(nums: list[int], target: int) -> list[list[int]]:
+    # O(n^2) time complexity, O(n^2) space complexity.
+    # Build a map: keys are sums for all distinct pairs in nums
+    nums.sort()
+    sums = {} 
+    n = len(nums)
+    for i in range(n-1):
+        for j in range(i+1, n):
+            s = nums[i] + nums[j]
+            if not(s in sums):
+                sums[s] = []
+            sums[s].append((i, j))
+    # Build pairs of distinct values in nums, and check if we have cached another pair of different values for the diff.
+    out = set()
+    for i in range(n-3):
+        for j in range(i+1, n-2):
+            diff = target - nums[i] - nums[j]
+            if not(diff in sums):
+                continue
+            for (k, l) in sums[diff]:
+                if j < k and k < l: # Distinct indices.
+                    out.add((nums[i], nums[j], nums[k], nums[l]))
+    return [list(l) for l in out] 
+
+def four_sum2(nums: list[int], target: int) -> list[list[int]]:
+    # Space complexity O(n^3)
+    n = len(nums)
+    nums.sort() # O(n^2)
+    out = []
+    for i in range(n-3):
+        for j in range(i+1, n-2):
+            diff = target - nums[i] - nums[j]
+            k, l = j+1, n-1
+            while k < l:
+                partial = nums[k] + nums[l] 
+                if partial < diff:
+                    k += 1
+                elif partial > diff:
+                    l -= 1
+                else:
+                    out.append([nums[i], nums[j], nums[k], nums[l]])
+                    k +=1
+                    l -= 1
+    return out
+
+                

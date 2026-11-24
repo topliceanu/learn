@@ -1,4 +1,6 @@
+use core::unreachable;
 use std::fmt::Binary;
+use std::collections::HashMap;
 
 // Problem 4. Median of two sorted arrays in O(log (m+n))
 // See https://leetcode.com/problems/median-of-two-sorted-arrays/description/
@@ -85,39 +87,37 @@ fn reverse_improved(x:i32) -> i32 {
 // Problem 10. Regular Expression Matching
 // See https://leetcode.com/problems/regular-expression-matching/description/
 pub fn is_match(s: String, p: String) -> bool {
-    // Plan:
-    // 1. parse the regular expression into a list of matchers: (Instead of a list, we can have a tree, traversal is DF)
-    // - match character x once -> x
-    // - match character x zero or more time -> x*
-    // - match any character once -> .
-    // - match any character zero or more times -> .*
-    // 2. each matcher takes a string and output bool (is or is not a match) + the rest of the string, (is_match:bool, rest:&[str])
-    // - apply recursive matching for the * pattern: ie. build a set of rest values then iterate the rest of the pattern over it: (is_match:bool, rests: Vec<&[str]>)
-
-    // Tests:
-    //"aaaaab", ".*ab"
-    //"aaaaab", "a*ab"
-    let pattern = Pattern::parse(&p) ;
-    let (is_match, rests) = pattern.apply(&s);
-    is_match && rests.len() == 0
-}
-
-enum Pattern {
-    Single(char),
-    ZeroOrMultiple(Box<Pattern>),
-    Any,
-    And(Box<Pattern>, Box<Pattern>),
-    End,
-}
-
-impl Pattern {
-    fn parse(input: &str) -> Self {
-        return Pattern::End
+    let text: Vec<char> = s.chars().collect();
+    let pattern: Vec<char> = p.chars().collect();
+    
+    let t_len = text.len();
+    let p_len = pattern.len();
+    
+    // dp[i][j] represents whether text[i..] matches pattern[j..]
+    let mut dp = vec![vec![false; p_len + 1]; t_len + 1];
+    
+    dp[t_len][p_len] = true;
+    
+    for i in (0..=t_len).rev() {
+        for j in (0..p_len).rev() {
+            let first_match = i < t_len && (pattern[j] == text[i] || pattern[j] == '.');
+            
+            if j + 1 < p_len && pattern[j + 1] == '*' {
+                dp[i][j] = dp[i][j + 2] || (first_match && dp[i + 1][j]);
+            } else {
+                dp[i][j] = first_match && dp[i + 1][j + 1];
+            }
+        }
     }
-
-    fn apply(&self, input: &str) -> (bool, Vec<&str>) {
-        (true, vec![])
-    }
+    
+    dp[0][0]
+}
+    
+// Problem 14: Longest common prefix
+// See https://leetcode.com/problems/longest-common-prefix/
+pub fn longest_common_prefix(strs: &[&str]) -> String {
+    // TODO
+    return "".to_string();
 }
 
 // Problem 16: 3Sum closest

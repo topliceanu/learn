@@ -164,4 +164,16 @@ let trapping_rain_water height =
   in let right_maxs = reverse (left_max 0 (reverse height))
   in aux (height, left_maxs, right_maxs)
 
-
+(* Problem 25: Reverse Nodes in k-Group *)
+(* Source: https://leetcode.com/problems/reverse-nodes-in-k-group/ *)
+let rec rev_k_group k xs =
+  let (reversed, success, rest) = rev_tmp k xs
+  in if success then reversed @ (rev_k_group k rest)
+  else xs
+and rev_tmp k = function
+  | [] -> ([], k == 1, [])
+  | x :: xs -> 
+    if k == 1 then ([x], true, xs)
+    else let (so_far, success, rest) = rev_tmp (k-1) xs
+    in if success then (so_far @ [x], success, rest)
+    else (so_far, success, rest)
